@@ -1,0 +1,199 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Scoring and Clustering Service Schemas",
+  "description": "Schemas for scoring, clustering, and role classification services",
+  "definitions": {
+    "score_output": {
+      "type": "object",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Batch identifier"
+        },
+        "scores": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "photo_id": {
+                "type": "string",
+                "description": "Photo identifier"
+              },
+              "Q_tech": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Technical quality composite score"
+              },
+              "Aesthetic": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Aesthetic quality score"
+              },
+              "Vibe": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Theme vibe match score"
+              },
+              "Typography": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Typography affordance score"
+              },
+              "Composition": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Composition quality score"
+              },
+              "Total_prelim": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Preliminary total score (before LLM)"
+              }
+            },
+            "required": ["photo_id", "Q_tech", "Aesthetic", "Vibe", "Typography", "Composition", "Total_prelim"]
+          }
+        },
+        "dropped_for_tech": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Photo IDs dropped due to technical quality gate"
+        }
+      },
+      "required": ["batch_id", "scores", "dropped_for_tech"]
+    },
+    "cluster_output": {
+      "type": "object",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Batch identifier"
+        },
+        "clusters": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cluster_id": {
+                "type": "string",
+                "description": "Unique cluster identifier"
+              },
+              "members": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Photo IDs in this cluster"
+              }
+            },
+            "required": ["cluster_id", "members"]
+          }
+        }
+      },
+      "required": ["batch_id", "clusters"]
+    },
+    "cluster_rank_output": {
+      "type": "object",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Batch identifier"
+        },
+        "cluster_winners": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "cluster_id": {
+                "type": "string",
+                "description": "Cluster identifier"
+              },
+              "hero": {
+                "type": "string",
+                "description": "Winning photo ID for this cluster"
+              },
+              "alternates": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Alternate photo IDs from this cluster"
+              }
+            },
+            "required": ["cluster_id", "hero", "alternates"]
+          }
+        },
+        "llm_rationales": {
+          "type": "object",
+          "description": "LLM rationales keyed by photo ID",
+          "additionalProperties": {
+            "type": "array",
+            "items": {"type": "string"}
+          }
+        },
+        "judge_costs": {
+          "type": "object",
+          "properties": {
+            "pairs_scored": {"type": "integer", "minimum": 0},
+            "tokens_est": {"type": "integer", "minimum": 0}
+          }
+        }
+      },
+      "required": ["batch_id", "cluster_winners", "llm_rationales", "judge_costs"]
+    },
+    "roles_output": {
+      "type": "object",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Batch identifier"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "photo_id": {
+                "type": "string",
+                "description": "Photo identifier"
+              },
+              "probs": {
+                "type": "object",
+                "properties": {
+                  "opener": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Probability of being an opener"
+                  },
+                  "anchor": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Probability of being an anchor"
+                  },
+                  "detail": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Probability of being a detail shot"
+                  },
+                  "breather": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Probability of being a breather"
+                  }
+                },
+                "required": ["opener", "anchor", "detail", "breather"]
+              }
+            },
+            "required": ["photo_id", "probs"]
+          }
+        }
+      },
+      "required": ["batch_id", "roles"]
+    }
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Features Service Schemas",
+  "description": "Input and output schemas for the feature extraction service",
+  "definitions": {
+    "features_output": {
+      "type": "object",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Batch identifier"
+        },
+        "features": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "photo_id": {
+                "type": "string",
+                "description": "Photo identifier"
+              },
+              "embeddings": {
+                "type": "object",
+                "description": "Various embedding vectors",
+                "properties": {
+                  "clip_L14": {
+                    "type": "string",
+                    "description": "URI to CLIP L/14 embedding (.npy file)"
+                  }
+                }
+              },
+              "hashes": {
+                "type": "object",
+                "description": "Perceptual and other hashes",
+                "properties": {
+                  "phash": {
+                    "type": "string",
+                    "description": "Perceptual hash for duplicate detection"
+                  }
+                }
+              },
+              "tech": {
+                "type": "object",
+                "description": "Technical quality metrics",
+                "properties": {
+                  "sharpness": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Sharpness score (Laplacian variance)"
+                  },
+                  "exposure": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Exposure quality score"
+                  },
+                  "noise": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Noise level (inverse quality)"
+                  },
+                  "horizon_deg": {
+                    "type": "number",
+                    "description": "Horizon tilt in degrees"
+                  }
+                },
+                "required": ["sharpness", "exposure", "noise", "horizon_deg"]
+              },
+              "saliency": {
+                "type": "object",
+                "description": "Saliency and composition features",
+                "properties": {
+                  "heatmap_uri": {
+                    "type": "string",
+                    "description": "URI to saliency heatmap"
+                  },
+                  "neg_space_ratio": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Ratio of negative space for typography"
+                  }
+                }
+              },
+              "faces": {
+                "type": "object",
+                "description": "Face detection results",
+                "properties": {
+                  "count": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Number of faces detected"
+                  },
+                  "landmarks_ok": {
+                    "type": "boolean",
+                    "description": "Whether face landmarks are properly positioned"
+                  }
+                }
+              },
+              "palette": {
+                "type": "object",
+                "description": "Color palette analysis",
+                "properties": {
+                  "lab_centroids": {
+                    "type": "array",
+                    "items": {
+                      "type": "array",
+                      "items": {"type": "number"},
+                      "minItems": 3,
+                      "maxItems": 3,
+                      "description": "LAB color centroids"
+                    }
+                  },
+                  "cluster_id": {
+                    "type": "string",
+                    "description": "Palette cluster identifier"
+                  }
+                }
+              }
+            },
+            "required": ["photo_id", "embeddings", "hashes", "tech", "saliency", "faces", "palette"]
+          }
+        }
+      },
+      "required": ["batch_id", "features"]
+    }
+  }
+}

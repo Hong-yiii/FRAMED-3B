@@ -1,0 +1,12 @@
+[workspace]
+authors = ["Hong-yiii <hongyilin.mail@gmail.com>"]
+channels = ["conda-forge"]
+name = "framed_3b"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = ">=3.13.7,<3.14"
+jsonschema = ">=4.25.1,<5"

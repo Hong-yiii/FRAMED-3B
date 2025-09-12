@@ -1,0 +1,173 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Optimizer and Output Schemas",
+  "description": "Schemas for diversity optimizer and final curated output",
+  "definitions": {
+    "selection_output": {
+      "type": "object",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Batch identifier"
+        },
+        "selected_ids": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Selected photo IDs (size K)"
+        },
+        "marginal_gains": {
+          "type": "object",
+          "description": "Marginal gain scores for selected photos",
+          "additionalProperties": {"type": "number"}
+        },
+        "coverage": {
+          "type": "object",
+          "description": "Coverage achieved for each diversity axis",
+          "properties": {
+            "scene_type": {"type": "number", "minimum": 0, "maximum": 1},
+            "palette_cluster": {"type": "number", "minimum": 0, "maximum": 1},
+            "time_of_day": {"type": "number", "minimum": 0, "maximum": 1},
+            "location_cluster": {"type": "number", "minimum": 0, "maximum": 1},
+            "people_count": {"type": "number", "minimum": 0, "maximum": 1},
+            "orientation": {"type": "number", "minimum": 0, "maximum": 1}
+          }
+        }
+      },
+      "required": ["batch_id", "selected_ids", "marginal_gains", "coverage"]
+    },
+    "review_update": {
+      "type": "object",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Batch identifier"
+        },
+        "lock_in": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Photo IDs to force include"
+        },
+        "exclude": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Photo IDs to force exclude"
+        },
+        "nudges": {
+          "type": "object",
+          "properties": {
+            "emphasize_axes": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Axes to emphasize (e.g., 'night', 'people>=2')"
+            },
+            "alpha": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Quality weight multiplier"
+            },
+            "beta": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Diversity weight multiplier"
+            },
+            "gamma": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Similarity penalty multiplier"
+            }
+          }
+        }
+      },
+      "required": ["batch_id"]
+    },
+    "curated_list": {
+      "type": "object",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Batch identifier"
+        },
+        "version": {
+          "type": "string",
+          "description": "Schema version"
+        },
+        "theme_spec_ref": {
+          "type": "string",
+          "description": "URI to theme specification"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "photo_id": {
+                "type": "string",
+                "description": "Photo identifier"
+              },
+              "rank": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Rank in curated set"
+              },
+              "cluster_id": {
+                "type": "string",
+                "description": "Source cluster identifier"
+              },
+              "role": {
+                "type": "string",
+                "enum": ["opener", "anchor", "detail", "breather"],
+                "description": "Predicted layout role"
+              },
+              "scores": {
+                "type": "object",
+                "properties": {
+                  "Q_tech": {"type": "number", "minimum": 0, "maximum": 1},
+                  "Aesthetic": {"type": "number", "minimum": 0, "maximum": 1},
+                  "Vibe": {"type": "number", "minimum": 0, "maximum": 1},
+                  "Typography": {"type": "number", "minimum": 0, "maximum": 1},
+                  "Composition": {"type": "number", "minimum": 0, "maximum": 1},
+                  "LLM": {"type": "number", "minimum": 0, "maximum": 1},
+                  "Total": {"type": "number", "minimum": 0, "maximum": 1}
+                },
+                "required": ["Q_tech", "Aesthetic", "Vibe", "Typography", "Composition", "Total"]
+              },
+              "diversity_tags": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Diversity tags (e.g., 'scene:street', 'palette:teal-orange')"
+              },
+              "reasons": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Human-readable reasons for selection"
+              },
+              "artifacts": {
+                "type": "object",
+                "properties": {
+                  "thumb": {"type": "string", "description": "URI to thumbnail"},
+                  "std": {"type": "string", "description": "URI to standardized image"}
+                }
+              }
+            },
+            "required": ["photo_id", "rank", "cluster_id", "role", "scores", "diversity_tags", "reasons", "artifacts"]
+          }
+        },
+        "audit": {
+          "type": "object",
+          "properties": {
+            "created_at": {"type": "string", "format": "date-time"},
+            "optimizer_params": {
+              "type": "object",
+              "properties": {
+                "alpha": {"type": "number"},
+                "beta": {"type": "number"},
+                "gamma": {"type": "number"}
+              }
+            }
+          }
+        }
+      },
+      "required": ["batch_id", "version", "theme_spec_ref", "items", "audit"]
+    }
+  }
+}

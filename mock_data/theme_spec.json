@@ -1,0 +1,70 @@
+{
+  "theme_id": "travel_zine_001",
+  "name": "Urban Exploration",
+  "summary": "A zine about discovering hidden gems in city landscapes, focusing on architecture, street life, and the interplay of light and shadow in urban environments.",
+  "weights": {
+    "comp": 0.22,
+    "subject": 0.18,
+    "light": 0.2,
+    "type": 0.12,
+    "story": 0.18,
+    "vibe": 0.1
+  },
+  "roles": {
+    "opener": {
+      "min": 3,
+      "max": 6
+    },
+    "anchor": {
+      "min": 10,
+      "max": 20
+    },
+    "detail": {
+      "min": 8,
+      "max": 20
+    },
+    "breathers": {
+      "min": 6,
+      "max": 12
+    }
+  },
+  "diversity_axes": [
+    "scene_type",
+    "people_count",
+    "time_of_day",
+    "palette_cluster",
+    "location_cluster",
+    "orientation"
+  ],
+  "keywords": [
+    "urban",
+    "architecture",
+    "street",
+    "light",
+    "shadow",
+    "city",
+    "exploration",
+    "concrete",
+    "neon",
+    "vintage"
+  ],
+  "palette_reference": {
+    "primary_colors": [
+      [
+        45,
+        15,
+        -20
+      ],
+      [
+        65,
+        -5,
+        15
+      ],
+      [
+        25,
+        5,
+        -25
+      ]
+    ]
+  }
+}

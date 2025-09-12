@@ -1,0 +1,165 @@
+{
+  "batch_id": "batch_2025-01-15_test",
+  "photos": [
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    },
+    {
+      "uri": "s3://mock-bucket/photos/02d.jpg"
+    }
+  ],
+  "theme_spec_ref": "s3://mock-bucket/themes/batch_2025-01-15_test_theme.yaml",
+  "user_overrides": {
+    "lock_in": [
+      "P041.jpg",
+      "P008.jpg"
+    ],
+    "exclude": [
+      "P002.jpg"
+    ]
+  }
+}

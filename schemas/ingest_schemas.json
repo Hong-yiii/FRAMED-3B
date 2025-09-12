@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ingest Service Schemas",
+  "description": "Input and output schemas for the ingest service",
+  "definitions": {
+    "ingest_input": {
+      "type": "object",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Unique batch identifier"
+        },
+        "photos": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "uri": {
+                "type": "string",
+                "description": "S3 URI to the photo"
+              }
+            },
+            "required": ["uri"]
+          }
+        },
+        "theme_spec_ref": {
+          "type": "string",
+          "description": "URI to theme specification"
+        },
+        "user_overrides": {
+          "type": "object",
+          "properties": {
+            "lock_in": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Photo IDs to force include"
+            },
+            "exclude": {
+              "type": "array",
+              "items": {"type": "string"},
+              "description": "Photo IDs to force exclude"
+            }
+          }
+        }
+      },
+      "required": ["batch_id", "photos", "theme_spec_ref"]
+    },
+    "ingest_output": {
+      "type": "object",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Batch identifier"
+        },
+        "photo_index": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "photo_id": {
+                "type": "string",
+                "description": "Content-addressable photo ID (hash)"
+              },
+              "uri": {
+                "type": "string",
+                "description": "Original photo URI"
+              },
+              "exif": {
+                "type": "object",
+                "description": "Extracted EXIF metadata"
+              }
+            },
+            "required": ["photo_id", "uri", "exif"]
+          }
+        }
+      },
+      "required": ["batch_id", "photo_index"]
+    }
+  }
+}

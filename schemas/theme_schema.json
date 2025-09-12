@@ -1,0 +1,131 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Theme Specification Schema",
+  "description": "Schema for theme specifications that drive the curation rubric",
+  "type": "object",
+  "properties": {
+    "theme_id": {
+      "type": "string",
+      "description": "Unique identifier for the theme"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable theme name"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Brief description of the theme for LLM context"
+    },
+    "weights": {
+      "type": "object",
+      "description": "Rubric weights for different scoring dimensions",
+      "properties": {
+        "comp": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Composition weight"
+        },
+        "subject": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Subject clarity weight"
+        },
+        "light": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Lighting and color harmony weight"
+        },
+        "type": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Typography affordance weight"
+        },
+        "story": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Story relevance weight"
+        },
+        "vibe": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Overall vibe match weight"
+        }
+      },
+      "required": ["comp", "subject", "light", "type", "story", "vibe"]
+    },
+    "roles": {
+      "type": "object",
+      "description": "Role quotas for layout types",
+      "properties": {
+        "opener": {
+          "type": "object",
+          "properties": {
+            "min": {"type": "integer", "minimum": 0},
+            "max": {"type": "integer", "minimum": 0}
+          },
+          "required": ["min", "max"]
+        },
+        "anchor": {
+          "type": "object",
+          "properties": {
+            "min": {"type": "integer", "minimum": 0},
+            "max": {"type": "integer", "minimum": 0}
+          },
+          "required": ["min", "max"]
+        },
+        "detail": {
+          "type": "object",
+          "properties": {
+            "min": {"type": "integer", "minimum": 0},
+            "max": {"type": "integer", "minimum": 0}
+          },
+          "required": ["min", "max"]
+        },
+        "breathers": {
+          "type": "object",
+          "properties": {
+            "min": {"type": "integer", "minimum": 0},
+            "max": {"type": "integer", "minimum": 0}
+          },
+          "required": ["min", "max"]
+        }
+      },
+      "required": ["opener", "anchor", "detail", "breathers"]
+    },
+    "diversity_axes": {
+      "type": "array",
+      "description": "Axes to optimize diversity across",
+      "items": {
+        "type": "string",
+        "enum": ["scene_type", "people_count", "time_of_day", "palette_cluster", "location_cluster", "orientation"]
+      }
+    },
+    "keywords": {
+      "type": "array",
+      "description": "Keywords for theme vibe matching",
+      "items": {"type": "string"}
+    },
+    "palette_reference": {
+      "type": "object",
+      "description": "Reference colors for the theme",
+      "properties": {
+        "primary_colors": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {"type": "number"},
+            "minItems": 3,
+            "maxItems": 3
+          }
+        }
+      }
+    }
+  },
+  "required": ["theme_id", "name", "summary", "weights", "roles", "diversity_axes", "keywords"]
+}

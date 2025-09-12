@@ -1,0 +1,816 @@
+{
+  "batch_id": "batch_2025-01-15_test",
+  "photo_index": [
+    {
+      "photo_id": "e7c4f5e1ebbad7203b18f8c840da314144d27f639e1962e5d87a06c63d4df672",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "50mm f/1.4",
+        "iso": 200,
+        "aperture": "f/2.0",
+        "shutter_speed": "1/1000",
+        "focal_length": "30mm",
+        "datetime": "2025-09-11T12:27:30.596862+00:00",
+        "gps": {
+          "lat": 40.79123591354097,
+          "lon": -74.08861223347412
+        }
+      }
+    },
+    {
+      "photo_id": "2532015be408bf7d89e4de7cead893f3773e3a3735ecd163a34731ce19bc26b1",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "iPhone 15 Pro",
+        "lens": "24-70mm f/2.8",
+        "iso": 100,
+        "aperture": "f/1.4",
+        "shutter_speed": "1/60",
+        "focal_length": "38mm",
+        "datetime": "2025-09-11T12:27:30.597004+00:00",
+        "gps": {
+          "lat": 40.61810719393677,
+          "lon": -74.06623246986267
+        }
+      }
+    },
+    {
+      "photo_id": "9d813ad7a2344ad21c5bb93e377aaecd713d91f9048a41d6fa7bf4e9bff2f98b",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "iPhone 15 Pro",
+        "lens": "50mm f/1.4",
+        "iso": 800,
+        "aperture": "f/5.6",
+        "shutter_speed": "1/125",
+        "focal_length": "75mm",
+        "datetime": "2025-09-11T12:27:30.597011+00:00",
+        "gps": {
+          "lat": 40.76456147342596,
+          "lon": -74.07406813672462
+        }
+      }
+    },
+    {
+      "photo_id": "f56a2e78d1df534c6f44ad24eb3ba0d28873f61f128cc6d63d7aaf6b63bfec85",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "iPhone 15 Pro",
+        "lens": "16-35mm f/2.8",
+        "iso": 400,
+        "aperture": "f/2.0",
+        "shutter_speed": "1/60",
+        "focal_length": "85mm",
+        "datetime": "2025-09-11T12:27:30.597016+00:00",
+        "gps": {
+          "lat": 40.633242055303974,
+          "lon": -74.03001453987254
+        }
+      }
+    },
+    {
+      "photo_id": "c76ebc72801a271659948bc315c9bc77f45937d1e7a671b027a485045640165a",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "16-35mm f/2.8",
+        "iso": 1600,
+        "aperture": "f/2.8",
+        "shutter_speed": "1/30",
+        "focal_length": "70mm",
+        "datetime": "2025-09-11T12:27:30.597020+00:00",
+        "gps": {
+          "lat": 40.63776523257064,
+          "lon": -73.92154092559437
+        }
+      }
+    },
+    {
+      "photo_id": "e036e9bc5f973fb601c4361a9fb60fd76ff7308752803d28349557a61b38c596",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Canon EOS R5",
+        "lens": "16-35mm f/2.8",
+        "iso": 1600,
+        "aperture": "f/2.8",
+        "shutter_speed": "1/500",
+        "focal_length": "36mm",
+        "datetime": "2025-09-11T12:27:30.597025+00:00",
+        "gps": {
+          "lat": 40.621964876731134,
+          "lon": -74.0604203448697
+        }
+      }
+    },
+    {
+      "photo_id": "a99ce8b2e50450ec33333f6c49d469f61311bcd3ef8c7f4de0eb653e592567b3",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "24-70mm f/2.8",
+        "iso": 200,
+        "aperture": "f/1.4",
+        "shutter_speed": "1/250",
+        "focal_length": "41mm",
+        "datetime": "2025-09-11T12:27:30.597028+00:00",
+        "gps": {
+          "lat": 40.77962208532815,
+          "lon": -74.07346918056878
+        }
+      }
+    },
+    {
+      "photo_id": "6ec7c42b638604f90927b9583d003d601d0d9934c49a7a582af4cbf9de6a68e0",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "50mm f/1.4",
+        "iso": 400,
+        "aperture": "f/8.0",
+        "shutter_speed": "1/1000",
+        "focal_length": "65mm",
+        "datetime": "2025-09-11T12:27:30.597032+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "5496458b8bd454679a4d062ab39ba66b766a86bc6c3e902a484e366083ffb970",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Sony A7R IV",
+        "lens": "50mm f/1.4",
+        "iso": 200,
+        "aperture": "f/4.0",
+        "shutter_speed": "1/250",
+        "focal_length": "41mm",
+        "datetime": "2025-09-11T12:27:30.597036+00:00",
+        "gps": {
+          "lat": 40.74079995197082,
+          "lon": -73.99461005124508
+        }
+      }
+    },
+    {
+      "photo_id": "b231f3bde60f38e3f6560eba453a1d73595a8c1c7adce87c1a69a89a1d3a25a9",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "24-70mm f/2.8",
+        "iso": 200,
+        "aperture": "f/1.4",
+        "shutter_speed": "1/125",
+        "focal_length": "49mm",
+        "datetime": "2025-09-11T12:27:30.597039+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "657d580dee3fcfa3127927e0e800d6fd870862ece20e3cb047ed44f65e3e3832",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Sony A7R IV",
+        "lens": "16-35mm f/2.8",
+        "iso": 200,
+        "aperture": "f/8.0",
+        "shutter_speed": "1/250",
+        "focal_length": "49mm",
+        "datetime": "2025-09-11T12:27:30.597043+00:00",
+        "gps": {
+          "lat": 40.74137037404009,
+          "lon": -74.07742568191159
+        }
+      }
+    },
+    {
+      "photo_id": "4e073793e511ce5ca4feacda8acb4394592339fd0df261ce402a245617e73cbc",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Sony A7R IV",
+        "lens": "50mm f/1.4",
+        "iso": 1600,
+        "aperture": "f/5.6",
+        "shutter_speed": "1/125",
+        "focal_length": "71mm",
+        "datetime": "2025-09-11T12:27:30.597047+00:00",
+        "gps": {
+          "lat": 40.792364576720495,
+          "lon": -74.02611989897193
+        }
+      }
+    },
+    {
+      "photo_id": "5958d52af285c66565b6d34c120ca77f7c3c0e105457e2156af6273fcb8fc259",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Sony A7R IV",
+        "lens": "50mm f/1.4",
+        "iso": 1600,
+        "aperture": "f/4.0",
+        "shutter_speed": "1/30",
+        "focal_length": "72mm",
+        "datetime": "2025-09-11T12:27:30.597096+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "320b0c2b5a8764e24ddaf809b436b3040034a29ad5d5ce21cddbdb21176c369c",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Canon EOS R5",
+        "lens": "50mm f/1.4",
+        "iso": 200,
+        "aperture": "f/8.0",
+        "shutter_speed": "1/250",
+        "focal_length": "62mm",
+        "datetime": "2025-09-11T12:27:30.597099+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "3a48bab119e2090a736d869069a8c7832ac952644883b5853935ac51a90a33d3",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "iPhone 15 Pro",
+        "lens": "85mm f/1.4",
+        "iso": 1600,
+        "aperture": "f/2.8",
+        "shutter_speed": "1/500",
+        "focal_length": "79mm",
+        "datetime": "2025-09-11T12:27:30.597103+00:00",
+        "gps": {
+          "lat": 40.748856682051304,
+          "lon": -74.08308965140326
+        }
+      }
+    },
+    {
+      "photo_id": "24fe204288c7a11a85dfbc14e16a9ef25d987298331aff192c2310269da077a9",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "16-35mm f/2.8",
+        "iso": 100,
+        "aperture": "f/2.8",
+        "shutter_speed": "1/250",
+        "focal_length": "34mm",
+        "datetime": "2025-09-11T12:27:30.597107+00:00",
+        "gps": {
+          "lat": 40.80356318550422,
+          "lon": -73.93082941192436
+        }
+      }
+    },
+    {
+      "photo_id": "672275d045eee7ed3fff5833788d2eb16395b587001fb88d2e5c2f4acf7c6d85",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "50mm f/1.4",
+        "iso": 1600,
+        "aperture": "f/1.4",
+        "shutter_speed": "1/1000",
+        "focal_length": "43mm",
+        "datetime": "2025-09-11T12:27:30.597111+00:00",
+        "gps": {
+          "lat": 40.71433257639553,
+          "lon": -74.06621777964705
+        }
+      }
+    },
+    {
+      "photo_id": "d625039dbb6b0fabc98f06655150c89f818e9e9ea93d1a64cdc61b5f7a6acce2",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "50mm f/1.4",
+        "iso": 1600,
+        "aperture": "f/5.6",
+        "shutter_speed": "1/30",
+        "focal_length": "62mm",
+        "datetime": "2025-09-11T12:27:30.597117+00:00",
+        "gps": {
+          "lat": 40.616695348477165,
+          "lon": -73.92018027674708
+        }
+      }
+    },
+    {
+      "photo_id": "9ea01a883db1299977c59d785ec23cc9e1231690fc1a9bfe1a3966802d1eb910",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "50mm f/1.4",
+        "iso": 100,
+        "aperture": "f/2.0",
+        "shutter_speed": "1/500",
+        "focal_length": "84mm",
+        "datetime": "2025-09-11T12:27:30.597121+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "0726cbe665d1db84fb51c710560de396b603c8e6e684c68b26fe6bb0be83700c",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "iPhone 15 Pro",
+        "lens": "24-70mm f/2.8",
+        "iso": 1600,
+        "aperture": "f/2.0",
+        "shutter_speed": "1/60",
+        "focal_length": "66mm",
+        "datetime": "2025-09-11T12:27:30.597124+00:00",
+        "gps": {
+          "lat": 40.72276071869899,
+          "lon": -74.05298867421199
+        }
+      }
+    },
+    {
+      "photo_id": "f89632c72c43189db48b5cde1fa5b09c764e641717851f0c190b86a9b72ff0c6",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "iPhone 15 Pro",
+        "lens": "50mm f/1.4",
+        "iso": 1600,
+        "aperture": "f/8.0",
+        "shutter_speed": "1/1000",
+        "focal_length": "36mm",
+        "datetime": "2025-09-11T12:27:30.597128+00:00",
+        "gps": {
+          "lat": 40.69259845999949,
+          "lon": -73.97166260807235
+        }
+      }
+    },
+    {
+      "photo_id": "6ffcf1a81a6895608517b4213d6bb066561c3efaae19bbab5ec53a7f19289505",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "85mm f/1.4",
+        "iso": 1600,
+        "aperture": "f/4.0",
+        "shutter_speed": "1/30",
+        "focal_length": "39mm",
+        "datetime": "2025-09-11T12:27:30.597131+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "5cfda97f5c7c925e173093a5d0366f4e06d832e9ba6f37634a3cb2060a5dafc7",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "24-70mm f/2.8",
+        "iso": 1600,
+        "aperture": "f/5.6",
+        "shutter_speed": "1/60",
+        "focal_length": "61mm",
+        "datetime": "2025-09-11T12:27:30.597134+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "c92afc9299c99b6d6415ba0942dfcbaeae9d33f3ecb661727ef73c0d6e0c34b9",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Canon EOS R5",
+        "lens": "24-70mm f/2.8",
+        "iso": 200,
+        "aperture": "f/1.4",
+        "shutter_speed": "1/30",
+        "focal_length": "79mm",
+        "datetime": "2025-09-11T12:27:30.597138+00:00",
+        "gps": {
+          "lat": 40.71563122396172,
+          "lon": -74.05030454720709
+        }
+      }
+    },
+    {
+      "photo_id": "fa7bda9067a49ff07f455ed8badea0b579c937e3082ebbac5e910f712abafc63",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "iPhone 15 Pro",
+        "lens": "50mm f/1.4",
+        "iso": 1600,
+        "aperture": "f/2.0",
+        "shutter_speed": "1/1000",
+        "focal_length": "83mm",
+        "datetime": "2025-09-11T12:27:30.597141+00:00",
+        "gps": {
+          "lat": 40.72804232994418,
+          "lon": -74.05740055152086
+        }
+      }
+    },
+    {
+      "photo_id": "887e835b33796bad136da2e242379b869db1ae4ac417d82445b051841bd9cb58",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "iPhone 15 Pro",
+        "lens": "85mm f/1.4",
+        "iso": 200,
+        "aperture": "f/1.4",
+        "shutter_speed": "1/30",
+        "focal_length": "66mm",
+        "datetime": "2025-09-11T12:27:30.597145+00:00",
+        "gps": {
+          "lat": 40.69751572460399,
+          "lon": -74.01259506639266
+        }
+      }
+    },
+    {
+      "photo_id": "07fcc2555af9133d12551c078a0e737c84d67f227d2d4fd532abb5a273b4a371",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Canon EOS R5",
+        "lens": "24-70mm f/2.8",
+        "iso": 100,
+        "aperture": "f/4.0",
+        "shutter_speed": "1/1000",
+        "focal_length": "45mm",
+        "datetime": "2025-09-11T12:27:30.597148+00:00",
+        "gps": {
+          "lat": 40.63465380644896,
+          "lon": -74.06768198557167
+        }
+      }
+    },
+    {
+      "photo_id": "dccae63ebf2694130ea906e9e2ba2400b33b343adc2eff9f0e18dd41d69a529a",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "iPhone 15 Pro",
+        "lens": "50mm f/1.4",
+        "iso": 800,
+        "aperture": "f/2.0",
+        "shutter_speed": "1/125",
+        "focal_length": "53mm",
+        "datetime": "2025-09-11T12:27:30.597152+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "54d80af0874d925b1dc326c94a63202cc1891a61ca5e11104e83cbd589b03008",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Canon EOS R5",
+        "lens": "85mm f/1.4",
+        "iso": 1600,
+        "aperture": "f/1.4",
+        "shutter_speed": "1/30",
+        "focal_length": "65mm",
+        "datetime": "2025-09-11T12:27:30.597155+00:00",
+        "gps": {
+          "lat": 40.780005517015994,
+          "lon": -73.91220074854304
+        }
+      }
+    },
+    {
+      "photo_id": "68ecdb1f39e1c191ba859d588285bcd5358609cfc9ec30f2cc90db9768428835",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Sony A7R IV",
+        "lens": "50mm f/1.4",
+        "iso": 800,
+        "aperture": "f/4.0",
+        "shutter_speed": "1/250",
+        "focal_length": "37mm",
+        "datetime": "2025-09-11T12:27:30.597159+00:00",
+        "gps": {
+          "lat": 40.79328857310211,
+          "lon": -74.07307257571969
+        }
+      }
+    },
+    {
+      "photo_id": "eacc8fc93f03cd1e4a360a169cd051a85084e48aa46e8226d2bd5fc8598e86f9",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Canon EOS R5",
+        "lens": "85mm f/1.4",
+        "iso": 400,
+        "aperture": "f/4.0",
+        "shutter_speed": "1/125",
+        "focal_length": "51mm",
+        "datetime": "2025-09-11T12:27:30.597162+00:00",
+        "gps": {
+          "lat": 40.758901063483094,
+          "lon": -73.94932769430314
+        }
+      }
+    },
+    {
+      "photo_id": "8dc74c3d293cfdc528c79e157d76895b3e7a615e13f28cb67ec19f4e17c969dc",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "iPhone 15 Pro",
+        "lens": "50mm f/1.4",
+        "iso": 200,
+        "aperture": "f/2.8",
+        "shutter_speed": "1/60",
+        "focal_length": "85mm",
+        "datetime": "2025-09-11T12:27:30.597165+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "4b8ee83aa0d36866ec58a9059d79e9b022e87c98f1e1b059700c1d828a724770",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Canon EOS R5",
+        "lens": "16-35mm f/2.8",
+        "iso": 100,
+        "aperture": "f/1.4",
+        "shutter_speed": "1/500",
+        "focal_length": "54mm",
+        "datetime": "2025-09-11T12:27:30.597169+00:00",
+        "gps": {
+          "lat": 40.78334397840966,
+          "lon": -74.0745134544121
+        }
+      }
+    },
+    {
+      "photo_id": "c9ded46197f374cba45f5d68200a6201257c1172cd5aae05c6c3d40b44426bed",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Canon EOS R5",
+        "lens": "50mm f/1.4",
+        "iso": 100,
+        "aperture": "f/5.6",
+        "shutter_speed": "1/30",
+        "focal_length": "67mm",
+        "datetime": "2025-09-11T12:27:30.597173+00:00",
+        "gps": {
+          "lat": 40.69355511026366,
+          "lon": -73.91768077455419
+        }
+      }
+    },
+    {
+      "photo_id": "d827942970aaf8e0012e489cb8b67606837633b5ecd9950b575cbe6b1e820802",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Sony A7R IV",
+        "lens": "24-70mm f/2.8",
+        "iso": 1600,
+        "aperture": "f/1.4",
+        "shutter_speed": "1/250",
+        "focal_length": "66mm",
+        "datetime": "2025-09-11T12:27:30.597178+00:00",
+        "gps": {
+          "lat": 40.71735654310639,
+          "lon": -73.91905874845271
+        }
+      }
+    },
+    {
+      "photo_id": "51b2ed2d777ae30e6688b9466dc2b944c37c8fdfde9d9c5e90c2a1a1ac36b32f",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Sony A7R IV",
+        "lens": "16-35mm f/2.8",
+        "iso": 200,
+        "aperture": "f/2.8",
+        "shutter_speed": "1/250",
+        "focal_length": "32mm",
+        "datetime": "2025-09-11T12:27:30.597182+00:00",
+        "gps": {
+          "lat": 40.67279941595975,
+          "lon": -74.04276456074562
+        }
+      }
+    },
+    {
+      "photo_id": "e20584db0b0c5b63de349afa37d1200af01ad77436a82ae80196ccf663166f9a",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Canon EOS R5",
+        "lens": "24-70mm f/2.8",
+        "iso": 800,
+        "aperture": "f/5.6",
+        "shutter_speed": "1/500",
+        "focal_length": "30mm",
+        "datetime": "2025-09-11T12:27:30.597186+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "1efa11b5f7044e8e3b50d46da6eec24b63240233e68eb478d01f75758964f7c2",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Sony A7R IV",
+        "lens": "16-35mm f/2.8",
+        "iso": 200,
+        "aperture": "f/2.8",
+        "shutter_speed": "1/30",
+        "focal_length": "80mm",
+        "datetime": "2025-09-11T12:27:30.597189+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "6d3c94b21a8ffcf051e7ac25ed2b13b0c651a74aa2c620a85727245bb285e5aa",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "50mm f/1.4",
+        "iso": 800,
+        "aperture": "f/5.6",
+        "shutter_speed": "1/1000",
+        "focal_length": "43mm",
+        "datetime": "2025-09-11T12:27:30.597192+00:00",
+        "gps": {
+          "lat": 40.8102466127263,
+          "lon": -73.97520473645785
+        }
+      }
+    },
+    {
+      "photo_id": "49badb2889b87d9fbb41465c3efab95657df621c50e9340eac367db7dce24a0e",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Canon EOS R5",
+        "lens": "16-35mm f/2.8",
+        "iso": 100,
+        "aperture": "f/2.0",
+        "shutter_speed": "1/125",
+        "focal_length": "31mm",
+        "datetime": "2025-09-11T12:27:30.597196+00:00",
+        "gps": {
+          "lat": 40.761283336796204,
+          "lon": -74.07491041804501
+        }
+      }
+    },
+    {
+      "photo_id": "756890df4c2fb869e30ffdfec38b254da4263ca4533eed2c966820bb303d5916",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "50mm f/1.4",
+        "iso": 400,
+        "aperture": "f/2.0",
+        "shutter_speed": "1/1000",
+        "focal_length": "64mm",
+        "datetime": "2025-09-11T12:27:30.597199+00:00",
+        "gps": {
+          "lat": 40.7138818116196,
+          "lon": -74.05577574958602
+        }
+      }
+    },
+    {
+      "photo_id": "7fd168ccccc0fa977398fafd04b2c3e68f8d4a3b71ace3faafd4cdbef29ae432",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Canon EOS R5",
+        "lens": "24-70mm f/2.8",
+        "iso": 800,
+        "aperture": "f/2.8",
+        "shutter_speed": "1/30",
+        "focal_length": "24mm",
+        "datetime": "2025-09-11T12:27:30.597203+00:00",
+        "gps": {
+          "lat": 40.63896393214034,
+          "lon": -73.91004040923423
+        }
+      }
+    },
+    {
+      "photo_id": "76c27f5c82bf63986ff241b08d58930edb353cac9f703685f46e97b8cf26f539",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Sony A7R IV",
+        "lens": "85mm f/1.4",
+        "iso": 1600,
+        "aperture": "f/8.0",
+        "shutter_speed": "1/250",
+        "focal_length": "59mm",
+        "datetime": "2025-09-11T12:27:30.597206+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "620b17dd7e7dcf6633bb70460fa205ca7fccd558de1aef694552c07acd4a468d",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Canon EOS R5",
+        "lens": "50mm f/1.4",
+        "iso": 1600,
+        "aperture": "f/1.4",
+        "shutter_speed": "1/125",
+        "focal_length": "61mm",
+        "datetime": "2025-09-11T12:27:30.597211+00:00",
+        "gps": {
+          "lat": 40.69875734257616,
+          "lon": -74.09763422836623
+        }
+      }
+    },
+    {
+      "photo_id": "15db98103763e5e6a39d35cbd25f2a28dee56c32c350b7b817223ea3d4a5300b",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "24-70mm f/2.8",
+        "iso": 400,
+        "aperture": "f/2.0",
+        "shutter_speed": "1/1000",
+        "focal_length": "39mm",
+        "datetime": "2025-09-11T12:27:30.597215+00:00",
+        "gps": {
+          "lat": 40.683535726922926,
+          "lon": -73.99402329617122
+        }
+      }
+    },
+    {
+      "photo_id": "502a9082b0e4492934c660869a35fbef6216c0b875a85dc9c8c18afa9befc72a",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "iPhone 15 Pro",
+        "lens": "50mm f/1.4",
+        "iso": 200,
+        "aperture": "f/2.0",
+        "shutter_speed": "1/60",
+        "focal_length": "80mm",
+        "datetime": "2025-09-11T12:27:30.597218+00:00",
+        "gps": {
+          "lat": 40.64867213268364,
+          "lon": -73.9211025409517
+        }
+      }
+    },
+    {
+      "photo_id": "faa1255dc9b4b38eaa1bf32f91b741443dbcefc4af003ca7961e94db0b87c2ac",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "iPhone 15 Pro",
+        "lens": "50mm f/1.4",
+        "iso": 400,
+        "aperture": "f/2.0",
+        "shutter_speed": "1/1000",
+        "focal_length": "30mm",
+        "datetime": "2025-09-11T12:27:30.597222+00:00",
+        "gps": {
+          "lat": 40.62054492153316,
+          "lon": -74.01186199578281
+        }
+      }
+    },
+    {
+      "photo_id": "cf5fc9fdb4351b1383523485b3714603ebc4cb484106af717f90941034b277dd",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Sony A7R IV",
+        "lens": "85mm f/1.4",
+        "iso": 400,
+        "aperture": "f/2.8",
+        "shutter_speed": "1/60",
+        "focal_length": "38mm",
+        "datetime": "2025-09-11T12:27:30.597227+00:00",
+        "gps": null
+      }
+    },
+    {
+      "photo_id": "2c944bf51c746635814e79b90625950c104cdb114faa73ec9dc97fb0b9d30e06",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Sony A7R IV",
+        "lens": "85mm f/1.4",
+        "iso": 400,
+        "aperture": "f/2.8",
+        "shutter_speed": "1/30",
+        "focal_length": "85mm",
+        "datetime": "2025-09-11T12:27:30.597230+00:00",
+        "gps": {
+          "lat": 40.683029225816554,
+          "lon": -74.0041188648944
+        }
+      }
+    },
+    {
+      "photo_id": "ff9a294bde50007f248b12c6b846ef9e21fd237f9c1f5668fdbfc2649284945b",
+      "uri": "s3://mock-bucket/photos/02d.jpg",
+      "exif": {
+        "camera": "Nikon Z6 II",
+        "lens": "24-70mm f/2.8",
+        "iso": 100,
+        "aperture": "f/2.8",
+        "shutter_speed": "1/60",
+        "focal_length": "61mm",
+        "datetime": "2025-09-11T12:27:30.597234+00:00",
+        "gps": {
+          "lat": 40.6658932725046,
+          "lon": -74.08431949055706
+        }
+      }
+    }
+  ]
+}
