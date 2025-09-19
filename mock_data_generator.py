@@ -115,7 +115,6 @@ class MockDataGenerator:
         for photo in ingest_output["photo_index"]:
             artifacts.append({
                 "photo_id": photo["photo_id"],
-                "thumb_uri": f"./data/thumbs/{photo['photo_id']}_512.jpg",
                 "std_uri": f"./data/processed/{photo['photo_id']}_1024.jpg"
             })
 
@@ -435,7 +434,6 @@ class MockDataGenerator:
                     f"Diversity contribution: {', '.join(diversity_tags[:2])}"
                 ],
                 "artifacts": {
-                    "thumb": f"./data/thumbs/{photo_id}_512.jpg",
                     "std": f"./data/std/{photo_id}_1024.jpg"
                 }
             })

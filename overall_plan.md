@@ -63,7 +63,6 @@ Each service is a stateless Python module with async communication. Keep everyth
     "artifacts":[
       {
         "photo_id":"sha256:...P001",
-        "thumb_uri":"./data/thumbs/P001_512.jpg",
         "std_uri":"./data/processed/P001_1024.jpg",
         "features": {
           "embeddings":{"clip_L14":"./data/features/P001_clip.npy"},
@@ -205,7 +204,7 @@ Each service is a stateless Python module with async communication. Keep everyth
           "Lower-right third subject; sky space for headline.",
           "Palette matches theme accent."
         ],
-        "artifacts":{"thumb":"./data/thumbs/P004_512.jpg","std":"./data/processed/P004_1024.jpg"}
+        "artifacts":{"std":"./data/processed/P004_1024.jpg"}
       }
     ],
     "audit":{"created_at":"2025-09-11T11:05:00Z","optimizer_params":{"alpha":1.0,"beta":1.0,"gamma":1.0}}
@@ -247,7 +246,6 @@ Each service is a stateless Python module with async communication. Keep everyth
   ./data/
   ├── input/          # Original photos
   ├── processed/      # Standardized images
-  ├── thumbs/         # Thumbnails (512px)
   ├── features/       # Embeddings, saliency maps
   ├── themes/         # Theme YAML files
   ├── cache/          # Computed features cache
@@ -324,7 +322,7 @@ Each service is a stateless Python module with async communication. Keep everyth
 
 1. **Directory Structure:**
    ```bash
-   mkdir -p data/{input,processed,thumbs,features,themes,cache,output}
+   mkdir -p data/{input,processed,features,themes,cache,output}
    ```
 
 2. **Theme Files:** Place theme YAML files in `./data/themes/`

@@ -315,7 +315,6 @@ graph TD
 classDiagram
     class WhyCard {
         +photo_id: string
-        +thumbnail: uri
         +rank: number
         +selection_reason: string
     }

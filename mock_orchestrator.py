@@ -14,14 +14,6 @@ from datetime import datetime, timezone
 from mock_services import MockServices
 from mock_data_generator import MockDataGenerator
 
-# Import real services
-try:
-    from services import RealServices
-    REAL_SERVICES_AVAILABLE = True
-except ImportError:
-    REAL_SERVICES_AVAILABLE = False
-    print("⚠️  Real services not available, using mock services")
-
 
 class MessageBus:
     """Simple in-memory message bus for event-driven communication."""
@@ -68,52 +60,16 @@ class Orchestrator:
 
     def __init__(self):
         self.message_bus = MessageBus()
-        self.mock_services = MockServices()
+        self.services = MockServices()
         self.generator = MockDataGenerator()
-        self.real_services = None
-        self.use_real_services = False
         self.batch_states: Dict[str, Dict[str, Any]] = {}
-
-        # Initialize real services if available
-        if REAL_SERVICES_AVAILABLE:
-            try:
-                self.real_services = RealServices()
-                print("✅ Real services initialized")
-            except Exception as e:
-                print(f"❌ Error initializing real services: {e}")
-
         self.setup_event_subscriptions()
-
-    def _should_use_real_services(self, input_data: Dict[str, Any]) -> bool:
-        """Determine if we should use real services based on input data."""
-        if not self.real_services:
-            return False
-
-        # Check if any photos have local file paths (not mock data)
-        photos = input_data.get("photos", [])
-        if not photos:
-            return False
-
-        # If any photo URI starts with "./data/input/", it's real data
-        for photo in photos:
-            uri = photo.get("uri", "")
-            if uri.startswith("./data/input/"):
-                return True
-
-        return False
-
-    def _get_services(self):
-        """Get the appropriate services based on current mode."""
-        return self.real_services if self.use_real_services else self.mock_services
 
     def setup_event_subscriptions(self):
         """Set up event subscriptions for the MVP pipeline flow."""
 
-        # Ingest → Preprocess
+        # Ingest → Combined Process & Features
         self.message_bus.subscribe("ingest.completed", self.handle_ingest_completed)
-
-        # Preprocess → Features
-        self.message_bus.subscribe("preprocess.completed", self.handle_preprocess_completed)
 
         # Features → Scoring
         self.message_bus.subscribe("features.completed", self.handle_features_completed)
@@ -134,33 +90,15 @@ class Orchestrator:
         self.message_bus.subscribe("review.update", self.handle_review_update)
 
     def handle_ingest_completed(self, event: Dict[str, Any]):
-        """Handle ingest completion and trigger preprocessing."""
+        """Handle ingest completion and trigger combined process & features."""
         data = event["data"]
         batch_id = data["batch_id"]
 
-        print(f"🎯 Orchestrator: Ingest completed for {batch_id}, triggering preprocessing...")
-        self.batch_states[batch_id]["stage"] = "ingest.completed"
+        print(f"🎯 Orchestrator: Ingest completed for {batch_id}, triggering process & features...")
+        self.batch_states[batch_id] = {"stage": "ingest.completed"}
 
-        # Use the same service type as determined at batch start
-        services = self._get_services()
-
-        # Trigger preprocess service
-        preprocess_output = services.preprocess_service(data)
-        self.message_bus.publish("preprocess.completed", preprocess_output)
-
-    def handle_preprocess_completed(self, event: Dict[str, Any]):
-        """Handle preprocess completion and trigger features extraction."""
-        data = event["data"]
-        batch_id = data["batch_id"]
-
-        print(f"🎯 Orchestrator: Preprocess completed for {batch_id}, triggering features...")
-        self.batch_states[batch_id]["stage"] = "preprocess.completed"
-
-        # Use the same service type as determined at batch start
-        services = self._get_services()
-
-        # Trigger features service
-        features_output = services.process_features_service(data)
+        # Trigger combined process & features service
+        features_output = self.services.process_features_service(data)
         self.message_bus.publish("features.completed", features_output)
 
     def handle_features_completed(self, event: Dict[str, Any]):
@@ -174,11 +112,8 @@ class Orchestrator:
         # Get theme spec (in real system, this would come from a service)
         theme_spec = self.generator.generate_theme_spec()
 
-        # Use the same service type as determined at batch start
-        services = self._get_services()
-
         # Trigger scoring service
-        score_output = services.scoring_service(data, theme_spec)
+        score_output = self.services.scoring_service(data, theme_spec)
         self.message_bus.publish("score.completed", score_output)
 
     def handle_score_completed(self, event: Dict[str, Any]):
@@ -189,11 +124,8 @@ class Orchestrator:
         print(f"🎯 Orchestrator: Scoring completed for {batch_id}, triggering clustering...")
         self.batch_states[batch_id]["stage"] = "score.completed"
 
-        # Use the same service type as determined at batch start
-        services = self._get_services()
-
         # Trigger clustering service
-        cluster_output = services.clustering_service(data)
+        cluster_output = self.services.clustering_service(data)
         self.message_bus.publish("cluster.completed", cluster_output)
 
     def handle_cluster_completed(self, event: Dict[str, Any]):
@@ -205,12 +137,11 @@ class Orchestrator:
         self.batch_states[batch_id]["stage"] = "cluster.completed"
 
         # Get required data
-        services = self._get_services()
-        score_output = services.data_store[batch_id]["score_output"]
+        score_output = self.services.data_store[batch_id]["score_output"]
         theme_spec = self.generator.generate_theme_spec()
 
         # Trigger cluster ranking service
-        cluster_rank_output = services.cluster_ranking_service(data, theme_spec)
+        cluster_rank_output = self.services.cluster_ranking_service(data, theme_spec)
         self.message_bus.publish("cluster.rank.completed", cluster_rank_output)
 
     def handle_cluster_rank_completed(self, event: Dict[str, Any]):
@@ -224,11 +155,8 @@ class Orchestrator:
         # Get theme spec
         theme_spec = self.generator.generate_theme_spec()
 
-        # Use the same service type as determined at batch start
-        services = self._get_services()
-
         # Trigger combined optimizer service
-        selection_output = services.optimizer_service(data, theme_spec)
+        selection_output = self.services.optimizer_service(data, theme_spec)
         self.message_bus.publish("selection.completed", selection_output)
 
     def handle_selection_completed(self, event: Dict[str, Any]):
@@ -242,11 +170,8 @@ class Orchestrator:
         # Get theme spec
         theme_spec = self.generator.generate_theme_spec()
 
-        # Use the same service type as determined at batch start
-        services = self._get_services()
-
         # Trigger exporter service
-        curated_list = services.exporter_service(data, theme_spec)
+        curated_list = self.services.exporter_service(data, theme_spec)
         self.message_bus.publish("curation.completed", curated_list)
 
         # Mark batch as completed
@@ -262,86 +187,25 @@ class Orchestrator:
 
         print(f"🎯 Orchestrator: Review update received for {batch_id}, re-running optimization...")
 
-        # Use the same service type as determined at batch start
-        services = self._get_services()
-
         # Get current selection
-        current_selection = services.data_store[batch_id]["selection_output"]
+        current_selection = self.services.data_store[batch_id]["selection_output"]
 
         # Apply review constraints (in real system, this would modify the optimizer input)
         # For now, just re-run with same data
         theme_spec = self.generator.generate_theme_spec()
-        new_selection = services.optimizer_service(current_selection, theme_spec)
+        new_selection = self.services.optimizer_service(current_selection, theme_spec)
 
         self.message_bus.publish("selection.completed", new_selection)
 
-    def generate_ingest_input_from_directory(self, input_dir: str = "./data/input",
-                                            batch_id: str = None) -> Dict[str, Any]:
-        """Generate ingest input from photos in a directory."""
-        import os
-
-        if not os.path.exists(input_dir):
-            raise ValueError(f"Input directory {input_dir} does not exist")
-
-        # Find all image files
-        image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.tif', '.heic', '.heif', '.raw'}
-        photo_files = []
-
-        for filename in os.listdir(input_dir):
-            if os.path.isfile(os.path.join(input_dir, filename)):
-                _, ext = os.path.splitext(filename.lower())
-                if ext in image_extensions:
-                    photo_files.append(filename)
-
-        if not photo_files:
-            raise ValueError(f"No image files found in {input_dir}")
-
-        # Generate batch ID if not provided
-        if batch_id is None:
-            timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-            batch_id = f"batch_real_{timestamp}"
-
-        # Create ingest input
-        photos = [{"uri": f"./data/input/{filename}"} for filename in sorted(photo_files)]
-
-        ingest_input = {
-            "batch_id": batch_id,
-            "photos": photos,
-            "theme_spec_ref": "s3://mock-bucket/themes/default_theme.yaml",
-            "user_overrides": {"lock_in": [], "exclude": []}
-        }
-
-        return ingest_input
-
-    def start_batch(self, ingest_input: Dict[str, Any] = None, batch_id: str = None) -> str:
+    def start_batch(self, ingest_input: Dict[str, Any]) -> str:
         """Start a new curation batch."""
-
-        # If no ingest_input provided, try to generate from data/input directory
-        if ingest_input is None:
-            try:
-                ingest_input = self.generate_ingest_input_from_directory(batch_id=batch_id)
-                print(f"📁 Auto-generated ingest input from data/input/ directory")
-            except ValueError as e:
-                print(f"❌ {e}")
-                return None
-
         batch_id = ingest_input["batch_id"]
 
-        # Determine whether to use real services
-        self.use_real_services = self._should_use_real_services(ingest_input)
-        services = self._get_services()
-
-        service_type = "real" if self.use_real_services else "mock"
-        print(f"🚀 Orchestrator: Starting new batch {batch_id} with {service_type} services")
-
-        self.batch_states[batch_id] = {
-            "stage": "starting",
-            "started_at": datetime.now(timezone.utc).isoformat(),
-            "service_type": service_type
-        }
+        print(f"🚀 Orchestrator: Starting new batch {batch_id}")
+        self.batch_states[batch_id] = {"stage": "starting", "started_at": datetime.now(timezone.utc).isoformat()}
 
         # Trigger initial ingest service
-        ingest_output = services.ingest_service(ingest_input)
+        ingest_output = self.services.ingest_service(ingest_input)
         self.message_bus.publish("ingest.completed", ingest_output)
 
         return batch_id
@@ -398,31 +262,38 @@ def demo_orchestrator():
     os.makedirs("./data/output", exist_ok=True)
     os.makedirs("./data/cache", exist_ok=True)
 
-    # Create intermediate JSONs directories
-    os.makedirs("./intermediateJsons", exist_ok=True)
-    for step in ["ingest", "preprocess", "features", "scoring", "clustering", "ranking", "optimizer", "exporter"]:
-        os.makedirs(f"./intermediateJsons/{step}", exist_ok=True)
-
-    # Create rankingInput directory
-    os.makedirs("./data/rankingInput", exist_ok=True)
-
     orchestrator = Orchestrator()
     generator = MockDataGenerator()
 
-    print("\n📋 Demo 1: Using mock data (traditional way)")
-    print("-" * 40)
-
-    # Create test batch with mock data
+    # Create test batch
     batch_id = "batch_mvp_demo_001"
-    ingest_input = generator.generate_ingest_input(batch_id, num_photos=30)
 
-    # Save the generated ingest input for audit trail
-    os.makedirs("intermediateJsons/ingest", exist_ok=True)
-    with open(f"intermediateJsons/ingest/{batch_id}_ingest_input.json", 'w') as f:
-        json.dump(ingest_input, f, indent=2)
-    print(f"💾 Saved ingest input to intermediateJsons/ingest/{batch_id}_ingest_input.json")
+    # Check if there are actual photos in data/input/
+    import os
+    import glob
+    photo_files = glob.glob("./data/input/*.jpg") + glob.glob("./data/input/*.jpeg") + glob.glob("./data/input/*.png")
 
-    # Start orchestration with explicit input
+    if photo_files:
+        print(f"📸 Found {len(photo_files)} photos in data/input/:")
+        for photo in photo_files[:5]:  # Show first 5
+            print(f"  {photo}")
+        if len(photo_files) > 5:
+            print(f"  ... and {len(photo_files) - 5} more")
+
+        # Use real photos
+        photos = [{"uri": f"./data/input/{os.path.basename(f)}"} for f in photo_files]
+        ingest_input = {
+            "batch_id": batch_id,
+            "photos": photos,
+            "theme_spec_ref": f"./data/themes/{batch_id}_theme.yaml",
+            "user_overrides": {"lock_in": [], "exclude": []}
+        }
+        print(f"🎯 Using {len(photo_files)} real photos from data/input/")
+    else:
+        print("⚠️  No photos found in data/input/, using mock data...")
+        ingest_input = generator.generate_ingest_input(batch_id, num_photos=30)
+
+    # Start orchestration
     orchestrator.start_batch(ingest_input)
 
     # Wait for completion (in real system, this would be asynchronous)
@@ -448,32 +319,13 @@ def demo_orchestrator():
             print(f"  {key}: {value}")
 
     # Save final result
-    services = orchestrator.mock_services  # For demo
-    if batch_id in services.data_store:
-        final_result = services.data_store[batch_id].get("curated_list")
+    if batch_id in orchestrator.services.data_store:
+        final_result = orchestrator.services.data_store[batch_id].get("curated_list")
         if final_result:
             with open("./data/output/curated_list.json", 'w') as f:
                 json.dump(final_result, f, indent=2)
             print("\n💾 Final curated list saved to ./data/output/curated_list.json")
             print(f"Selected {len(final_result['items'])} photos")
-
-    print("\n📋 Demo 2: Auto-generating from directory")
-    print("-" * 40)
-
-    # Try auto-generating from data/input (will use mock data if directory is empty)
-    print("🔍 Checking data/input/ directory...")
-    if os.path.exists("./data/input") and os.listdir("./data/input"):
-        print("📁 Found photos in data/input/, would use real services")
-    else:
-        print("📁 No photos in data/input/, using auto-generated mock input")
-
-    # This will either use real photos or generate mock input
-    batch_id_2 = orchestrator.start_batch()  # No input provided = auto-generate
-
-    if batch_id_2:
-        print(f"✅ Started batch: {batch_id_2}")
-    else:
-        print("❌ Could not start batch - no photos found")
 
 
 if __name__ == "__main__":
