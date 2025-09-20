@@ -95,12 +95,20 @@ class Orchestrator:
             return False
 
         # If any photo URI starts with "./data/input/", it's real data
+        # Also check for other local path indicators
         for photo in photos:
             uri = photo.get("uri", "")
             if uri.startswith("./data/input/"):
                 return True
 
-        return False
+        # If all URIs are S3 or other remote URIs, use mock services
+        # unless explicitly overridden
+        all_remote = all(
+            photo.get("uri", "").startswith(("s3://", "http://", "https://"))
+            for photo in photos
+        )
+
+        return not all_remote
 
     def _get_services(self):
         """Get the appropriate services based on current mode."""
@@ -138,7 +146,7 @@ class Orchestrator:
         data = event["data"]
         batch_id = data["batch_id"]
 
-        print(f"🎯 Orchestrator: Ingest completed for {batch_id}, triggering preprocessing...")
+        print(f"✓ Ingest → Preprocess ({batch_id})")
         self.batch_states[batch_id]["stage"] = "ingest.completed"
 
         # Use the same service type as determined at batch start
@@ -153,7 +161,7 @@ class Orchestrator:
         data = event["data"]
         batch_id = data["batch_id"]
 
-        print(f"🎯 Orchestrator: Preprocess completed for {batch_id}, triggering features...")
+        print(f"✓ Preprocess → Features ({batch_id})")
         self.batch_states[batch_id]["stage"] = "preprocess.completed"
 
         # Use the same service type as determined at batch start
@@ -168,7 +176,7 @@ class Orchestrator:
         data = event["data"]
         batch_id = data["batch_id"]
 
-        print(f"🎯 Orchestrator: Features completed for {batch_id}, triggering scoring...")
+        print(f"✓ Features → Scoring ({batch_id})")
         self.batch_states[batch_id]["stage"] = "features.completed"
 
         # Get theme spec (in real system, this would come from a service)
@@ -186,7 +194,7 @@ class Orchestrator:
         data = event["data"]
         batch_id = data["batch_id"]
 
-        print(f"🎯 Orchestrator: Scoring completed for {batch_id}, triggering clustering...")
+        print(f"✓ Scoring → Clustering ({batch_id})")
         self.batch_states[batch_id]["stage"] = "score.completed"
 
         # Use the same service type as determined at batch start
@@ -201,7 +209,7 @@ class Orchestrator:
         data = event["data"]
         batch_id = data["batch_id"]
 
-        print(f"🎯 Orchestrator: Clustering completed for {batch_id}, triggering cluster ranking...")
+        print(f"✓ Clustering → Ranking ({batch_id})")
         self.batch_states[batch_id]["stage"] = "cluster.completed"
 
         # Get required data
@@ -218,7 +226,7 @@ class Orchestrator:
         data = event["data"]
         batch_id = data["batch_id"]
 
-        print(f"🎯 Orchestrator: Ranking completed for {batch_id}, triggering optimization...")
+        print(f"✓ Ranking → Optimization ({batch_id})")
         self.batch_states[batch_id]["stage"] = "cluster.rank.completed"
 
         # Get theme spec
@@ -236,7 +244,7 @@ class Orchestrator:
         data = event["data"]
         batch_id = data["batch_id"]
 
-        print(f"🎯 Orchestrator: Selection completed for {batch_id}, triggering export...")
+        print(f"✓ Optimization → Export ({batch_id})")
         self.batch_states[batch_id]["stage"] = "selection.completed"
 
         # Get theme spec
@@ -253,7 +261,7 @@ class Orchestrator:
         self.batch_states[batch_id]["stage"] = "curation.completed"
         self.batch_states[batch_id]["completed_at"] = datetime.now(timezone.utc).isoformat()
 
-        print(f"🎉 Orchestrator: Curation pipeline completed for {batch_id}!")
+        print(f"🎉 Pipeline complete: {batch_id}")
 
     def handle_review_update(self, event: Dict[str, Any]):
         """Handle human review updates and re-run optimization."""
@@ -332,7 +340,7 @@ class Orchestrator:
         services = self._get_services()
 
         service_type = "real" if self.use_real_services else "mock"
-        print(f"🚀 Orchestrator: Starting new batch {batch_id} with {service_type} services")
+        print(f"🚀 Starting batch {batch_id} ({service_type})")
 
         self.batch_states[batch_id] = {
             "stage": "starting",

@@ -21,7 +21,7 @@ class FeaturesService:
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process preprocessed photos and extract features."""
-        print("🔄 Real Features Service: Extracting features from preprocessed photos")
+        print("🧠 Extracting features...")
 
         batch_id = input_data["batch_id"]
         artifacts = []
@@ -49,7 +49,7 @@ class FeaturesService:
             cache_file = os.path.join(self.cache_dir, f"{cache_key}.json")
 
             if os.path.exists(cache_file):
-                print(f"📋 Using cached features for {photo_id[:8]}...")
+                print(f"📋 Cache: {photo_id[:8]}")
                 with open(cache_file, 'r') as f:
                     cached_data = json.load(f)
                     artifacts.append(cached_data)
@@ -68,7 +68,7 @@ class FeaturesService:
             with open(cache_file, 'w') as f:
                 json.dump(complete_artifact, f, indent=2)
 
-            print(f"✅ Extracted features for {photo_id[:8]}...")
+            print(f"✓ {photo_id[:8]}")
 
         result = {
             "batch_id": batch_id,
@@ -81,8 +81,7 @@ class FeaturesService:
         with open(f"intermediateJsons/features/{batch_id}_features_output.json", 'w') as f:
             json.dump(result, f, indent=2)
 
-        print(f"✅ Real Features Service: Processed {len(artifacts)} photos")
-        print(f"💾 Saved output to intermediateJsons/features/{batch_id}_features_output.json")
+        print(f"📤 Features complete: {len(artifacts)} photos")
         return result
 
     def _extract_features(self, photo_uri: str, photo_id: str) -> Dict[str, Any]:

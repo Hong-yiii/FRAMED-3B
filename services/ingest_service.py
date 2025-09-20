@@ -57,7 +57,7 @@ class IngestService:
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process actual photos from the input directory."""
-        print("🔄 Real Ingest Service: Processing photos from data/input/")
+        print("📥 Processing photos...")
 
         batch_id = input_data["batch_id"]
         photo_index = []
@@ -76,7 +76,7 @@ class IngestService:
 
             # Check if file exists
             if not os.path.exists(full_path):
-                print(f"⚠️  File not found: {full_path}")
+                print(f"⚠️  Missing: {filename}")
                 continue
 
             try:
@@ -104,7 +104,7 @@ class IngestService:
                     "format": self._get_file_format(filename)
                 })
 
-                print(f"✅ Processed: {filename} -> {photo_id[:8]}...")
+                print(f"✓ {filename}")
 
             except Exception as e:
                 print(f"❌ Error processing {filename}: {e}")
@@ -121,27 +121,26 @@ class IngestService:
         with open(f"intermediateJsons/ingest/{batch_id}_ingest_output.json", 'w') as f:
             json.dump(result, f, indent=2)
 
-        print(f"✅ Real Ingest Service: Successfully processed {len(photo_index)} photos")
-        print(f"💾 Saved output to intermediateJsons/ingest/{batch_id}_ingest_output.json")
+        print(f"📤 Ingest complete: {len(photo_index)} photos")
         return result
 
     def _extract_exif_data(self, file_path: str) -> Dict[str, Any]:
         """Extract EXIF metadata from image file."""
+        # Initialize default EXIF data structure
+        exif_data = {
+            "camera": "Unknown",
+            "lens": "Unknown",
+            "iso": None,
+            "aperture": "Unknown",
+            "shutter_speed": "Unknown",
+            "focal_length": "Unknown",
+            "datetime": None,
+            "gps": None
+        }
+
         try:
             # Load EXIF data
             exif_dict = piexif.load(file_path)
-
-            # Extract basic camera info
-            exif_data = {
-                "camera": "Unknown",
-                "lens": "Unknown",
-                "iso": None,
-                "aperture": "Unknown",
-                "shutter_speed": "Unknown",
-                "focal_length": "Unknown",
-                "datetime": None,
-                "gps": None
-            }
 
             # Extract camera info
             if "0th" in exif_dict:

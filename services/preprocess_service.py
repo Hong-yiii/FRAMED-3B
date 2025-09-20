@@ -20,7 +20,7 @@ class PreprocessService:
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create standardized versions of photos."""
-        print("🔄 Real Preprocess Service: Creating standardized versions")
+        print("🔧 Preprocessing photos...")
 
         batch_id = input_data["batch_id"]
         artifacts = []
@@ -46,7 +46,7 @@ class PreprocessService:
             }
 
             artifacts.append(artifact)
-            print(f"✅ Standardized {photo_id[:8]}...")
+            print(f"✓ {photo_id[:8]}")
 
         result = {
             "batch_id": batch_id,
@@ -59,8 +59,7 @@ class PreprocessService:
         with open(f"intermediateJsons/preprocess/{batch_id}_preprocess_output.json", 'w') as f:
             json.dump(result, f, indent=2)
 
-        print(f"✅ Real Preprocess Service: Processed {len(artifacts)} photos")
-        print(f"💾 Saved output to intermediateJsons/preprocess/{batch_id}_preprocess_output.json")
+        print(f"📤 Preprocess complete: {len(artifacts)} photos")
         return result
 
     def _create_standardized_version(self, photo_uri: str, photo_id: str) -> str:
