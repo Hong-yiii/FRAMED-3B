@@ -22,6 +22,7 @@ except ImportError:
     REAL_SERVICES_AVAILABLE = False
     print("⚠️  Real services not available, using mock services")
 
+# Import real services
 
 class MessageBus:
     """Simple in-memory message bus for event-driven communication."""
@@ -285,39 +286,22 @@ class Orchestrator:
 
     def generate_ingest_input_from_directory(self, input_dir: str = "./data/input",
                                             batch_id: str = None) -> Dict[str, Any]:
-        """Generate ingest input from photos in a directory."""
-        import os
-
-        if not os.path.exists(input_dir):
-            raise ValueError(f"Input directory {input_dir} does not exist")
-
-        # Find all image files
-        image_extensions = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.tif', '.heic', '.heif', '.raw'}
-        photo_files = []
-
-        for filename in os.listdir(input_dir):
-            if os.path.isfile(os.path.join(input_dir, filename)):
-                _, ext = os.path.splitext(filename.lower())
-                if ext in image_extensions:
-                    photo_files.append(filename)
-
-        if not photo_files:
-            raise ValueError(f"No image files found in {input_dir}")
+        """Generate ingest input from photos in a directory using the dedicated service."""
 
         # Generate batch ID if not provided
         if batch_id is None:
             timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
             batch_id = f"batch_real_{timestamp}"
 
-        # Create ingest input
-        photos = [{"uri": f"./data/input/{filename}"} for filename in sorted(photo_files)]
+        # Use the dedicated service
+        if self.real_services:
+            ingest_input = self.real_services.generate_ingest_input_from_directory(batch_id, input_dir)
+        else:
+            print("⚠️ Real services not available, exiting")
+            return 0
 
-        ingest_input = {
-            "batch_id": batch_id,
-            "photos": photos,
-            "theme_spec_ref": "s3://mock-bucket/themes/default_theme.yaml",
-            "user_overrides": {"lock_in": [], "exclude": []}
-        }
+        if ingest_input is None:
+            raise ValueError(f"No image files found in {input_dir}")
 
         return ingest_input
 
@@ -333,6 +317,7 @@ class Orchestrator:
                 print(f"❌ {e}")
                 return None
 
+        # Use the batch_id from the ingest_input, or use the provided batch_id
         batch_id = ingest_input["batch_id"]
 
         # Determine whether to use real services
@@ -392,12 +377,13 @@ class Orchestrator:
         }
 
 
-def demo_orchestrator():
-    """Demonstrate the MVP event-driven orchestrator."""
-    print("🎬 MVP Event-Driven Orchestrator Demo")
+
+def main():
+    """Run the orchestrator with real data."""
+    print("🎬 Photo Curation Pipeline Orchestrator")
     print("=" * 50)
 
-    # Create local data directories
+    # Create necessary directories
     import os
     os.makedirs("./data/input", exist_ok=True)
     os.makedirs("./data/processed", exist_ok=True)
@@ -415,26 +401,18 @@ def demo_orchestrator():
     os.makedirs("./data/rankingInput", exist_ok=True)
 
     orchestrator = Orchestrator()
-    generator = MockDataGenerator()
 
-    print("\n📋 Demo 1: Using mock data (traditional way)")
-    print("-" * 40)
+    # Start the batch - it will auto-generate ingest input and batch_id if needed
+    print("🚀 Starting batch (auto-generating batch_id and ingest input)")
+    batch_id = orchestrator.start_batch()
 
-    # Create test batch with mock data
-    batch_id = "batch_mvp_demo_001"
-    ingest_input = generator.generate_ingest_input(batch_id, num_photos=30)
+    if not batch_id:
+        print("❌ Failed to start batch")
+        return
 
-    # Save the generated ingest input for audit trail
-    os.makedirs("intermediateJsons/ingest", exist_ok=True)
-    with open(f"intermediateJsons/ingest/{batch_id}_ingest_input.json", 'w') as f:
-        json.dump(ingest_input, f, indent=2)
-    print(f"💾 Saved ingest input to intermediateJsons/ingest/{batch_id}_ingest_input.json")
-
-    # Start orchestration with explicit input
-    orchestrator.start_batch(ingest_input)
-
-    # Wait for completion (in real system, this would be asynchronous)
-    time.sleep(1)
+    # Wait for completion
+    print("⏳ Processing...")
+    time.sleep(5)  # Give it more time to complete
 
     # Check final status
     status = orchestrator.get_batch_status(batch_id)
@@ -444,45 +422,20 @@ def demo_orchestrator():
     print(f"  Events: {status['events']}")
     print(f"  Last Event: {status['last_event']}")
 
-    # Show pipeline metrics
-    metrics = orchestrator.get_pipeline_metrics()
-    print("\n📈 Pipeline Metrics:")
-    for key, value in metrics.items():
-        if key == "event_counts":
-            print(f"  {key}:")
-            for event_type, count in value.items():
-                print(f"    {event_type}: {count}")
-        else:
-            print(f"  {key}: {value}")
-
     # Save final result
-    services = orchestrator.mock_services  # For demo
-    if batch_id in services.data_store:
+    services = orchestrator._get_services()
+    if hasattr(services, 'data_store') and batch_id in services.data_store:
         final_result = services.data_store[batch_id].get("curated_list")
         if final_result:
             with open("./data/output/curated_list.json", 'w') as f:
                 json.dump(final_result, f, indent=2)
             print("\n💾 Final curated list saved to ./data/output/curated_list.json")
             print(f"Selected {len(final_result['items'])} photos")
+        else:
+            print("⚠️ No curated list found in results")
 
-    print("\n📋 Demo 2: Auto-generating from directory")
-    print("-" * 40)
-
-    # Try auto-generating from data/input (will use mock data if directory is empty)
-    print("🔍 Checking data/input/ directory...")
-    if os.path.exists("./data/input") and os.listdir("./data/input"):
-        print("📁 Found photos in data/input/, would use real services")
-    else:
-        print("📁 No photos in data/input/, using auto-generated mock input")
-
-    # This will either use real photos or generate mock input
-    batch_id_2 = orchestrator.start_batch()  # No input provided = auto-generate
-
-    if batch_id_2:
-        print(f"✅ Started batch: {batch_id_2}")
-    else:
-        print("❌ Could not start batch - no photos found")
+    print(f"\n🎉 Pipeline complete: {batch_id}")
 
 
 if __name__ == "__main__":
-    demo_orchestrator()
+    main()

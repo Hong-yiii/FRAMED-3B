@@ -19,11 +19,13 @@ from .clustering_service import ClusteringService
 from .ranking_service import RankingService
 from .optimizer_service import OptimizerService
 from .exporter_service import ExporterService
+from .generate_ingest_input_service import GenerateIngestInputService
 
 class RealServices:
     """Real services that process actual photo data."""
 
     def __init__(self):
+        self.ingest_input = GenerateIngestInputService()
         self.ingest = IngestService()
         self.preprocess = PreprocessService()
         self.features = FeaturesService()
@@ -32,6 +34,10 @@ class RealServices:
         self.ranking = RankingService()
         self.optimizer = OptimizerService()
         self.exporter = ExporterService()
+
+    def generate_ingest_input_from_directory(self, batch_id: str, input_dir: str = "./data/input/") -> Dict[str, Any]:
+        """Generate ingest input from photos in a directory."""
+        return self.ingest_input.process(batch_id, input_dir)
 
     def ingest_service(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         return self.ingest.process(input_data)

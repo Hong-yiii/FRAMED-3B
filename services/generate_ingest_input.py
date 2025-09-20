@@ -1,8 +1,9 @@
 """
 Generate Ingest Input for Real Photos
 
-This script scans the data/input/ directory and creates a proper ingest input
-JSON that can be used with the real services.
+This module provides functionality to scan directories and create ingest input
+JSON that can be used with the real services. Can be used as a standalone script
+or imported as a module.
 """
 
 import os
@@ -12,8 +13,8 @@ from datetime import datetime, timezone
 from typing import Dict, Any, List
 
 
-def generate_real_ingest_input(batch_id: str, input_dir: str = "./data/input/") -> Dict[str, Any]:
-    """Generate ingest input from actual files in the input directory."""
+def generate_ingest_input_from_directory(batch_id: str, input_dir: str = "./data/input/") -> Dict[str, Any]:
+    """Generate ingest input from photos in a directory (can be imported and used by other modules)."""
 
     # Supported image extensions
     image_extensions = {'.jpg', '.jpeg', '.png', '.tiff', '.tif', '.bmp', '.gif', '.heic', '.heif', '.webp'}
