@@ -8,14 +8,14 @@ awesome — let's lock (B) Curation into a clean, composable **micro-services** 
 
 ```
 ingest → preprocess → features → scoring → clustering
-      → ranking (LLM) → optimizer → curated_list.json
+      → ranking (LLM) → optimizer → exporter → curated_list.json
 ```
 
 **MVP Simplifications:**
 - ✅ **Local file storage** (no cloud dependencies except LLM)
 - ✅ **In-memory message bus** (RabbitMQ optional for MVP)
-- ✅ **Combined services** (preprocess + features can be one service)
-- ✅ **SQLite database** (instead of Postgres)
+- ✅ **Separate services** (preprocess and features are distinct for flexibility)
+- ✅ **File-based caching** (instead of SQLite for simplicity)
 - ✅ **Minimal external dependencies** (only LLM service)
 
 Each service is a stateless Python module with async communication. Keep everything **idempotent** and **content-addressed** (photo\_id = hash).
@@ -50,11 +50,37 @@ Each service is a stateless Python module with async communication. Keep everyth
   }
   ```
 
-## 2) Process & Feature Service (Combined for MVP)
+## 2) Preprocess Service
 
-**Purpose:** standardize images + extract features in one step (MVP optimization).
+**Purpose:** standardize images without quality loss for consistent processing.
 
 * **Input (event `ingest.completed`)**
+* **Output (event `preprocess.completed`):**
+
+  ```json
+  {
+    "batch_id":"...",
+    "artifacts":[
+      {
+        "photo_id":"sha256:...P001",
+        "original_uri":"./data/input/P001.jpg",
+        "ranking_uri":"./data/rankingInput/P001.jpg",
+        "std_uri":"./data/rankingInput/P001_1024.jpg",
+        "processing_metadata": {
+          "original_size": [3264, 2448],
+          "standardized_size": [2048, 1536],
+          "processing_method": "quality_preserved"
+        }
+      }
+    ]
+  }
+  ```
+
+## 3) Features Service
+
+**Purpose:** extract rich visual and technical features from standardized images.
+
+* **Input (event `preprocess.completed`)**
 * **Output (event `features.completed`):**
 
   ```json
@@ -63,23 +89,23 @@ Each service is a stateless Python module with async communication. Keep everyth
     "artifacts":[
       {
         "photo_id":"sha256:...P001",
-        "std_uri":"./data/processed/P001_1024.jpg",
+        "std_uri":"./data/rankingInput/P001_1024.jpg",
         "features": {
-          "embeddings":{"clip_L14":"./data/features/P001_clip.npy"},
-          "hashes":{"phash":"22f9a3..."},
-          "tech": {"sharpness":0.61,"exposure":0.74,"noise":0.18,"horizon_deg":-1.7},
-          "saliency":{"heatmap_uri":"./data/features/P001_saliency.png","neg_space_ratio":0.36},
+          "embeddings":{"clip_L14":"./data/emb/P001_clip.npy"},
+          "hashes":{"phash":"4f2a8b9c1e5d7f3a"},
+          "tech": {"sharpness":0.85,"exposure":0.72,"noise":0.15,"horizon_deg":-0.8},
+          "saliency":{"heatmap_uri":"./data/sal/P001.png","neg_space_ratio":0.34},
           "faces":{"count":2,"landmarks_ok":true},
-          "palette":{"lab_centroids":[[62,10,-5],[48,-3,22]],"cluster_id":"pal_07"}
+          "palette":{"lab_centroids":[[65.2,12.8,-8.5],[42.1,-15.3,22.7]],"cluster_id":"pal_03"}
         }
       }
     ]
   }
   ```
 
-## 3) Scoring Service
+## 4) Scoring Service
 
-**Purpose:** compute designer-aligned scores without LLM (fast/cheap).
+**Purpose:** compute designer-aligned quality scores from extracted features.
 
 * **Input:** `features.completed`
 * **Output (`score.completed`):**
@@ -90,19 +116,19 @@ Each service is a stateless Python module with async communication. Keep everyth
     "scores":[
       {
         "photo_id":"sha256:...P001",
-        "Q_tech":0.72,
-        "Aesthetic":0.68,
-        "Vibe":0.81,
-        "Typography":0.62,
-        "Composition":0.77,
-        "Total_prelim":0.74
+        "Q_tech":0.82,
+        "Aesthetic":0.73,
+        "Vibe":0.64,
+        "Typography":0.47,
+        "Composition":0.75,
+        "Total_prelim":0.76
       }
     ],
     "dropped_for_tech":["sha256:...P233","sha256:...P241"]
   }
   ```
 
-## 4) Clustering Service
+## 5) Clustering Service
 
 **Purpose:** group near-duplicates ("same moment").
 
@@ -119,7 +145,7 @@ Each service is a stateless Python module with async communication. Keep everyth
   }
   ```
 
-## 5) Ranking Service (LLM-assisted)
+## 6) Ranking Service (LLM-assisted)
 
 **Purpose:** rank photos within clusters using pairwise LLM judgments.
 
@@ -136,13 +162,13 @@ Each service is a stateless Python module with async communication. Keep everyth
     "llm_rationales":{
       "sha256:...P004":[ "Balanced subject, dusk tones match palette, space for headline." ]
     },
-    "judge_costs":{"pairs_scored":26,"tokens_est":14500}
+    "judge_costs":{"pairs_scored":0,"tokens_est":0}
   }
   ```
 
-## 6) Optimizer Service (Combined)
+## 7) Optimizer Service
 
-**Purpose:** role classification + diversity optimization + final selection.
+**Purpose:** diversity optimization and final photo selection.
 
 * **Input:** `cluster.rank.completed`, `score.completed`, `theme_spec_ref`
 * **Output (`selection.completed`):**
@@ -152,38 +178,22 @@ Each service is a stateless Python module with async communication. Keep everyth
     "batch_id":"...",
     "selected_ids":["sha256:...P004","sha256:...P017","..."],
     "roles":[
-      {"photo_id":"sha256:...P004","role":"opener","prob":0.61},
-      {"photo_id":"sha256:...P017","role":"anchor","prob":0.82}
+      {"photo_id":"sha256:...P004","role":"opener","prob":0.78},
+      {"photo_id":"sha256:...P017","role":"body","prob":0.65}
     ],
     "coverage":{
-      "scene_type":0.88,"palette_cluster":0.81,"time_of_day":0.73,
-      "people_count":0.77,"orientation":0.95
+      "scene_type":0.85,"palette_cluster":0.78,"time_of_day":0.82,
+      "people_count":0.80,"orientation":0.95
     },
-    "marginal_gains":{"sha256:...P004":0.043,"sha256:...P017":0.039}
+    "marginal_gains":{"sha256:...P004":0.043,"sha256:...P017":0.038}
   }
   ```
 
-## 7) Human Review Service (Optional MVP)
-
-**Purpose:** present explainable cards, accept lock-in/exclude adjustments.
-
-* **Input:** `selection.completed`
-* **Output (`review.update`):**
-
-  ```json
-  {
-    "batch_id":"...",
-    "lock_in":["sha256:...P017"],
-    "exclude":["sha256:...P044"],
-    "nudges":{"emphasize_axes":["night","people>=2"]}
-  }
-  ```
-
-## 8) Export Service
+## 8) Exporter Service
 
 **Purpose:** produce final curated list and export artifacts.
 
-* **Input:** `selection.completed` (+ optional `review.update`)
+* **Input:** `selection.completed`
 * **Output:** `curated_list.json` + exported images
 
   ```json
@@ -197,19 +207,25 @@ Each service is a stateless Python module with async communication. Keep everyth
         "rank":1,
         "cluster_id":"m_0001",
         "role":"opener",
-        "scores":{"Q_tech":0.72,"Aesthetic":0.68,"Vibe":0.81,"Typography":0.62,"Composition":0.77,"LLM":0.84,"Total":0.79},
-        "diversity_tags":["scene:street","palette:teal-orange","time:dusk","people:2","orient:landscape"],
+        "scores":{"Q_tech":0.82,"Aesthetic":0.73,"Vibe":0.64,"Typography":0.47,"Composition":0.75,"Total":0.76},
+        "diversity_tags":["scene:street","palette:warm","time:dusk","people:2","orient:landscape"],
         "reasons":[
-          "Cluster hero (won 5/6 pairwise).",
-          "Lower-right third subject; sky space for headline.",
-          "Palette matches theme accent."
+          "Cluster hero (highest quality in group)",
+          "Excellent technical scores across dimensions"
         ],
-        "artifacts":{"std":"./data/processed/P004_1024.jpg"}
+        "artifacts":{"std":"./data/rankingInput/P004_1024.jpg"}
       }
     ],
-    "audit":{"created_at":"2025-09-11T11:05:00Z","optimizer_params":{"alpha":1.0,"beta":1.0,"gamma":1.0}}
+    "audit":{"created_at":"2025-09-20T14:37:03Z","optimizer_params":{"diversity_weight":0.3,"quality_weight":0.7}}
   }
   ```
+
+## 9) Generate Ingest Input Service (Utility)
+
+**Purpose:** scan directories and create batch input for the curation pipeline.
+
+* **Input:** directory path and batch parameters
+* **Output:** `ingest_input.json` with photo batch configuration
 
 ---
 
@@ -244,15 +260,30 @@ Each service is a stateless Python module with async communication. Keep everyth
 * **Local Filesystem Structure:**
   ```
   ./data/
-  ├── input/          # Original photos
-  ├── processed/      # Standardized images
-  ├── features/       # Embeddings, saliency maps
+  ├── input/          # Original photos (read-only)
+  ├── rankingInput/   # Standardized images for curation
+  ├── processed/      # Alternative processed images location
+  ├── emb/            # CLIP embedding NumPy arrays
+  ├── sal/            # Saliency heatmap PNG files
+  ├── features/       # Feature extraction cache
   ├── themes/         # Theme YAML files
-  ├── cache/          # Computed features cache
-  └── output/         # Final curated sets
+  ├── cache/          # Service-specific caches
+  └── output/         # Final curated sets and exports
   ```
 
-* **Database:** SQLite for metadata, audit logs, and batch state
+* **intermediateJsons/**     # Service outputs and logs
+  ```
+  ├── ingest/         # Ingest service outputs
+  ├── preprocess/     # Preprocess service outputs
+  ├── features/       # Features service outputs
+  ├── scoring/        # Scoring service outputs
+  ├── clustering/     # Clustering service outputs
+  ├── ranking/        # Ranking service outputs
+  ├── optimizer/      # Optimizer service outputs
+  └── exporter/       # Final curated lists
+  ```
+
+* **Database:** File-based caching (upgrade to SQLite/PostgreSQL later)
 * **Message Bus:** In-memory async queues (upgrade to RabbitMQ later)
 
 ---
@@ -283,24 +314,32 @@ Each service is a stateless Python module with async communication. Keep everyth
 
 
 
-2. **M1 – Local Signals**
+## ✅ **M1 – Local Signals (COMPLETED)**
 
-   * Implement preprocess, features, scoring (no LLM), hard tech gate.
+   * ✅ **Ingest Service:** Photo registration, format conversion, EXIF extraction
+   * ✅ **Preprocess Service:** Image standardization without quality loss
+   * ✅ **Features Service:** Rich feature extraction (CLIP, pHash, technical metrics)
+   * ✅ **Scoring Service:** Quality assessment with technical gate (Q_tech > 0.3)
+   * ✅ **Basic Caching:** File-based caching for performance
 
-3. **M2 – Moment Clustering & Selection**
+## 🚧 **M2 – Moment Clustering & Selection (IN PROGRESS)**
 
-   * pHash+embedding DBSCAN/HDBSCAN → cluster heroes using **Total\_prelim** only.
-   * Submodular diversity optimizer with role quotas; produce `curated_list.json`.
+   * ✅ **Clustering Service:** Quality-based photo grouping
+   * ✅ **Ranking Service:** Intra-cluster ranking (quality-based, LLM-ready)
+   * ✅ **Optimizer Service:** Diversity optimization and selection
+   * 🔄 **Exporter Service:** Final curated list generation
+   * 📋 **pHash Clustering:** Upgrade from quality-based to perceptual similarity
+   * 📋 **Submodular Optimization:** Replace simple selection with mathematical optimization
 
-4. **M3 – Human Review UI**
+## 📋 **M3 – Human Review UI (PLANNED)**
 
    * Why-cards (bars for each score, coverage heat), lock/exclude, nudges → re-run.
 
-5. **M4 – LLM Pairwise (Scoped)**
+## 📋 **M4 – LLM Pairwise (Scoped) (PLANNED)**
 
    * Add pairwise judge inside clusters + for opener finalists; audit + caching.
 
-6. **M5 – Personalization**
+## 📋 **M5 – Personalization (PLANNED)**
 
    * Collect pairwise picks → fit **Bradley–Terry** or a small linear head; add as `BT_personal`.
 
@@ -322,7 +361,8 @@ Each service is a stateless Python module with async communication. Keep everyth
 
 1. **Directory Structure:**
    ```bash
-   mkdir -p data/{input,processed,features,themes,cache,output}
+   mkdir -p data/{input,rankingInput,emb,sal,features,themes,cache,output}
+   mkdir -p intermediateJsons/{ingest,preprocess,features,scoring,clustering,ranking,optimizer,exporter}
    ```
 
 2. **Theme Files:** Place theme YAML files in `./data/themes/`
@@ -331,8 +371,11 @@ Each service is a stateless Python module with async communication. Keep everyth
 
 4. **Run MVP Pipeline:**
    ```bash
-   python -m m0.test_m0  # Test the skeleton
-   python orchestrator.py  # Run full pipeline
+   # Generate ingest input from photos
+   python services/generate_ingest_input_service.py
+
+   # Run full curation pipeline
+   python orchestrator.py
    ```
 
 ## Integration Points
