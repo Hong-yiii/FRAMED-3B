@@ -16,7 +16,7 @@ def generate_real_ingest_input(batch_id: str, input_dir: str = "./data/input/") 
     """Generate ingest input from actual files in the input directory."""
 
     # Supported image extensions
-    image_extensions = {'.jpg', '.jpeg', '.png', '.tiff', '.tif', '.bmp', '.gif'}
+    image_extensions = {'.jpg', '.jpeg', '.png', '.tiff', '.tif', '.bmp', '.gif', '.heic', '.heif', '.webp'}
 
     photos = []
 
