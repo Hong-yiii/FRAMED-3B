@@ -6,6 +6,20 @@ __pycache__/
 # C extensions
 *.so
 
+# Data folders - exclude processed data but keep structure
+data/
+intermediateJsons/
+intermediateJsons/ingest/
+intermediateJsons/preprocess/
+intermediateJsons/features/
+intermediateJsons/scoring/
+intermediateJsons/clustering/
+intermediateJsons/ranking/
+intermediateJsons/optimizer/
+intermediateJsons/exporter/
+!intermediateJsons/README.md
+!intermediateJsons/analyze_pipeline.py
+
 # Distribution / packaging
 .Python
 build/

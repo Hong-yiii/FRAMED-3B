@@ -31,36 +31,74 @@ class MockServices:
         output = self.generator.generate_ingest_output(input_data)
         self.data_store[batch_id]["ingest_output"] = output
 
+        # Save to intermediate JSONs
+        import json
+        import os
+        os.makedirs("intermediateJsons/ingest", exist_ok=True)
+        with open(f"intermediateJsons/ingest/{batch_id}_ingest_output.json", 'w') as f:
+            json.dump(output, f, indent=2)
+
         print(f"✅ Ingest Service: Registered {len(output['photo_index'])} photos")
+        print(f"💾 Saved output to intermediateJsons/ingest/{batch_id}_ingest_output.json")
         return output
 
-    def process_features_service(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Mock combined process & features service: standardize + extract features."""
-        print("🔄 Process & Features Service: Standardizing images and extracting features...")
+    def preprocess_service(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Mock preprocess service: create standardized versions."""
+        print("🔄 Mock Preprocess Service: Creating standardized versions")
 
         batch_id = input_data["batch_id"]
 
-        # Simulate processing time (combined operation)
-        time.sleep(0.7)
+        # Simulate processing time
+        time.sleep(0.3)
 
-        # Generate preprocess output first
+        # Generate preprocess output
         preprocess_output = self.generator.generate_preprocess_output(input_data)
         self.data_store[batch_id]["preprocess_output"] = preprocess_output
 
-        # Generate features output
-        features_output = self.generator.generate_features_output(preprocess_output)
+        # Save to intermediate JSONs
+        import json
+        import os
+        os.makedirs("intermediateJsons/preprocess", exist_ok=True)
+        with open(f"intermediateJsons/preprocess/{batch_id}_preprocess_output.json", 'w') as f:
+            json.dump(preprocess_output, f, indent=2)
 
-        # Combine into single output for MVP
+        print(f"✅ Mock Preprocess Service: Processed {len(preprocess_output['artifacts'])} photos")
+        print(f"💾 Saved output to intermediateJsons/preprocess/{batch_id}_preprocess_output.json")
+        return preprocess_output
+
+    def process_features_service(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Mock features service: extract features from preprocessed photos."""
+        print("🔄 Process & Features Service: Extracting features from preprocessed photos...")
+
+        batch_id = input_data["batch_id"]
+
+        # Simulate processing time
+        time.sleep(0.5)
+
+        # Handle input from preprocess service (has artifacts) or ingest service (has photo_index)
+        if "artifacts" in input_data:
+            # From preprocess service
+            source_data = input_data
+        elif "photo_index" in input_data:
+            # Fallback: generate preprocess output from photo_index
+            source_data = self.generator.generate_preprocess_output(input_data)
+        else:
+            print("❌ No artifacts or photo_index found in input")
+            return {"batch_id": batch_id, "artifacts": []}
+
+        # Generate features output
+        features_output = self.generator.generate_features_output(source_data)
+
+        # Combine with artifacts
         combined_output = {
             "batch_id": batch_id,
             "artifacts": []
         }
 
-        for i, artifact in enumerate(preprocess_output["artifacts"]):
+        for i, artifact in enumerate(source_data["artifacts"]):
             photo_id = artifact["photo_id"]
             combined_artifact = {
                 "photo_id": photo_id,
-                "thumb_uri": artifact["thumb_uri"],
                 "std_uri": artifact["std_uri"],
                 "features": features_output["features"][i] if i < len(features_output["features"]) else {}
             }
@@ -68,7 +106,15 @@ class MockServices:
 
         self.data_store[batch_id]["features_output"] = combined_output
 
+        # Save to intermediate JSONs
+        import json
+        import os
+        os.makedirs("intermediateJsons/features", exist_ok=True)
+        with open(f"intermediateJsons/features/{batch_id}_features_output.json", 'w') as f:
+            json.dump(combined_output, f, indent=2)
+
         print(f"✅ Process & Features Service: Processed {len(combined_output['artifacts'])} photos with features")
+        print(f"💾 Saved output to intermediateJsons/features/{batch_id}_features_output.json")
         return combined_output
 
     def scoring_service(self, input_data: Dict[str, Any], theme_spec: Dict[str, Any] = None) -> Dict[str, Any]:
@@ -94,7 +140,15 @@ class MockServices:
 
         self.data_store[batch_id]["score_output"] = output
 
+        # Save to intermediate JSONs
+        import json
+        import os
+        os.makedirs("intermediateJsons/scoring", exist_ok=True)
+        with open(f"intermediateJsons/scoring/{batch_id}_scoring_output.json", 'w') as f:
+            json.dump(output, f, indent=2)
+
         print(f"✅ Scoring Service: Scored {len(output['scores'])} photos, dropped {len(output['dropped_for_tech'])} for quality")
+        print(f"💾 Saved output to intermediateJsons/scoring/{batch_id}_scoring_output.json")
         return output
 
     def clustering_service(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -112,7 +166,15 @@ class MockServices:
         output = self.generator.generate_cluster_output(score_output)
         self.data_store[batch_id]["cluster_output"] = output
 
+        # Save to intermediate JSONs
+        import json
+        import os
+        os.makedirs("intermediateJsons/clustering", exist_ok=True)
+        with open(f"intermediateJsons/clustering/{batch_id}_clustering_output.json", 'w') as f:
+            json.dump(output, f, indent=2)
+
         print(f"✅ Clustering Service: Created {len(output['clusters'])} clusters")
+        print(f"💾 Saved output to intermediateJsons/clustering/{batch_id}_clustering_output.json")
         return output
 
     def cluster_ranking_service(self, input_data: Dict[str, Any], theme_spec: Dict[str, Any] = None) -> Dict[str, Any]:
@@ -131,7 +193,15 @@ class MockServices:
         output = self.generator.generate_cluster_rank_output(cluster_output, score_output)
         self.data_store[batch_id]["cluster_rank_output"] = output
 
+        # Save to intermediate JSONs
+        import json
+        import os
+        os.makedirs("intermediateJsons/ranking", exist_ok=True)
+        with open(f"intermediateJsons/ranking/{batch_id}_ranking_output.json", 'w') as f:
+            json.dump(output, f, indent=2)
+
         print(f"✅ Cluster Ranking Service: Ranked {len(output['cluster_winners'])} clusters, {output['judge_costs']['pairs_scored']} pairwise judgments")
+        print(f"💾 Saved output to intermediateJsons/ranking/{batch_id}_ranking_output.json")
         return output
 
     def roles_service(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -171,8 +241,16 @@ class MockServices:
         output = self.generator.generate_selection_output(roles_output, num_select)
         self.data_store[batch_id]["selection_output"] = output
 
+        # Save to intermediate JSONs
+        import json
+        import os
+        os.makedirs("intermediateJsons/optimizer", exist_ok=True)
+        with open(f"intermediateJsons/optimizer/{batch_id}_optimizer_output.json", 'w') as f:
+            json.dump(output, f, indent=2)
+
         coverage_avg = sum(output["coverage"].values()) / len(output["coverage"])
         print(".1f")
+        print(f"💾 Saved output to intermediateJsons/optimizer/{batch_id}_optimizer_output.json")
         return output
 
     def exporter_service(self, input_data: Dict[str, Any], theme_spec: Dict[str, Any] = None) -> Dict[str, Any]:
@@ -190,7 +268,15 @@ class MockServices:
         output = self.generator.generate_curated_list(selection_output, theme_spec or self.generator.generate_theme_spec())
         self.data_store[batch_id]["curated_list"] = output
 
+        # Save to intermediate JSONs
+        import json
+        import os
+        os.makedirs("intermediateJsons/exporter", exist_ok=True)
+        with open(f"intermediateJsons/exporter/{batch_id}_exporter_output.json", 'w') as f:
+            json.dump(output, f, indent=2)
+
         print(f"✅ Exporter Service: Created curated list with {len(output['items'])} photos")
+        print(f"💾 Saved output to intermediateJsons/exporter/{batch_id}_exporter_output.json")
         return output
 
     def get_pipeline_status(self, batch_id: str) -> Dict[str, Any]:

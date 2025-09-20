@@ -61,16 +61,74 @@
                 "type": "string",
                 "description": "Content-addressable photo ID (hash)"
               },
-              "uri": {
+              "original_uri": {
                 "type": "string",
                 "description": "Original photo URI"
               },
+              "ranking_uri": {
+                "type": "string",
+                "description": "Processed photo URI in rankingInput directory"
+              },
               "exif": {
                 "type": "object",
-                "description": "Extracted EXIF metadata"
+                "description": "Extracted EXIF metadata",
+                "properties": {
+                  "camera": {
+                    "type": "string",
+                    "description": "Camera make and model"
+                  },
+                  "lens": {
+                    "type": "string",
+                    "description": "Lens information"
+                  },
+                  "iso": {
+                    "type": ["number", "null"],
+                    "description": "ISO speed rating"
+                  },
+                  "aperture": {
+                    "type": "string",
+                    "description": "Aperture setting"
+                  },
+                  "shutter_speed": {
+                    "type": "string",
+                    "description": "Shutter speed"
+                  },
+                  "focal_length": {
+                    "type": "string",
+                    "description": "Focal length"
+                  },
+                  "datetime": {
+                    "type": ["string", "null"],
+                    "description": "Date and time photo was taken"
+                  },
+                  "gps": {
+                    "type": ["object", "null"],
+                    "description": "GPS coordinates",
+                    "properties": {
+                      "lat": {
+                        "type": "number",
+                        "description": "Latitude in decimal degrees"
+                      },
+                      "lon": {
+                        "type": "number",
+                        "description": "Longitude in decimal degrees"
+                      },
+                      "alt": {
+                        "type": "number",
+                        "description": "Altitude in meters (optional)"
+                      }
+                    },
+                    "required": ["lat", "lon"]
+                  }
+                }
+              },
+              "format": {
+                "type": "string",
+                "description": "File format extension (always '.jpg' after processing)",
+                "pattern": "\\.jpg$"
               }
             },
-            "required": ["photo_id", "uri", "exif"]
+            "required": ["photo_id", "original_uri", "ranking_uri", "exif", "format"]
           }
         }
       },

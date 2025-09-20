@@ -144,7 +144,6 @@
               "artifacts": {
                 "type": "object",
                 "properties": {
-                  "thumb": {"type": "string", "description": "URI to thumbnail"},
                   "std": {"type": "string", "description": "URI to standardized image"}
                 }
               }
