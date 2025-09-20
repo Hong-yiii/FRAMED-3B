@@ -35,37 +35,77 @@ import os
 import hashlib
 import subprocess
 import json
+import logging
+import time
 from typing import Dict, Any, List
 from datetime import datetime, timezone
 from PIL import Image
 import piexif
+import pillow_heif
+
+# Register HEIF opener for PIL
+pillow_heif.register_heif_opener()
 
 
 class IngestService:
     """Real ingest service that processes actual photo files."""
 
     def __init__(self):
+        # Setup logging
+        self.logger = logging.getLogger('IngestService')
+        self.logger.setLevel(logging.DEBUG)
+
+        # Create logs directory if it doesn't exist
+        log_dir = "intermediateJsons/ingest"
+        os.makedirs(log_dir, exist_ok=True)
+
+        # File handler - logs everything
+        file_handler = logging.FileHandler(os.path.join(log_dir, 'ingest_service.log'))
+        file_handler.setLevel(logging.DEBUG)
+        file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        file_handler.setFormatter(file_formatter)
+
+        # Console handler - only errors
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.ERROR)
+        console_formatter = logging.Formatter('%(levelname)s: %(message)s')
+        console_handler.setFormatter(console_formatter)
+
+        # Add handlers to logger
+        self.logger.addHandler(file_handler)
+        self.logger.addHandler(console_handler)
+
         self.cache_dir = "./data/cache"
         self.ranking_input_dir = "./data/rankingInput"
         os.makedirs(self.cache_dir, exist_ok=True)
         os.makedirs(self.ranking_input_dir, exist_ok=True)
 
         # Supported formats that PIL can handle directly
-        self.pil_formats = {'.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif', '.gif', '.webp'}
+        self.pil_formats = {'.jpg', '.jpeg', '.png', '.bmp', '.tiff', '.tif', '.gif', '.webp', '.heic', '.heif'}
 
-        # Formats that need ffmpeg conversion
-        self.ffmpeg_formats = {'.heic', '.heif', '.raw', '.cr2', '.nef', '.arw', '.dng', '.orf', '.rw2', '.raf'}
+        # Formats that need ffmpeg conversion (keep true RAWs here)
+        self.ffmpeg_formats = {'.raw', '.cr2', '.nef', '.arw', '.dng', '.orf', '.rw2', '.raf'}
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process actual photos from the input directory."""
-        print("📥 Processing photos...")
+        start_time = time.time()
+        self.logger.info("Processing photos...")
 
         batch_id = input_data["batch_id"]
         photo_index = []
+        total_photos = len(input_data["photos"])
+        processed_count = 0
+        error_count = 0
+
+        print(f"📥 Processing {total_photos} photos...")
 
         # Process each photo URI
         for i, photo in enumerate(input_data["photos"]):
             photo_uri = photo["uri"]
+
+            # Update progress bar
+            progress = f"[{processed_count + error_count + 1}/{total_photos}]"
+            print(f"\r🔄 {progress} Processing photos... {photo_uri.split('/')[-1]}", end="", flush=True)
 
             # Extract filename from URI
             if photo_uri.startswith("./data/input/"):
@@ -77,7 +117,9 @@ class IngestService:
 
             # Check if file exists
             if not os.path.exists(full_path):
-                print(f"⚠️  Missing: {filename}")
+                print(f"\r⚠️  [{processed_count + error_count + 1}/{total_photos}] Missing: {filename}")
+                self.logger.warning(f"Missing file: {filename}")
+                error_count += 1
                 continue
 
             try:
@@ -105,11 +147,17 @@ class IngestService:
                     "format": self._get_file_format(filename)
                 })
 
-                print(f"✓ {filename}")
+                processed_count += 1
+                self.logger.info(f"Processed successfully: {filename}")
 
             except Exception as e:
-                print(f"❌ Error processing {filename}: {e}")
+                print(f"\r❌ [{processed_count + error_count + 1}/{total_photos}] Error: {filename}")
+                self.logger.error(f"Error processing {filename}: {e}")
+                error_count += 1
                 continue
+
+        # Clear progress line and show final status
+        print(f"\r✅ Processed {processed_count}/{total_photos} photos successfully")
 
         result = {
             "batch_id": batch_id,
@@ -122,7 +170,12 @@ class IngestService:
         with open(f"intermediateJsons/ingest/{batch_id}_ingest_output.json", 'w') as f:
             json.dump(result, f, indent=2)
 
-        print(f"📤 Ingest complete: {len(photo_index)} photos")
+        # Calculate and display timing
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        timing_msg = f"Ingest complete: {len(photo_index)}/{total_photos} photos processed in {elapsed_time:.2f}s"
+        print(f"📤 {timing_msg}")
+        self.logger.info(timing_msg)
         return result
 
     def _extract_exif_data(self, file_path: str) -> Dict[str, Any]:
@@ -205,7 +258,7 @@ class IngestService:
                     exif_data["gps"] = {"lat": lat, "lon": lon}
 
         except Exception as e:
-            print(f"⚠️  Error extracting EXIF from {file_path}: {e}")
+            self.logger.warning(f"Error extracting EXIF from {file_path}: {e}")
 
         return exif_data
 
@@ -295,39 +348,45 @@ class IngestService:
                 if datetime_original:
                     exif_data["datetime"] = datetime_original
 
-                # Extract GPS data
-                gps_lat = metadata.get("GPS:GPSLatitude")
-                gps_lon = metadata.get("GPS:GPSLongitude")
+                # Extract GPS data - prefer Composite tags (already decimal) over GPS tags
+                gps_lat = metadata.get("Composite:GPSLatitude") or metadata.get("GPS:GPSLatitude")
+                gps_lon = metadata.get("Composite:GPSLongitude") or metadata.get("GPS:GPSLongitude")
                 gps_alt = metadata.get("GPS:GPSAltitude")
 
                 if gps_lat and gps_lon:
-                    # Convert GPS coordinates to decimal format
-                    lat_decimal = self._convert_gps_to_decimal(gps_lat) if isinstance(gps_lat, str) else gps_lat
-                    lon_decimal = self._convert_gps_to_decimal(gps_lon) if isinstance(gps_lon, str) else gps_lon
+                    # Composite GPS coordinates are already in decimal format
+                    if metadata.get("Composite:GPSLatitude"):
+                        lat_decimal = gps_lat
+                        lon_decimal = gps_lon
+                        # Composite GPS already includes hemisphere signs
+                    else:
+                        # Convert GPS coordinates to decimal format
+                        lat_decimal = self._convert_gps_to_decimal(gps_lat) if isinstance(gps_lat, str) else gps_lat
+                        lon_decimal = self._convert_gps_to_decimal(gps_lon) if isinstance(gps_lon, str) else gps_lon
 
-                    # Apply hemisphere signs
-                    if metadata.get("GPS:GPSLatitudeRef") == "S":
-                        lat_decimal = -abs(lat_decimal)
-                    if metadata.get("GPS:GPSLongitudeRef") == "W":
-                        lon_decimal = -abs(lon_decimal)
+                        # Apply hemisphere signs
+                        if metadata.get("GPS:GPSLatitudeRef") == "S":
+                            lat_decimal = -abs(lat_decimal)
+                        if metadata.get("GPS:GPSLongitudeRef") == "W":
+                            lon_decimal = -abs(lon_decimal)
 
                     gps_info = {"lat": lat_decimal, "lon": lon_decimal}
                     if gps_alt:
                         gps_info["alt"] = gps_alt
                     exif_data["gps"] = gps_info
 
-                print(f"✅ Extracted comprehensive metadata for {os.path.basename(file_path)}")
+                self.logger.info(f"Extracted comprehensive metadata for {os.path.basename(file_path)}")
                 return exif_data
 
         except subprocess.TimeoutExpired:
-            print(f"⚠️  ExifTool extraction timed out for {os.path.basename(file_path)}")
+            self.logger.warning(f"ExifTool extraction timed out for {os.path.basename(file_path)}")
         except json.JSONDecodeError:
-            print(f"⚠️  Failed to parse ExifTool output for {os.path.basename(file_path)}")
+            self.logger.warning(f"Failed to parse ExifTool output for {os.path.basename(file_path)}")
         except Exception as e:
-            print(f"⚠️  Error extracting metadata with ExifTool from {file_path}: {e}")
+            self.logger.warning(f"Error extracting metadata with ExifTool from {file_path}: {e}")
 
         # Fallback to PIL-based extraction if ExifTool fails
-        print(f"🔄 Falling back to PIL extraction for {os.path.basename(file_path)}")
+        self.logger.info(f"Falling back to PIL extraction for {os.path.basename(file_path)}")
         return self._extract_exif_with_pil(file_path)
 
     def _extract_exif_with_pil(self, file_path: str) -> Dict[str, Any]:
@@ -400,10 +459,10 @@ class IngestService:
                     if 34853 in exif_dict:  # GPS IFD offset
                         exif_data["gps"] = "Present (coordinates not extracted with PIL)"
 
-                    print(f"✅ Extracted PIL EXIF data for {os.path.basename(file_path)}")
+                    self.logger.info(f"Extracted PIL EXIF data for {os.path.basename(file_path)}")
 
         except Exception as e:
-            print(f"⚠️  Error extracting PIL EXIF from {file_path}: {e}")
+            self.logger.warning(f"Error extracting PIL EXIF from {file_path}: {e}")
 
         return exif_data
 
@@ -437,11 +496,11 @@ class IngestService:
                 return float(gps_value)
 
             else:
-                print(f"⚠️  Unknown GPS format: {type(gps_value)} - {gps_value}")
+                self.logger.warning(f"Unknown GPS format: {type(gps_value)} - {gps_value}")
                 return None
 
         except Exception as e:
-            print(f"⚠️  Error converting GPS coordinate {gps_value}: {e}")
+            self.logger.warning(f"Error converting GPS coordinate {gps_value}: {e}")
             return None
 
     def _get_file_format(self, filename: str) -> str:
@@ -479,7 +538,7 @@ class IngestService:
                     img.save(ranking_path, 'JPEG', quality=95, optimize=True)
                     return ranking_path
             except Exception as e:
-                print(f"⚠️  PIL conversion failed for {filename}: {e}")
+                self.logger.warning(f"PIL conversion failed for {filename}: {e}")
 
         # Try ffmpeg for other formats
         if self._has_ffmpeg():
@@ -498,30 +557,19 @@ class IngestService:
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
 
                 if result.returncode == 0 and os.path.exists(ranking_path):
-                    print(f"📹 Converted {filename} with ffmpeg")
+                    self.logger.info(f"Converted {filename} with ffmpeg")
                     return ranking_path
                 else:
-                    print(f"⚠️  ffmpeg conversion failed for {filename}: {result.stderr}")
+                    self.logger.warning(f"ffmpeg conversion failed for {filename}: {result.stderr}")
 
             except subprocess.TimeoutExpired:
-                print(f"⚠️  ffmpeg conversion timed out for {filename}")
+                self.logger.warning(f"ffmpeg conversion timed out for {filename}")
             except Exception as e:
-                print(f"⚠️  ffmpeg conversion failed for {filename}: {e}")
+                self.logger.warning(f"ffmpeg conversion failed for {filename}: {e}")
 
-        # Fallback: try to copy as-is if it's a common image format
-        try:
-            ranking_filename = f"{photo_id}{ext}"
-            ranking_path = os.path.join(self.ranking_input_dir, ranking_filename)
-
-            with open(source_path, 'rb') as src, open(ranking_path, 'wb') as dst:
-                dst.write(src.read())
-
-            print(f"⚠️  Copied {filename} as-is (no conversion)")
-            return ranking_path
-
-        except Exception as e:
-            print(f"❌ Failed to prepare {filename} for ranking: {e}")
-            raise
+        # If all conversion methods fail, raise an error
+        self.logger.error(f"Failed to prepare {filename} for ranking: all conversion methods failed")
+        raise RuntimeError(f"Cannot convert {filename} to JPEG format")
 
     def _has_ffmpeg(self) -> bool:
         """Check if ffmpeg is available."""

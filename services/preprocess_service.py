@@ -6,6 +6,8 @@ Creates standardized versions without quality loss.
 
 import os
 import hashlib
+import logging
+import time
 from typing import Dict, Any
 from PIL import Image
 import numpy as np
@@ -15,20 +17,53 @@ class PreprocessService:
     """Real preprocess service that creates standardized versions."""
 
     def __init__(self):
+        # Setup logging
+        self.logger = logging.getLogger('PreprocessService')
+        self.logger.setLevel(logging.DEBUG)
+
+        # Create logs directory if it doesn't exist
+        log_dir = "intermediateJsons/preprocess"
+        os.makedirs(log_dir, exist_ok=True)
+
+        # File handler - logs everything
+        file_handler = logging.FileHandler(os.path.join(log_dir, 'preprocess_service.log'))
+        file_handler.setLevel(logging.DEBUG)
+        file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        file_handler.setFormatter(file_formatter)
+
+        # Console handler - only errors
+        console_handler = logging.StreamHandler()
+        console_handler.setLevel(logging.ERROR)
+        console_formatter = logging.Formatter('%(levelname)s: %(message)s')
+        console_handler.setFormatter(console_formatter)
+
+        # Add handlers to logger
+        self.logger.addHandler(file_handler)
+        self.logger.addHandler(console_handler)
+
         self.ranking_input_dir = "./data/rankingInput"
         os.makedirs(self.ranking_input_dir, exist_ok=True)
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Create standardized versions of photos."""
-        print("🔧 Preprocessing photos...")
+        start_time = time.time()
+        self.logger.info("Preprocessing photos...")
 
         batch_id = input_data["batch_id"]
         artifacts = []
+        total_photos = len(input_data["photo_index"])
+        processed_count = 0
 
-        for photo in input_data["photo_index"]:
+        print(f"🔧 Preprocessing {total_photos} photos...")
+
+        for i, photo in enumerate(input_data["photo_index"]):
             photo_id = photo["photo_id"]
             photo_uri = photo.get("original_uri", photo.get("uri", ""))
             ranking_uri = photo.get("ranking_uri", photo_uri)
+
+            # Progress indicator
+            progress = f"[{i+1}/{total_photos}]"
+            print(f"\r🔄 {progress} Processing photos... {photo_id[:8]}", end="", flush=True)
 
             # Create standardized version (no quality loss) in rankingInput
             std_uri = self._create_standardized_version(ranking_uri, photo_id)
@@ -46,7 +81,11 @@ class PreprocessService:
             }
 
             artifacts.append(artifact)
-            print(f"✓ {photo_id[:8]}")
+            processed_count += 1
+            self.logger.info(f"Processed successfully: {photo_id[:8]}")
+
+        # Clear progress line and show final status
+        print(f"\r✅ Preprocessed {processed_count}/{total_photos} photos successfully")
 
         result = {
             "batch_id": batch_id,
@@ -59,7 +98,12 @@ class PreprocessService:
         with open(f"intermediateJsons/preprocess/{batch_id}_preprocess_output.json", 'w') as f:
             json.dump(result, f, indent=2)
 
-        print(f"📤 Preprocess complete: {len(artifacts)} photos")
+        # Calculate and display timing
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        timing_msg = f"Preprocess complete: {len(artifacts)}/{total_photos} photos processed in {elapsed_time:.2f}s"
+        print(f"📤 {timing_msg}")
+        self.logger.info(timing_msg)
         return result
 
     def _create_standardized_version(self, photo_uri: str, photo_id: str) -> str:
@@ -94,7 +138,7 @@ class PreprocessService:
                 return output_path
 
         except Exception as e:
-            print(f"❌ Error processing {photo_uri}: {e}")
+            self.logger.error(f"Error processing {photo_uri}: {e}")
             return photo_uri  # Return original if processing fails
 
     def _get_image_size(self, image_path: str) -> tuple:

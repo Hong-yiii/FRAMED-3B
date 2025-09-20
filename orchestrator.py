@@ -291,7 +291,7 @@ class Orchestrator:
         # Generate batch ID if not provided
         if batch_id is None:
             timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-            batch_id = f"batch_real_{timestamp}"
+            batch_id = f"batch_{timestamp}"
 
         # Use the dedicated service
         if self.real_services:
