@@ -91,12 +91,8 @@ Each service is a stateless Python module with async communication. Keep everyth
         "photo_id":"sha256:...P001",
         "std_uri":"./data/rankingInput/P001_1024.jpg",
         "features": {
-          "embeddings":{"clip_L14":"./data/emb/P001_clip.npy"},
-          "hashes":{"phash":"4f2a8b9c1e5d7f3a"},
           "tech": {"sharpness":0.85,"exposure":0.72,"noise":0.15,"horizon_deg":-0.8},
-          "saliency":{"heatmap_uri":"./data/sal/P001.png","neg_space_ratio":0.34},
-          "faces":{"count":2,"landmarks_ok":true},
-          "palette":{"lab_centroids":[[65.2,12.8,-8.5],[42.1,-15.3,22.7]],"cluster_id":"pal_03"}
+          "clip_labels":["photography","landscape","nature","outdoor","scenic"]
         }
       }
     ]
@@ -318,16 +314,16 @@ Each service is a stateless Python module with async communication. Keep everyth
 
    * ✅ **Ingest Service:** Photo registration, format conversion, EXIF extraction
    * ✅ **Preprocess Service:** Image standardization without quality loss
-   * ✅ **Features Service:** Rich feature extraction (CLIP, pHash, technical metrics)
-   * ✅ **Scoring Service:** Quality assessment with technical gate (Q_tech > 0.3)
-   * ✅ **Basic Caching:** File-based caching for performance
+   * ✅ **Features Service:** Rich feature extraction (CLIP, technical metrics)
+   * 📋 **Scoring Service:** Quality assessment with technical gate (Q_tech > 0.3)
+   * 📋 **Basic Caching:** File-based caching for performance
 
 ## 🚧 **M2 – Moment Clustering & Selection (IN PROGRESS)**
 
-   * ✅ **Clustering Service:** Quality-based photo grouping
-   * ✅ **Ranking Service:** Intra-cluster ranking (quality-based, LLM-ready)
-   * ✅ **Optimizer Service:** Diversity optimization and selection
-   * 🔄 **Exporter Service:** Final curated list generation
+   * 📋 **Clustering Service:** Quality-based photo grouping
+   * 📋 **Ranking Service:** Intra-cluster ranking (quality-based, LLM-ready)
+   * 📋 **Optimizer Service:** Diversity optimization and selection
+   * 📋 **Exporter Service:** Final curated list generation
    * 📋 **pHash Clustering:** Upgrade from quality-based to perceptual similarity
    * 📋 **Submodular Optimization:** Replace simple selection with mathematical optimization
 

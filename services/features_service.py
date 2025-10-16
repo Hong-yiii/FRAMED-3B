@@ -31,9 +31,9 @@ class FeaturesService:
             # From preprocess service
             source_artifacts = input_data["artifacts"]
         elif "photo_index" in input_data:
-            # Fallback for direct processing
+            # Fallback for direct processing from ingest output
             source_artifacts = [
-                {"photo_id": photo["photo_id"], "std_uri": photo["uri"]}
+                {"photo_id": photo["photo_id"], "std_uri": photo.get("uri", photo.get("ranking_uri", ""))}
                 for photo in input_data["photo_index"]
             ]
         else:
@@ -76,7 +76,6 @@ class FeaturesService:
         }
 
         # Save to intermediate JSONs
-        import json
         os.makedirs("intermediateJsons/features", exist_ok=True)
         with open(f"intermediateJsons/features/{batch_id}_features_output.json", 'w') as f:
             json.dump(result, f, indent=2)
@@ -96,34 +95,22 @@ class FeaturesService:
                 is_portrait = height > width
 
                 # Mock advanced features (replace with real implementations)
+                # Sample CLIP labels for demonstration
+                clip_labels = [
+                    "photography", "landscape", "nature", "outdoor", "scenic",
+                    "mountain", "sky", "water", "forest", "sunset"
+                ]
+                # Randomly select top 5 labels
+                selected_labels = np.random.choice(clip_labels, 5, replace=False).tolist()
+
                 features = {
-                    "embeddings": {
-                        "clip_L14": f"./data/emb/{photo_id}_clip.npy"
-                    },
-                    "hashes": {
-                        "phash": hashlib.md5(f"phash_{photo_id}".encode()).hexdigest()[:16]
-                    },
                     "tech": {
                         "sharpness": 0.7 + np.random.random() * 0.3,
                         "exposure": 0.6 + np.random.random() * 0.3,
                         "noise": 0.1 + np.random.random() * 0.3,
                         "horizon_deg": np.random.normal(0, 2)
                     },
-                    "saliency": {
-                        "heatmap_uri": f"./data/sal/{photo_id}.png",
-                        "neg_space_ratio": 0.2 + np.random.random() * 0.6
-                    },
-                    "faces": {
-                        "count": np.random.choice([0, 1, 2, 3], p=[0.4, 0.3, 0.2, 0.1]),
-                        "landmarks_ok": np.random.random() > 0.1
-                    },
-                    "palette": {
-                        "lab_centroids": [
-                            [np.random.uniform(20, 80), np.random.uniform(-20, 20), np.random.uniform(-30, 30)]
-                            for _ in range(np.random.randint(2, 5))
-                        ],
-                        "cluster_id": f"pal_{np.random.randint(1, 10):02d}"
-                    }
+                    "clip_labels": selected_labels
                 }
 
                 return features
@@ -132,10 +119,6 @@ class FeaturesService:
             print(f"❌ Error extracting features from {photo_uri}: {e}")
             # Return minimal features on error
             return {
-                "embeddings": {"clip_L14": f"./data/emb/{photo_id}_clip.npy"},
-                "hashes": {"phash": hashlib.md5(f"phash_{photo_id}".encode()).hexdigest()[:16]},
                 "tech": {"sharpness": 0.5, "exposure": 0.5, "noise": 0.5, "horizon_deg": 0},
-                "saliency": {"heatmap_uri": f"./data/sal/{photo_id}.png", "neg_space_ratio": 0.3},
-                "faces": {"count": 0, "landmarks_ok": True},
-                "palette": {"lab_centroids": [[50, 0, 0]], "cluster_id": "pal_01"}
+                "clip_labels": ["photography", "landscape", "nature", "outdoor", "scenic"]
             }

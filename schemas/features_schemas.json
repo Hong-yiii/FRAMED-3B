@@ -19,26 +19,6 @@
                 "type": "string",
                 "description": "Photo identifier"
               },
-              "embeddings": {
-                "type": "object",
-                "description": "Various embedding vectors",
-                "properties": {
-                  "clip_L14": {
-                    "type": "string",
-                    "description": "URI to CLIP L/14 embedding (.npy file)"
-                  }
-                }
-              },
-              "hashes": {
-                "type": "object",
-                "description": "Perceptual and other hashes",
-                "properties": {
-                  "phash": {
-                    "type": "string",
-                    "description": "Perceptual hash for duplicate detection"
-                  }
-                }
-              },
               "tech": {
                 "type": "object",
                 "description": "Technical quality metrics",
@@ -68,59 +48,18 @@
                 },
                 "required": ["sharpness", "exposure", "noise", "horizon_deg"]
               },
-              "saliency": {
-                "type": "object",
-                "description": "Saliency and composition features",
-                "properties": {
-                  "heatmap_uri": {
-                    "type": "string",
-                    "description": "URI to saliency heatmap"
-                  },
-                  "neg_space_ratio": {
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "description": "Ratio of negative space for typography"
-                  }
-                }
-              },
-              "faces": {
-                "type": "object",
-                "description": "Face detection results",
-                "properties": {
-                  "count": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "description": "Number of faces detected"
-                  },
-                  "landmarks_ok": {
-                    "type": "boolean",
-                    "description": "Whether face landmarks are properly positioned"
-                  }
-                }
-              },
-              "palette": {
-                "type": "object",
-                "description": "Color palette analysis",
-                "properties": {
-                  "lab_centroids": {
-                    "type": "array",
-                    "items": {
-                      "type": "array",
-                      "items": {"type": "number"},
-                      "minItems": 3,
-                      "maxItems": 3,
-                      "description": "LAB color centroids"
-                    }
-                  },
-                  "cluster_id": {
-                    "type": "string",
-                    "description": "Palette cluster identifier"
-                  }
-                }
+              "clip_labels": {
+                "type": "array",
+                "description": "Top 5 CLIP classification labels",
+                "items": {
+                  "type": "string",
+                  "description": "CLIP label"
+                },
+                "minItems": 5,
+                "maxItems": 5
               }
             },
-            "required": ["photo_id", "embeddings", "hashes", "tech", "saliency", "faces", "palette"]
+            "required": ["photo_id", "tech", "clip_labels"]
           }
         }
       },

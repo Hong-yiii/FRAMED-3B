@@ -85,18 +85,21 @@ class ScoringService:
     def _compute_scores(self, features: Dict[str, Any]) -> Dict[str, float]:
         """Compute quality scores from features."""
         tech = features.get("tech", {})
-        saliency = features.get("saliency", {})
+        clip_labels = features.get("clip_labels", [])
 
         # Technical quality score
         q_tech = 0.4 * tech.get("sharpness", 0.5) + \
                  0.4 * tech.get("exposure", 0.5) + \
                  0.2 * (1 - tech.get("noise", 0.5))
 
+        # Content score based on CLIP labels variety
+        content_score = min(1.0, len(set(clip_labels)) / 5.0) if clip_labels else 0.5
+
         return {
             "Q_tech": q_tech,
-            "Aesthetic": 0.6 + 0.3 * (q_tech + saliency.get("neg_space_ratio", 0.3)),
-            "Vibe": 0.5 + 0.4 * saliency.get("neg_space_ratio", 0.3),
-            "Typography": saliency.get("neg_space_ratio", 0.3) * 0.8 + 0.2,
+            "Aesthetic": 0.6 + 0.3 * q_tech + 0.1 * content_score,
+            "Vibe": 0.5 + 0.4 * content_score,
+            "Typography": content_score * 0.8 + 0.2,
             "Composition": 0.6 + 0.3 * q_tech,
-            "Total_prelim": 0.7 + 0.2 * q_tech
+            "Total_prelim": 0.7 + 0.2 * q_tech + 0.1 * content_score
         }

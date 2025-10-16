@@ -65,6 +65,10 @@
                 "type": "string",
                 "description": "Original photo URI"
               },
+              "uri": {
+                "type": "string",
+                "description": "Processed photo URI for feature extraction"
+              },
               "ranking_uri": {
                 "type": "string",
                 "description": "Processed photo URI in rankingInput directory"
