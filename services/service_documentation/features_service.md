@@ -13,6 +13,19 @@ This service integrates with the existing orchestrator pipeline:
 - **Triggered by:** `preprocess.completed` event
 - **Publishes:** `features.completed` event
 - **Optimized for:** MacBook Pro with MPS (Metal Performance Shaders)
+- **Data Preservation:** Maintains ALL metadata from ingest and preprocess services
+
+### Data Flow
+```
+Ingest Service → Preprocess Service → Features Service
+     ↓                    ↓                   ↓
+  [exif, format]    [+ processing_metadata]  [+ features]
+```
+
+The Features Service receives artifacts from the Preprocess Service that contain:
+- **From Ingest:** `exif`, `format`, `original_uri`, `ranking_uri`, `photo_id`
+- **From Preprocess:** `std_uri`, `processing_metadata`
+- **Adds:** `features` (CLIP labels + technical quality metrics)
 
 ### Input Format
 
@@ -21,13 +34,29 @@ The service accepts two input formats:
 **1. From Preprocess Service (Preferred):**
 ```json
 {
-  "batch_id": "batch_2025-01-15_test",
+  "batch_id": "batch_20251017_105804",
   "artifacts": [
     {
-      "photo_id": "abed1315713f44e8c76ba97152ec25d788a02f36ec64b7858b5d00c7fb08e9ea",
-      "original_uri": "./data/input/30ED3B7D-090E-485E-A3B7-A3A04F816B2E.jpg",
-      "ranking_uri": "./data/rankingInput/abed1315713f44e8c76ba97152ec25d788a02f36ec64b7858b5d00c7fb08e9ea.jpg",
-      "std_uri": "./data/rankingInput/abed1315713f44e8c76ba97152ec25d788a02f36ec64b7858b5d00c7fb08e9ea_1024.jpg"
+      "photo_id": "48f6cf1e6e10e5367e229aabc3bffcf1c3bb3adac74365665fa9d6d1d1ed0541",
+      "original_uri": "./data/input/992DDF60-302C-4AB3-A794-EE9D0DDC56AA.jpg",
+      "ranking_uri": "./data/rankingInput/48f6cf1e6e10e5367e229aabc3bffcf1c3bb3adac74365665fa9d6d1d1ed0541.jpg",
+      "std_uri": "./data/rankingInput/48f6cf1e6e10e5367e229aabc3bffcf1c3bb3adac74365665fa9d6d1d1ed0541_1024.jpg",
+      "exif": {
+        "camera": "Apple iPhone 11 Pro Max",
+        "lens": "Unknown",
+        "iso": 64,
+        "aperture": "f/1.8",
+        "shutter_speed": "1/60",
+        "focal_length": "4mm",
+        "datetime": "2024:12:25 11:25:57",
+        "gps": null
+      },
+      "format": ".jpg",
+      "processing_metadata": {
+        "original_size": [3840, 2160],
+        "standardized_size": [2048, 1152],
+        "processing_method": "quality_preserved"
+      }
     }
   ]
 }
@@ -61,37 +90,46 @@ The service accepts two input formats:
 ### Output Format
 ```json
 {
-  "batch_id": "batch_2025-01-15_test",
+  "batch_id": "batch_20251017_105804",
   "artifacts": [
     {
-      "photo_id": "abed1315713f44e8c76ba97152ec25d788a02f36ec64b7858b5d00c7fb08e9ea",
-      "std_uri": "./data/rankingInput/abed1315713f44e8c76ba97152ec25d788a02f36ec64b7858b5d00c7fb08e9ea_1024.jpg",
-      "original_uri": "./data/input/30ED3B7D-090E-485E-A3B7-A3A04F816B2E.jpg",
-      "ranking_uri": "./data/rankingInput/abed1315713f44e8c76ba97152ec25d788a02f36ec64b7858b5d00c7fb08e9ea.jpg",
+      "photo_id": "48f6cf1e6e10e5367e229aabc3bffcf1c3bb3adac74365665fa9d6d1d1ed0541",
+      "original_uri": "./data/input/992DDF60-302C-4AB3-A794-EE9D0DDC56AA.jpg",
+      "ranking_uri": "./data/rankingInput/48f6cf1e6e10e5367e229aabc3bffcf1c3bb3adac74365665fa9d6d1d1ed0541.jpg",
+      "std_uri": "./data/rankingInput/48f6cf1e6e10e5367e229aabc3bffcf1c3bb3adac74365665fa9d6d1d1ed0541_1024.jpg",
       "exif": {
         "camera": "Apple iPhone 11 Pro Max",
-        "iso": 125,
-        "aperture": "f/2.4",
-        "shutter_speed": "1/100"
+        "lens": "Unknown",
+        "iso": 64,
+        "aperture": "f/1.8",
+        "shutter_speed": "1/60",
+        "focal_length": "4mm",
+        "datetime": "2024:12:25 11:25:57",
+        "gps": null
+      },
+      "format": ".jpg",
+      "processing_metadata": {
+        "original_size": [3840, 2160],
+        "standardized_size": [2048, 1152],
+        "processing_method": "quality_preserved"
       },
       "features": {
         "tech": {
-          "sharpness": 0.5824664430670188,
-          "exposure": 0.7642725303263522,
-          "noise": 0.15978705996824694,
-          "horizon_deg": 0.6372531198368598,
-          "iso_noise_factor": 0.039,
-          "aperture_f_number": 2.4,
-          "shutter_speed_seconds": 0.01,
+          "sharpness": 1.0,
+          "exposure": 0.7250478958473853,
+          "noise": 0.09551166822581503,
+          "horizon_deg": 0.0,
+          "iso_noise_factor": 0.02,
+          "aperture_f_number": 1.8,
           "camera_type": "Apple iPhone 11 Pro Max",
           "camera_tier": "smartphone"
         },
         "clip_labels": [
-          "photography",
-          "landscape",
-          "nature",
-          "outdoor",
-          "scenic"
+          "wide shot",
+          "colorful",
+          "close-up",
+          "panorama",
+          "indoor"
         ]
       }
     }

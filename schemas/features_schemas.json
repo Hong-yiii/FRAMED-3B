@@ -3,67 +3,264 @@
   "title": "Features Service Schemas",
   "description": "Input and output schemas for the feature extraction service",
   "definitions": {
-    "features_output": {
+    "processing_metadata": {
       "type": "object",
+      "description": "Processing metadata from preprocess service",
+      "properties": {
+        "original_size": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Original image dimensions [width, height]"
+        },
+        "standardized_size": {
+          "type": "array",
+          "items": {"type": "integer"},
+          "minItems": 2,
+          "maxItems": 2,
+          "description": "Standardized image dimensions [width, height]"
+        },
+        "processing_method": {
+          "type": "string",
+          "description": "Method used for processing (e.g., 'quality_preserved')"
+        }
+      }
+    },
+    "exif_data": {
+      "type": "object",
+      "description": "EXIF metadata from photo (optional, may not be present)",
+      "properties": {
+        "camera": {
+          "type": "string",
+          "description": "Camera make and model"
+        },
+        "lens": {
+          "type": "string",
+          "description": "Lens information"
+        },
+        "iso": {
+          "type": ["number", "null"],
+          "description": "ISO sensitivity"
+        },
+        "aperture": {
+          "type": "string",
+          "description": "Aperture value (e.g., 'f/2.4')"
+        },
+        "shutter_speed": {
+          "type": "string",
+          "description": "Shutter speed (e.g., '1/100')"
+        },
+        "focal_length": {
+          "type": "string",
+          "description": "Focal length (e.g., '5mm')"
+        },
+        "datetime": {
+          "type": ["string", "null"],
+          "description": "Date and time photo was taken"
+        },
+        "gps": {
+          "type": ["object", "null"],
+          "description": "GPS coordinates",
+          "properties": {
+            "lat": {"type": "number", "description": "Latitude"},
+            "lon": {"type": "number", "description": "Longitude"},
+            "alt": {"type": "number", "description": "Altitude (optional)"}
+          }
+        }
+      }
+    },
+    "technical_features": {
+      "type": "object",
+      "description": "Technical quality metrics (core metrics always present, EXIF-derived optional)",
+      "properties": {
+        "sharpness": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Sharpness score (Laplacian variance)"
+        },
+        "exposure": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Exposure quality score"
+        },
+        "noise": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Noise level (inverse quality)"
+        },
+        "horizon_deg": {
+          "type": "number",
+          "description": "Horizon tilt in degrees"
+        },
+        "iso_noise_factor": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "ISO-based noise prediction factor (optional)"
+        },
+        "aperture_f_number": {
+          "type": "number",
+          "description": "Aperture f-number for depth of field analysis (optional)"
+        },
+        "depth_of_field_factor": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Depth of field factor (optional)"
+        },
+        "shutter_speed_seconds": {
+          "type": "number",
+          "description": "Shutter speed in seconds (optional)"
+        },
+        "motion_blur_risk": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Motion blur risk factor (optional)"
+        },
+        "camera_type": {
+          "type": "string",
+          "description": "Camera make and model (optional)"
+        },
+        "camera_tier": {
+          "type": "string",
+          "enum": ["smartphone", "consumer", "enthusiast", "professional", "unknown"],
+          "description": "Camera quality tier classification (optional)"
+        }
+      },
+      "required": ["sharpness", "exposure", "noise", "horizon_deg"],
+      "additionalProperties": false
+    },
+    "features_data": {
+      "type": "object",
+      "description": "Combined features extracted from photo",
+      "properties": {
+        "tech": {
+          "$ref": "#/definitions/technical_features"
+        },
+        "clip_labels": {
+          "type": "array",
+          "description": "CLIP classification labels (typically 5, but can vary)",
+          "items": {
+            "type": "string",
+            "description": "CLIP label"
+          },
+          "minItems": 1,
+          "maxItems": 10
+        }
+      },
+      "required": ["tech", "clip_labels"],
+      "additionalProperties": false
+    },
+    "features_input_preprocess": {
+      "type": "object",
+      "description": "Input from preprocess service (preferred) - contains all ingest data plus preprocessing metadata",
       "properties": {
         "batch_id": {
           "type": "string",
           "description": "Batch identifier"
         },
-        "features": {
+        "artifacts": {
           "type": "array",
           "items": {
             "type": "object",
             "properties": {
-              "photo_id": {
-                "type": "string",
-                "description": "Photo identifier"
-              },
-              "tech": {
-                "type": "object",
-                "description": "Technical quality metrics",
-                "properties": {
-                  "sharpness": {
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "description": "Sharpness score (Laplacian variance)"
-                  },
-                  "exposure": {
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "description": "Exposure quality score"
-                  },
-                  "noise": {
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1,
-                    "description": "Noise level (inverse quality)"
-                  },
-                  "horizon_deg": {
-                    "type": "number",
-                    "description": "Horizon tilt in degrees"
-                  }
-                },
-                "required": ["sharpness", "exposure", "noise", "horizon_deg"]
-              },
-              "clip_labels": {
-                "type": "array",
-                "description": "Top 5 CLIP classification labels",
-                "items": {
-                  "type": "string",
-                  "description": "CLIP label"
-                },
-                "minItems": 5,
-                "maxItems": 5
-              }
+              "photo_id": {"type": "string", "description": "Unique photo identifier"},
+              "original_uri": {"type": "string", "description": "Path to original photo file (from ingest)"},
+              "ranking_uri": {"type": "string", "description": "Path to JPEG version for ranking (from ingest)"},
+              "std_uri": {"type": "string", "description": "Path to standardized processed image (from preprocess)"},
+              "exif": {"$ref": "#/definitions/exif_data"},
+              "format": {"type": "string", "description": "Original file format (from ingest)"},
+              "processing_metadata": {"$ref": "#/definitions/processing_metadata"}
             },
-            "required": ["photo_id", "tech", "clip_labels"]
+            "required": ["photo_id", "original_uri", "ranking_uri", "std_uri", "processing_metadata"],
+            "additionalProperties": true
           }
         }
       },
-      "required": ["batch_id", "features"]
+      "required": ["batch_id", "artifacts"]
+    },
+    "features_input_ingest": {
+      "type": "object",
+      "description": "Input from ingest service (fallback)",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Batch identifier"
+        },
+        "photo_index": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "photo_id": {"type": "string", "description": "Unique photo identifier"},
+              "original_uri": {"type": "string", "description": "Path to original photo file"},
+              "ranking_uri": {"type": "string", "description": "Path to JPEG version for ranking"},
+              "exif": {"$ref": "#/definitions/exif_data"},
+              "format": {"type": "string", "description": "Original file format"}
+            },
+            "required": ["photo_id", "original_uri", "ranking_uri", "format"],
+            "additionalProperties": true
+          }
+        }
+      },
+      "required": ["batch_id", "photo_index"]
+    },
+    "features_output": {
+      "type": "object",
+      "description": "Features service output with enriched artifacts",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Batch identifier"
+        },
+        "artifacts": {
+          "type": "array",
+          "description": "Photo artifacts enriched with features",
+          "items": {
+            "type": "object",
+            "description": "Photo artifact with all metadata and features",
+            "properties": {
+              "photo_id": {
+                "type": "string",
+                "description": "Unique photo identifier (SHA256 hash)"
+              },
+              "original_uri": {
+                "type": "string",
+                "description": "Path to original photo file"
+              },
+              "ranking_uri": {
+                "type": "string",
+                "description": "Path to JPEG version for ranking"
+              },
+              "std_uri": {
+                "type": "string",
+                "description": "Path to standardized processed image"
+              },
+              "processing_metadata": {
+                "$ref": "#/definitions/processing_metadata"
+              },
+              "exif": {
+                "$ref": "#/definitions/exif_data"
+              },
+              "format": {
+                "type": "string",
+                "description": "Original file format (e.g., '.jpg', '.heic')"
+              },
+              "features": {
+                "$ref": "#/definitions/features_data"
+              }
+            },
+            "required": ["photo_id", "original_uri", "ranking_uri", "std_uri", "processing_metadata", "features"],
+            "additionalProperties": true
+          }
+        }
+      },
+      "required": ["batch_id", "artifacts"]
     }
   }
 }

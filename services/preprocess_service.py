@@ -68,17 +68,16 @@ class PreprocessService:
             # Create standardized version (no quality loss) in rankingInput
             std_uri = self._create_standardized_version(ranking_uri, photo_id)
 
-            artifact = {
-                "photo_id": photo_id,
-                "original_uri": photo_uri,
-                "ranking_uri": ranking_uri,
+            # Preserve ALL metadata from ingest service and add preprocessing data
+            artifact = photo.copy()  # Start with all ingest data
+            artifact.update({
                 "std_uri": std_uri,
                 "processing_metadata": {
                     "original_size": self._get_image_size(ranking_uri),
                     "standardized_size": self._get_image_size(std_uri),
                     "processing_method": "quality_preserved"
                 }
-            }
+            })
 
             artifacts.append(artifact)
             processed_count += 1
