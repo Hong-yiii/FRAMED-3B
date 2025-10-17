@@ -14,3 +14,12 @@ pillow = ">=10.0.0,<11"
 piexif = ">=1.1.3,<2"
 numpy = ">=2.3.3,<3"
 pillow-heif = ">=0.20.0,<1"
+# ML dependencies
+pytorch = ">=2.1.0,<3"
+torchvision = ">=0.16.0,<1"
+# Image processing and quality assessment
+opencv = ">=4.8.0,<5"
+scikit-image = ">=0.22.0,<1"
+
+[pypi-dependencies]
+open-clip-torch = ">=2.26.1,<3"

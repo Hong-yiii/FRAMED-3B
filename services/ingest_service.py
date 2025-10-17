@@ -89,7 +89,7 @@ class IngestService:
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process actual photos from the input directory."""
         start_time = time.time()
-        self.logger.info("Processing photos...")
+        self.logger.info("Processing photos... (ingest service)")
 
         batch_id = input_data["batch_id"]
         photo_index = []

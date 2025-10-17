@@ -63,7 +63,7 @@ class PreprocessService:
 
             # Progress indicator
             progress = f"[{i+1}/{total_photos}]"
-            print(f"\r🔄 {progress} Processing photos... {photo_id[:8]}", end="", flush=True)
+            print(f"\r🔄 {progress} Processing photos... (Preprocess Service) {photo_id[:8]}", end="", flush=True)
 
             # Create standardized version (no quality loss) in rankingInput
             std_uri = self._create_standardized_version(ranking_uri, photo_id)

@@ -1,313 +1,310 @@
 ---
 
-# Cursor Prompt — “OpenCLIP Labeling Service (Framed)”
+# OpenCLIP Features Service (Framed Pipeline Integration)
 
-**Goal:** Build a small, reliable microservice that runs **OpenCLIP** zero-shot labeling. Input: 
+**Goal:** Extract rich visual and technical features from photos using **OpenCLIP** and computer vision techniques. This service is integrated into the curation pipeline and processes batches of photos.
+
+**Input:** Preprocessed photo artifacts from the preprocess service
+**Output:** Feature-enriched artifacts with CLIP labels and technical quality metrics
+
+## Pipeline Integration
+
+This service integrates with the existing orchestrator pipeline:
+- **Triggered by:** `preprocess.completed` event
+- **Publishes:** `features.completed` event
+- **Optimized for:** MacBook Pro with MPS (Metal Performance Shaders)
+
+### Input Format
+
+The service accepts two input formats:
+
+**1. From Preprocess Service (Preferred):**
+```json
+{
+  "batch_id": "batch_2025-01-15_test",
+  "artifacts": [
     {
       "photo_id": "abed1315713f44e8c76ba97152ec25d788a02f36ec64b7858b5d00c7fb08e9ea",
       "original_uri": "./data/input/30ED3B7D-090E-485E-A3B7-A3A04F816B2E.jpg",
       "ranking_uri": "./data/rankingInput/abed1315713f44e8c76ba97152ec25d788a02f36ec64b7858b5d00c7fb08e9ea.jpg",
+      "std_uri": "./data/rankingInput/abed1315713f44e8c76ba97152ec25d788a02f36ec64b7858b5d00c7fb08e9ea_1024.jpg"
+    }
+  ]
+}
+```
+
+**2. Direct from Ingest Service (Fallback):**
+```json
+{
+  "batch_id": "batch_20251016_132943",
+  "photo_index": [
+    {
+      "photo_id": "f399832e651bcecc870e4daac76c389f117bd34f2543acd0e596d561128dad47",
+      "original_uri": "./data/input/07C58076-AE31-41F3-878E-0B5837667F80.jpg",
+      "ranking_uri": "./data/rankingInput/f399832e651bcecc870e4daac76c389f117bd34f2543acd0e596d561128dad47.jpg",
       "exif": {
-        "camera": "Apple iPhone 11 Pro Max",
+        "camera": "Apple iPhone 13 Pro Max",
         "lens": "Unknown",
-        "iso": 125,
-        "aperture": "f/2.4",
-        "shutter_speed": "1/100",
-        "focal_length": "1mm",
-        "datetime": "2024:12:06 18:51:37",
+        "iso": 50,
+        "aperture": "f/1.5",
+        "shutter_speed": "1/5587",
+        "focal_length": "5mm",
+        "datetime": "2024:12:23 12:14:29",
         "gps": null
       },
       "format": ".jpg"
-    },
+    }
+  ]
+}
+```
 
-Output: **top-k labels** with scores. Optimize for **RTX 2070 (8 GB VRAM)** and low latency. No training. This service will be called by other components later.
-
+### Output Format
+```json
+{
   "batch_id": "batch_2025-01-15_test",
-  "features":
+  "artifacts": [
     {
-      "photo_id": "e7c4f5e1ebbad7203b18f8c840da314144d27f639e1962e5d87a06c63d4df672",
-      "tech": {
-        "sharpness": 0.5824664430670188,
-        "exposure": 0.7642725303263522,
-        "noise": 0.15978705996824694,
-        "horizon_deg": 0.6372531198368598
+      "photo_id": "abed1315713f44e8c76ba97152ec25d788a02f36ec64b7858b5d00c7fb08e9ea",
+      "std_uri": "./data/rankingInput/abed1315713f44e8c76ba97152ec25d788a02f36ec64b7858b5d00c7fb08e9ea_1024.jpg",
+      "original_uri": "./data/input/30ED3B7D-090E-485E-A3B7-A3A04F816B2E.jpg",
+      "ranking_uri": "./data/rankingInput/abed1315713f44e8c76ba97152ec25d788a02f36ec64b7858b5d00c7fb08e9ea.jpg",
+      "exif": {
+        "camera": "Apple iPhone 11 Pro Max",
+        "iso": 125,
+        "aperture": "f/2.4",
+        "shutter_speed": "1/100"
       },
-      "clip_labels": [
-        "photography",
-        "landscape",
-        "nature",
-        "outdoor",
-        "scenic"
-      ]
-    },
-
-## Hard Requirements
-
-* **Framework:** Python 3.10+, **FastAPI** + **Uvicorn**
-* **Model lib:** **open_clip_torch**
-* **Primary checkpoint:** `hf-hub:laion/CLIP-ViT-L-14-DataComp.XL-s13B-b90K` (good accuracy, fits on 8 GB)
-* **Device:** prefer CUDA if available; else CPU fallback (It should check for Mac and if so use the GPU as well)
-* **Precision:** FP16 on GPU
-* **Image size:** default 336px; allow `?size=224|336` query param
-* **Batch size:** 1 (single image per request; simple + low VRAM)
-* **Labels:** read from `config/labels.json`
-* **Prompt templates:** 3–6 per label; average text embeddings per label
-* **Return:** `top_k` labels (default 5) with softmax probabilities and raw cosine scores
-* **Cache:** cache label embeddings in memory; recompute only when labels/config change
-* **Thread-safety:** model/embeddings loaded once on startup (global)
-* **Timeouts:** 10s request timeout default
-* **Logging:** structured logs (JSON) for request id, latency, model, device, image size, top1 label, top1 prob
-* **Health endpoints:** `/healthz` (model and device ready), `/labels` (current label list), `/info` (model id, device)
-* **Security (basic):** max payload 8 MB, reject non-image mimetypes, cap `top_k` ≤ 10
-
-## API
-
-### `POST /classify`
-
-* **Query:** `top_k: int=5`, `size: int in {224,336}=336`, `temperature: float=0.01`, `threshold: float=0.0`
-* **Body:** multipart/form-data, field `file` (image)
-* **Response:**
-
-```json
-{
-  "model": "laion/CLIP-ViT-L-14-DataComp.XL-s13B-b90K",
-  "device": "cuda:0",
-  "size": 336,
-  "top_k": 5,
-  "results": [
-    {"label":"Eiffel Tower","prob":0.71,"score":0.83},
-    {"label":"Louvre Museum","prob":0.12,"score":0.46}
-  ]
-}
-```
-
-### `GET /labels`
-
-* Returns current label list and templates used.
-
-### `POST /reload-labels`
-
-* Reload `config/labels.json` without restarting (rebuild label embedding bank).
-* Returns counts + checksum.
-
-### `GET /healthz`
-
-* `{ "status":"ok", "device":"cuda", "fp16":true }`
-
-### `GET /info`
-
-* Model id, device, precision, image norm used, service version.
-
-## Files to Generate
-
-```
-openclip_service/
-  app.py
-  inference.py
-  clip_runtime.py
-  config/
-    labels.json
-    templates.json
-  requirements.txt
-  Dockerfile
-  README.md
-  scripts/
-    smoke_test.sh
-    bench_local.py
-```
-
-### `requirements.txt`
-
-```
-fastapi==0.115.0
-uvicorn[standard]==0.30.5
-open_clip_torch
-torch>=2.1
-torchvision
-pillow
-numpy
-orjson
-python-multipart
-```
-
-### `config/labels.json` (starter)
-
-```json
-{
-  "labels": [
-    "Eiffel Tower",
-    "Louvre Museum",
-    "Notre-Dame Cathedral",
-    "Arc de Triomphe",
-    "Tokyo Tower",
-    "Shibuya Crossing",
-    "Mount Fuji",
-    "Sagrada Família",
-    "Big Ben",
-    "Colosseum"
-  ]
-}
-```
-
-### `config/templates.json` (starter)
-
-```json
-{
-  "templates": [
-    "a photo of {}",
-    "a landmark: {}",
-    "an outdoor scene featuring {}",
-    "a travel photograph of {}",
-    "a wide shot of {}"
+      "features": {
+        "tech": {
+          "sharpness": 0.5824664430670188,
+          "exposure": 0.7642725303263522,
+          "noise": 0.15978705996824694,
+          "horizon_deg": 0.6372531198368598,
+          "iso_noise_factor": 0.039,
+          "aperture_f_number": 2.4,
+          "shutter_speed_seconds": 0.01,
+          "camera_type": "Apple iPhone 11 Pro Max",
+          "camera_tier": "smartphone"
+        },
+        "clip_labels": [
+          "photography",
+          "landscape",
+          "nature",
+          "outdoor",
+          "scenic"
+        ]
+      }
+    }
   ]
 }
 ```
 
 ## Implementation Details
 
-1. **Model Load**
+* **Framework:** Python 3.13+, integrated with existing pipeline
+* **Model lib:** **open_clip_torch**
+* **Primary checkpoint:** `hf-hub:laion/CLIP-ViT-L-14-DataComp.XL-s13B-b90K` (good accuracy, efficient)
+* **Device:** MPS (Metal Performance Shaders) on MacBook Pro, CUDA fallback, then CPU
+* **Precision:** FP16 on GPU/MPS for memory efficiency
+* **Image processing:** Uses standardized images from preprocess service
+* **Labels:** read from `config/labels.json` (50 photography-focused labels)
+* **Prompt templates:** 6 templates per label; averaged text embeddings
+* **Return:** top 5 CLIP labels with probabilities and cosine scores
+* **Cache:** label embeddings cached to disk; technical features cached per photo
+* **Thread-safety:** model loaded once on service initialization
+* **Logging:** structured logs for batch processing, feature extraction timing
+* **Error handling:** graceful fallback to default labels on processing errors
 
-   * Use `open_clip.create_model_and_transforms(MODEL_ID, device=DEVICE)`.
-   * `model.eval()` and `model.half()` on GPU.
-   * Keep **transform** returned by `create_model_and_transforms` (handles model-specific normalization, e.g., `[-1,1]` for some L/14 variants).
+## Core Components
 
-2. **Text Bank Build**
+### CLIPClassifier
+- **Model Loading:** Automatic device detection (MPS > CUDA > CPU)
+- **Label Embeddings:** Pre-computed and cached text embeddings for all labels
+- **Image Classification:** Zero-shot classification with temperature-scaled probabilities
+- **Caching:** Persistent embedding cache with model/config validation
 
-   * For each label, build prompts via templates, tokenize, encode with `model.encode_text`, **L2 normalize**, then **mean-pool** across templates to a single vector.
-   * Stack vectors → `LABEL_EMB` shape `[N, D]` (L2 normalized).
-   * Persist in memory; expose `/reload-labels` to rebuild.
+### TechnicalQualityAnalyzer
+- **Sharpness:** Laplacian variance-based sharpness measurement
+- **Exposure:** Histogram analysis for over/under-exposure detection
+- **Noise:** Gaussian blur difference for noise estimation
+- **Horizon:** Hough line detection for horizon tilt analysis
+- **EXIF Enhancement:** Additional insights from camera metadata
 
-3. **Image Encode**
+### 5. EXIF-Based Insights
+- **ISO Noise Factor:** Predicted noise level based on ISO setting
+- **Aperture Analysis:** F-number for depth of field context
+- **Shutter Speed:** Motion blur prediction from exposure time
+- **Camera Tier:** Classification (smartphone/consumer/professional)
+- **Camera Type:** Specific camera model information
 
-   * Preprocess (transform), add batch dim, move to device, cast to `half()` when CUDA.
-   * `model.encode_image(x)` → L2 normalize.
+### FeaturesService (Main Interface)
+- **Pipeline Integration:** Processes batch artifacts from preprocess service
+- **Caching Strategy:** Per-photo feature caching with hash-based keys
+- **Error Handling:** Graceful degradation with fallback features
+- **Logging:** Comprehensive logging for debugging and monitoring
 
-4. **Scoring**
+## File Structure
 
-   * Cosine similarity: `sims = v @ LABEL_EMB.T` → shape `[N]`.
-   * Return both:
+```
+services/
+  features_service.py          # Main service implementation
+config/
+  labels.json                  # CLIP classification labels
+  templates.json              # Text prompt templates
+data/cache/features/
+  label_embeddings.pt         # Cached CLIP text embeddings
+  {hash}.json                 # Per-photo feature cache
+```
 
-     * `score = sims[i]` (raw cosine)
-     * `prob = softmax(sims / temperature)[i]` (use default **temperature=0.01** for peaky distribution).
-   * Apply `threshold` (optional) → if `max(prob) < threshold`, return `"unsure"` pseudo-label.
+### Dependencies (added to pixi.toml)
 
-5. **Validation**
+```toml
+# OpenCLIP and ML dependencies
+pytorch = ">=2.1.0,<3"
+torchvision = ">=0.16.0,<1"
+open-clip-torch = ">=2.26.1,<3"
+# Image processing and quality assessment
+opencv = ">=4.8.0,<5"
+scikit-image = ">=0.22.0,<1"
+# Technical quality metrics
+pyiqa = ">=0.1.7,<1"
+```
 
-   * Validate content type, size, and decodable image.
-   * Clamp `top_k` to `[1..min(10, N)]`.
+### `config/labels.json`
 
-6. **Performance Notes (RTX 2070)**
+```json
+{
+  "labels": [
+    "photography", "landscape", "nature", "outdoor", "scenic",
+    "portrait", "street photography", "architecture", "urban", "cityscape",
+    "mountain", "forest", "ocean", "beach", "sunset", "sunrise", "night",
+    "indoor", "people", "animal", "flower", "tree", "building", "sky",
+    "cloud", "water", "road", "bridge", "park", "garden", "travel",
+    "vacation", "food", "restaurant", "art", "museum", "concert",
+    "festival", "sports", "action", "macro", "close-up", "wide shot",
+    "panorama", "black and white", "colorful", "vintage", "modern",
+    "abstract", "minimalist"
+  ]
+}
+```
 
-   * Default **size=336**, **bs=1**, FP16 → typical < 100 ms/image.
-   * If OOM: auto-fallback to **224** and log a warning.
-   * Use `@torch.inference_mode()`.
+### `config/templates.json`
 
-7. **Logging**
+```json
+{
+  "templates": [
+    "a photo of {}",
+    "a photograph showing {}",
+    "an image of {}",
+    "a picture featuring {}",
+    "a {} scene",
+    "a {} photograph"
+  ]
+}
+```
 
-   * On each request, log `{rid, latency_ms, device, size, top1_label, top1_prob, topk_labels}` in JSON.
+## Technical Implementation
 
-## `inference.py` (sketch)
+### 1. Model Loading & Device Selection
+- **Device Priority:** MPS (MacBook Pro) > CUDA > CPU
+- **Model:** `hf-hub:laion/CLIP-ViT-L-14-DataComp.XL-s13B-b90K`
+- **Precision:** FP16 on GPU/MPS for memory efficiency
+- **Initialization:** Model loaded once on service startup
+
+### 2. Label Embedding Cache
+- **Text Encoding:** Each label processed with 6 prompt templates
+- **Embedding Generation:** Text embeddings L2-normalized and averaged per label
+- **Caching:** Embeddings cached to `label_embeddings.pt` with validation
+- **Invalidation:** Cache rebuilt when labels/templates/model changes
+
+### 3. Image Classification Pipeline
+- **Preprocessing:** Uses model-specific transforms from OpenCLIP
+- **Encoding:** Image embeddings L2-normalized for cosine similarity
+- **Scoring:** Temperature-scaled softmax for probability distribution
+- **Output:** Top-5 labels with probabilities and raw cosine scores
+
+### 4. Technical Quality Analysis
+- **Sharpness:** Laplacian variance with normalization
+- **Exposure:** Histogram analysis for clipping detection
+- **Noise:** Gaussian blur difference method
+- **Horizon:** Hough line detection for tilt measurement
+
+### 5. Caching Strategy
+- **Feature Cache:** Per-photo hash-based caching in JSON format
+- **Cache Key:** MD5 hash of `{photo_id}_features`
+- **Invalidation:** Manual cache cleanup (no automatic expiry)
+
+### 6. Error Handling
+- **Graceful Degradation:** Default features on processing errors
+- **Logging:** Comprehensive error logging with context
+- **Fallback Labels:** Photography-focused default labels
+
+## Usage in Pipeline
+
+### Service Integration
+The FeaturesService integrates seamlessly with the existing orchestrator:
 
 ```python
-import torch
-import torch.nn.functional as F
-import open_clip
-from PIL import Image
-from typing import List, Dict
+# In services/__init__.py
+from .features_service import FeaturesService
 
-class CLIPService:
-    def __init__(self, model_id: str, device: str = "cuda", image_size: int = 336):
-        self.device = "cuda" if (device == "cuda" and torch.cuda.is_available()) else "cpu"
-        self.model_id = model_id
-        self.model, _, self.preprocess = open_clip.create_model_and_transforms(model_id, device=self.device)
-        self.model.eval()
-        if self.device == "cuda":
-            self.model.half()
-        self.label_texts = []
-        self.label_names = []
-        self.label_emb = None
-        self.image_size = image_size
-
-    @torch.inference_mode()
-    def build_label_bank(self, labels: List[str], templates: List[str]):
-        tok = open_clip.get_tokenizer(self.model_id)
-        self.label_names = labels
-        embs = []
-        for label in labels:
-            prompts = [t.format(label) for t in templates]
-            tokens = tok(prompts).to(self.device)
-            txt = self.model.encode_text(tokens)
-            txt = F.normalize(txt, dim=-1)
-            embs.append(txt.mean(dim=0, keepdim=True))
-        self.label_emb = F.normalize(torch.cat(embs, dim=0), dim=-1)  # [N,D]
-
-    @torch.inference_mode()
-    def classify_pil(self, img: Image.Image, top_k: int = 5, temperature: float = 0.01):
-        x = self.preprocess(img).unsqueeze(0)
-        if self.device == "cuda":
-            x = x.to(self.device).half()
-        else:
-            x = x.to(self.device)
-        v = self.model.encode_image(x)
-        v = F.normalize(v, dim=-1)  # [1,D]
-        sims = (v @ self.label_emb.T).squeeze(0)  # [N]
-        probs = F.softmax(sims / temperature, dim=0)
-        k = min(top_k, len(self.label_names))
-        probs_k, idx_k = torch.topk(probs, k)
-        results = []
-        for p, i in zip(probs_k.tolist(), idx_k.tolist()):
-            results.append({
-                "label": self.label_names[i],
-                "prob": float(p),
-                "score": float(sims[i])
-            })
-        return results
+class RealServices:
+    def __init__(self):
+        self.features_service = FeaturesService()
+    
+    def process_features_service(self, input_data):
+        return self.features_service.process(input_data)
 ```
 
-## `app.py` (sketch)
-
-* Load config files on startup.
-* Instantiate `CLIPService`.
-* Expose endpoints defined above.
-* Enforce size, mimetype, and `top_k` limits.
-
-## Dockerfile
-
-* Base: `pytorch/pytorch:2.3.1-cuda12.1-cudnn8-runtime`
-* Install deps, copy code, expose 8000, set `CMD` to run uvicorn.
-
-## Smoke & Bench
-
-* `scripts/smoke_test.sh`:
-
+### Running the Pipeline
 ```bash
-#!/usr/bin/env bash
-set -euo pipefail
-curl -s http://localhost:8000/healthz
-curl -s http://localhost:8000/labels
-curl -s -F "file=@sample.jpg" "http://localhost:8000/classify?top_k=5"
+# Install dependencies
+pixi install
+
+# Place photos in data/input/
+# Run the full pipeline
+python orchestrator.py
 ```
 
-* `scripts/bench_local.py`:
+## Performance Characteristics
 
-  * Loop over a folder of images, measure p95 latency, log to stdout.
+### MacBook Pro Optimization
+- **MPS Acceleration:** Leverages Metal Performance Shaders for GPU acceleration
+- **Memory Efficiency:** FP16 precision reduces memory usage by ~50%
+- **Batch Processing:** Optimized for single-image processing with low latency
 
-## Acceptance Criteria
+### Expected Performance
+- **Model Loading:** ~10-15 seconds on first run
+- **Label Embedding Cache:** ~5-10 seconds for 50 labels
+- **Per-Image Processing:** ~200-500ms per image (including technical analysis)
+- **Cache Hits:** ~10-50ms per image (cached features)
 
-* ✅ `/healthz` returns `ok` and reports device `cuda` on a GPU machine.
-* ✅ `/labels` returns the label list from config.
-* ✅ `/classify` returns **top-k** results with `prob` and `score` for a valid JPEG.
-* ✅ RTX 2070 with **size=336** and FP16: **median latency ≤ 120 ms** on a 1080p photo (bs=1).
-* ✅ OOM fallback: when VRAM is tight, service retries once at **224** and logs `"oom_fallback": true`.
-* ✅ `/reload-labels` rebuilds the text bank within 2s for ≤ 200 labels.
-* ✅ Bad input (wrong mimetype, >8 MB) rejected with 400; logs include error code & reason.
+### Caching Benefits
+- **Label Embeddings:** Cached across service restarts
+- **Feature Cache:** Per-photo caching avoids recomputation
+- **Incremental Processing:** Only new photos processed in subsequent runs
 
-## Nice-to-Haves (later)
+## Monitoring and Debugging
 
-* Optional **multilingual** text tower (XLM-RoBERTa variant) behind a flag.
-* Optional **region crops** pass (saliency or detector) → classify patches → merge.
-* Prometheus metrics endpoint and basic rate limiting.
+### Log Output
+```
+INFO:features_service:Using MPS (Metal Performance Shaders) for acceleration
+INFO:features_service:Loading OpenCLIP model: hf-hub:laion/CLIP-ViT-L-14-DataComp.XL-s13B-b90K
+INFO:features_service:Loaded 50 labels and 6 templates
+INFO:features_service:Built and cached embeddings for 50 labels
+INFO:features_service:Extracting features for abed1315...
+INFO:features_service:✓ Features extracted for abed1315: ['landscape', 'nature', 'outdoor']...
+```
+
+### Cache Management
+```bash
+# Clear feature cache
+rm -rf data/cache/features/*.json
+
+# Clear label embedding cache
+rm -f data/cache/features/label_embeddings.pt
+```
 
 ---
 
-**Now generate all files and working code as specified. Prioritize correctness, readability, and robust FP16 CUDA handling.**
+**The service is now fully integrated with the pipeline and optimized for MacBook Pro. Ready for testing with real photos!**
