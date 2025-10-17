@@ -12,7 +12,8 @@ import torch
 import torch.nn.functional as F
 import open_clip
 import cv2
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Union
+import numpy.typing as npt
 from PIL import Image
 from skimage import filters, measure, exposure
 import logging
@@ -49,13 +50,13 @@ class CLIPClassifier:
             self.device = "cpu"
             self.logger.info("Using CPU (no GPU acceleration available)")
         
-        # Initialize model components
-        self.model = None
-        self.preprocess = None
-        self.tokenizer = None
-        self.label_embeddings = None
-        self.labels = []
-        self.templates = []
+        # Initialize model components (will be set in _load_model and _load_config)
+        self.model: Optional[torch.nn.Module] = None
+        self.preprocess: Optional[Any] = None  # open_clip transform
+        self.tokenizer: Optional[Any] = None   # open_clip tokenizer
+        self.label_embeddings: Optional[torch.Tensor] = None
+        self.labels: List[str] = []
+        self.templates: List[str] = []
         
         # Load model and configurations
         self._load_model()
@@ -132,11 +133,13 @@ class CLIPClassifier:
             # Create prompts for this label using all templates
             prompts = [template.format(label) for template in self.templates]
             
-            # Tokenize prompts
+            # Tokenize prompts (assert tokenizer is not None after _load_model)
+            assert self.tokenizer is not None, "Tokenizer not initialized"
             tokens = self.tokenizer(prompts).to(self.device)
             
-            # Get text embeddings
-            text_embeddings = self.model.encode_text(tokens)
+            # Get text embeddings (assert model is not None after _load_model)
+            assert self.model is not None, "Model not initialized"
+            text_embeddings = self.model.encode_text(tokens)  # type: ignore
             text_embeddings = F.normalize(text_embeddings, dim=-1)
             
             # Average across templates
@@ -163,16 +166,23 @@ class CLIPClassifier:
         try:
             # Load and preprocess image
             image = Image.open(image_path).convert('RGB')
-            image_tensor = self.preprocess(image).unsqueeze(0).to(self.device)
+            
+            # Assert preprocess is not None after _load_model
+            assert self.preprocess is not None, "Preprocess transform not initialized"
+            # Type cast to torch.Tensor to satisfy linter
+            preprocessed = self.preprocess(image)
+            image_tensor = torch.as_tensor(preprocessed).unsqueeze(0).to(self.device)
             
             if self.device in ["cuda", "mps"]:
                 image_tensor = image_tensor.half()
             
-            # Get image embedding
-            image_embedding = self.model.encode_image(image_tensor)
+            # Get image embedding (assert model is not None after _load_model)
+            assert self.model is not None, "Model not initialized"
+            image_embedding = self.model.encode_image(image_tensor)  # type: ignore
             image_embedding = F.normalize(image_embedding, dim=-1)
             
-            # Compute similarities
+            # Compute similarities (assert label_embeddings is not None after _build_label_embeddings)
+            assert self.label_embeddings is not None, "Label embeddings not initialized"
             similarities = (image_embedding @ self.label_embeddings.T).squeeze(0)
             
             # Apply temperature and get probabilities
@@ -513,7 +523,7 @@ class FeaturesService:
             
         return result
 
-    def _extract_features(self, photo_uri: str, photo_id: str, exif_data: Dict[str, Any] = None) -> Dict[str, Any]:
+    def _extract_features(self, photo_uri: str, photo_id: str, exif_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Extract features from a single photo using OpenCLIP and technical analysis."""
         try:
             self.logger.debug(f"Extracting features for {photo_id[:8]}...")
