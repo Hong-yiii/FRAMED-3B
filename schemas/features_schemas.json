@@ -72,67 +72,40 @@
     },
     "technical_features": {
       "type": "object",
-      "description": "Technical quality metrics (core metrics always present, EXIF-derived optional)",
+      "description": "Technical quality metrics (core image analysis metrics)",
       "properties": {
         "sharpness": {
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description": "Sharpness score (Laplacian variance)"
+          "description": "Sharpness score using Tenengrad method (Sobel gradient energy)"
         },
         "exposure": {
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description": "Exposure quality score"
+          "description": "Exposure quality score using percentile analysis"
         },
         "noise": {
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description": "Noise level (inverse quality)"
+          "description": "Noise level using wavelet sigma estimation (inverse quality)"
         },
-        "horizon_deg": {
-          "type": "number",
-          "description": "Horizon tilt in degrees"
-        },
-        "iso_noise_factor": {
+        "clip_iqa": {
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description": "ISO-based noise prediction factor (optional)"
+          "description": "CLIP-IQA quality score (higher = better quality)"
         },
-        "aperture_f_number": {
-          "type": "number",
-          "description": "Aperture f-number for depth of field analysis (optional)"
-        },
-        "depth_of_field_factor": {
+        "brisque": {
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description": "Depth of field factor (optional)"
-        },
-        "shutter_speed_seconds": {
-          "type": "number",
-          "description": "Shutter speed in seconds (optional)"
-        },
-        "motion_blur_risk": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "Motion blur risk factor (optional)"
-        },
-        "camera_type": {
-          "type": "string",
-          "description": "Camera make and model (optional)"
-        },
-        "camera_tier": {
-          "type": "string",
-          "enum": ["smartphone", "consumer", "enthusiast", "professional", "unknown"],
-          "description": "Camera quality tier classification (optional)"
+          "description": "BRISQUE quality score normalized to [0,1] (higher = better quality)"
         }
       },
-      "required": ["sharpness", "exposure", "noise", "horizon_deg"],
+      "required": ["sharpness", "exposure", "noise", "clip_iqa", "brisque"],
       "additionalProperties": false
     },
     "features_data": {
@@ -144,10 +117,30 @@
         },
         "clip_labels": {
           "type": "array",
-          "description": "CLIP classification labels (typically 5, but can vary)",
+          "description": "CLIP classification labels with confidence scores (typically 5, but can vary)",
           "items": {
-            "type": "string",
-            "description": "CLIP label"
+            "type": "object",
+            "description": "CLIP label with confidence and similarity score",
+            "properties": {
+              "label": {
+                "type": "string",
+                "description": "The CLIP classification label"
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Temperature-scaled probability (softmax score) representing model confidence in this label"
+              },
+              "cosine_score": {
+                "type": "number",
+                "minimum": -1,
+                "maximum": 1,
+                "description": "Raw cosine similarity score between image and label embeddings (for reference/debugging)"
+              }
+            },
+            "required": ["label", "confidence"],
+            "additionalProperties": false
           },
           "minItems": 1,
           "maxItems": 10

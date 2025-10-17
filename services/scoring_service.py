@@ -7,7 +7,7 @@ Computes quality scores for actual photos.
 import os
 import json
 import hashlib
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 
 
 class ScoringService:
@@ -17,7 +17,7 @@ class ScoringService:
         self.cache_dir = "./data/cache/scoring"
         os.makedirs(self.cache_dir, exist_ok=True)
 
-    def process(self, input_data: Dict[str, Any], theme_spec: Dict[str, Any] = None) -> Dict[str, Any]:
+    def process(self, input_data: Dict[str, Any], theme_spec: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Process photos and compute quality scores."""
         print("🔄 Real Scoring Service: Computing quality scores")
 
@@ -73,7 +73,6 @@ class ScoringService:
         }
 
         # Save to intermediate JSONs
-        import json
         os.makedirs("intermediateJsons/scoring", exist_ok=True)
         with open(f"intermediateJsons/scoring/{batch_id}_scoring_output.json", 'w') as f:
             json.dump(result, f, indent=2)
@@ -87,13 +86,27 @@ class ScoringService:
         tech = features.get("tech", {})
         clip_labels = features.get("clip_labels", [])
 
+        # Extract label names, handling both new format (dicts with confidence) and old format (strings)
+        if clip_labels and isinstance(clip_labels[0], dict):
+            # New format: list of dicts with {"label": "...", "confidence": ..., "cosine_score": ...}
+            label_names = [item["label"] for item in clip_labels]
+            # Use confidence scores for weighted content evaluation
+            label_confidences = [item.get("confidence", 0.5) for item in clip_labels]
+            avg_confidence = sum(label_confidences) / len(label_confidences) if label_confidences else 0.5
+        else:
+            # Old format: list of strings (backward compatibility)
+            label_names = clip_labels
+            avg_confidence = 0.5  # Default confidence for old format
+
         # Technical quality score
         q_tech = 0.4 * tech.get("sharpness", 0.5) + \
                  0.4 * tech.get("exposure", 0.5) + \
                  0.2 * (1 - tech.get("noise", 0.5))
 
-        # Content score based on CLIP labels variety
-        content_score = min(1.0, len(set(clip_labels)) / 5.0) if clip_labels else 0.5
+        # Content score based on CLIP labels variety, enhanced by confidence
+        content_score = min(1.0, len(set(label_names)) / 5.0) if label_names else 0.5
+        # Boost content score based on average label confidence
+        content_score = content_score * (0.7 + 0.3 * avg_confidence)
 
         return {
             "Q_tech": q_tech,

@@ -76,9 +76,9 @@ Each service is a stateless Python module with async communication. Keep everyth
   }
   ```
 
-## 3) Features Service
+## 3) Features Service ✅ **COMPLETED & OPTIMIZED**
 
-**Purpose:** extract rich visual and technical features from standardized images.
+**Purpose:** extract rich visual and technical features from standardized images using OpenCLIP and advanced IQA models.
 
 * **Input (event `preprocess.completed`)**
 * **Output (event `features.completed`):**
@@ -91,13 +91,29 @@ Each service is a stateless Python module with async communication. Keep everyth
         "photo_id":"sha256:...P001",
         "std_uri":"./data/rankingInput/P001_1024.jpg",
         "features": {
-          "tech": {"sharpness":0.85,"exposure":0.72,"noise":0.15,"horizon_deg":-0.8},
-          "clip_labels":["photography","landscape","nature","outdoor","scenic"]
+          "tech": {
+            "sharpness":0.85,
+            "exposure":0.72,
+            "noise":0.15,
+            "clip_iqa":0.78,
+            "brisque":0.82
+          },
+          "clip_labels":[
+            {"label":"photography","confidence":0.89,"cosine_score":0.76},
+            {"label":"landscape","confidence":0.82,"cosine_score":0.71},
+            {"label":"nature","confidence":0.75,"cosine_score":0.68}
+          ]
         }
       }
     ]
   }
   ```
+
+**Key Features:**
+- **OpenCLIP Integration:** ViT-L-14 model with 50 photography-focused labels
+- **Advanced IQA:** CLIP-IQA and BRISQUE quality assessment via PIQ library
+- **Performance Optimized:** MPS auto-detection, parallel execution, shared I/O
+- **Robust Caching:** Version-aware cache with automatic invalidation
 
 ## 4) Scoring Service
 
@@ -314,9 +330,14 @@ Each service is a stateless Python module with async communication. Keep everyth
 
    * ✅ **Ingest Service:** Photo registration, format conversion, EXIF extraction
    * ✅ **Preprocess Service:** Image standardization without quality loss
-   * ✅ **Features Service:** Rich feature extraction (CLIP, technical metrics)
+   * ✅ **Features Service:** Rich feature extraction (OpenCLIP + advanced IQA metrics)
+     - ✅ OpenCLIP ViT-L-14 with 50 photography labels
+     - ✅ Technical metrics: Tenengrad sharpness, percentile exposure, wavelet noise
+     - ✅ Advanced IQA: CLIP-IQA and BRISQUE via PIQ library
+     - ✅ Performance optimizations: MPS auto-detection, parallel execution, shared I/O
+     - ✅ Enhanced caching with version tracking and auto-invalidation
    * 📋 **Scoring Service:** Quality assessment with technical gate (Q_tech > 0.3)
-   * 📋 **Basic Caching:** File-based caching for performance
+   * ✅ **Advanced Caching:** Version-aware file-based caching with automatic invalidation
 
 ## 🚧 **M2 – Moment Clustering & Selection (IN PROGRESS)**
 
@@ -335,9 +356,6 @@ Each service is a stateless Python module with async communication. Keep everyth
 
    * Add pairwise judge inside clusters + for opener finalists; audit + caching.
 
-## 📋 **M5 – Personalization (PLANNED)**
-
-   * Collect pairwise picks → fit **Bradley–Terry** or a small linear head; add as `BT_personal`.
 
 ---
 
