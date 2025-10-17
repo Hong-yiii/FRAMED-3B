@@ -20,6 +20,8 @@ torchvision = ">=0.16.0,<1"
 # Image processing and quality assessment
 opencv = ">=4.8.0,<5"
 scikit-image = ">=0.22.0,<1"
+# Image Quality Assessment
+piq = ">=0.8.0,<1"
 
 [pypi-dependencies]
 open-clip-torch = ">=2.26.1,<3"

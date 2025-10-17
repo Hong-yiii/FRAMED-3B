@@ -91,9 +91,21 @@
           "minimum": 0,
           "maximum": 1,
           "description": "Noise level using wavelet sigma estimation (inverse quality)"
+        },
+        "clip_iqa": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "CLIP-IQA quality score (higher = better quality)"
+        },
+        "brisque": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "BRISQUE quality score normalized to [0,1] (higher = better quality)"
         }
       },
-      "required": ["sharpness", "exposure", "noise"],
+      "required": ["sharpness", "exposure", "noise", "clip_iqa", "brisque"],
       "additionalProperties": false
     },
     "features_data": {

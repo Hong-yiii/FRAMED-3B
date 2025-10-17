@@ -18,6 +18,10 @@ from PIL import Image
 from skimage import filters, measure, exposure
 from skimage.restoration import estimate_sigma
 import logging
+import piq
+from concurrent.futures import ThreadPoolExecutor
+import time
+import torchvision.transforms as T
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -221,11 +225,34 @@ class TechnicalQualityAnalyzer:
     # Calibration constants for quality metrics
     TENENGRAD_K = 2000.0  # Tenengrad sharpness calibration
     NOISE_SIGMA_MAX = 0.08  # Maximum sigma for noise estimation
+    BRISQUE_MAX = 100.0  # BRISQUE scores above this are clamped (worse quality)
 
-    def __init__(self):
+    def __init__(self, device: Optional[str] = None):
         # Enable OpenCV optimizations and set thread count to avoid oversubscription
         cv2.setUseOptimized(True)
         cv2.setNumThreads(1)
+        
+        # Auto-detect device if not specified, prefer MPS > CUDA > CPU
+        if device is None:
+            if torch.backends.mps.is_available():
+                self.device = "mps"
+            elif torch.cuda.is_available():
+                self.device = "cuda"
+            else:
+                self.device = "cpu"
+        else:
+            self.device = device
+        
+        # Initialize IQA models (lazy loading)
+        self._clipiqa_model = None
+        self._brisque_initialized = False
+        
+        # CLIP preprocessing transform for CLIPIQA (PIQ expects [0,1] range, not normalized)
+        self._clip_transform = T.Compose([
+            T.Resize(336, interpolation=T.InterpolationMode.BICUBIC, antialias=True),
+            T.CenterCrop(336),
+            T.ToTensor(),  # Converts to [0,1] and CHW format
+        ])
 
     @staticmethod
     def _get_gray_preview(image_path: str, max_side: int = 512) -> Optional[np.ndarray]:
@@ -254,9 +281,13 @@ class TechnicalQualityAnalyzer:
     @staticmethod
     def analyze_sharpness(image_path: str) -> float:
         """Calculate sharpness using Tenengrad (Sobel energy) method."""
+        gray = TechnicalQualityAnalyzer._get_gray_preview(image_path)
+        return TechnicalQualityAnalyzer._analyze_sharpness_from_gray(gray)
+    
+    @staticmethod
+    def _analyze_sharpness_from_gray(gray: Optional[np.ndarray]) -> float:
+        """Calculate sharpness from pre-loaded grayscale image."""
         try:
-            analyzer = TechnicalQualityAnalyzer()
-            gray = analyzer._get_gray_preview(image_path)
             if gray is None:
                 return 0.5
 
@@ -272,15 +303,19 @@ class TechnicalQualityAnalyzer:
             return float(score)
 
         except Exception as e:
-            logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to analyze sharpness for {image_path}: {e}")
+            logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to analyze sharpness from gray: {e}")
             return 0.5
 
     @staticmethod
     def analyze_exposure(image_path: str) -> float:
         """Analyze exposure quality using percentiles and clipping."""
+        gray = TechnicalQualityAnalyzer._get_gray_preview(image_path)
+        return TechnicalQualityAnalyzer._analyze_exposure_from_gray(gray)
+    
+    @staticmethod
+    def _analyze_exposure_from_gray(gray: Optional[np.ndarray]) -> float:
+        """Analyze exposure from pre-loaded grayscale image."""
         try:
-            analyzer = TechnicalQualityAnalyzer()
-            gray = analyzer._get_gray_preview(image_path)
             if gray is None:
                 return 0.5
 
@@ -304,15 +339,19 @@ class TechnicalQualityAnalyzer:
             return float(score)
 
         except Exception as e:
-            logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to analyze exposure for {image_path}: {e}")
+            logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to analyze exposure from gray: {e}")
             return 0.5
 
     @staticmethod
     def analyze_noise(image_path: str) -> float:
         """Analyze noise level using wavelet-based sigma estimation."""
+        gray = TechnicalQualityAnalyzer._get_gray_preview(image_path)
+        return TechnicalQualityAnalyzer._analyze_noise_from_gray(gray)
+    
+    @staticmethod
+    def _analyze_noise_from_gray(gray: Optional[np.ndarray]) -> float:
+        """Analyze noise from pre-loaded grayscale image."""
         try:
-            analyzer = TechnicalQualityAnalyzer()
-            gray = analyzer._get_gray_preview(image_path)
             if gray is None:
                 return 0.5
 
@@ -329,7 +368,109 @@ class TechnicalQualityAnalyzer:
             return float(score)
 
         except Exception as e:
-            logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to analyze noise for {image_path}: {e}")
+            logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to analyze noise from gray: {e}")
+            return 0.5
+
+    @staticmethod
+    def analyze_traditional_metrics(image_path: str) -> Dict[str, float]:
+        """Analyze all traditional metrics (sharpness, exposure, noise) from single image load."""
+        # Load grayscale preview once
+        gray = TechnicalQualityAnalyzer._get_gray_preview(image_path)
+        
+        return {
+            "sharpness": TechnicalQualityAnalyzer._analyze_sharpness_from_gray(gray),
+            "exposure": TechnicalQualityAnalyzer._analyze_exposure_from_gray(gray),
+            "noise": TechnicalQualityAnalyzer._analyze_noise_from_gray(gray)
+        }
+
+    def _load_clipiqa_model(self):
+        """Lazy load CLIPIQA model."""
+        if self._clipiqa_model is None:
+            try:
+                self._clipiqa_model = piq.CLIPIQA(data_range=1.0)
+                if self.device in ["cuda", "mps"]:
+                    self._clipiqa_model = self._clipiqa_model.to(self.device)
+                    if self.device == "cuda":  # MPS doesn't support half precision for all ops
+                        self._clipiqa_model = self._clipiqa_model.half()
+                logging.getLogger('TechnicalQualityAnalyzer').debug("CLIPIQA model loaded")
+            except Exception as e:
+                logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to load CLIPIQA model: {e}")
+                self._clipiqa_model = None
+
+    def _image_to_tensor(self, image_path: str, for_clipiqa: bool = False) -> Optional[torch.Tensor]:
+        """Convert image to PyTorch tensor for IQA models."""
+        try:
+            # Load image
+            image = Image.open(image_path).convert('RGB')
+            
+            if for_clipiqa:
+                # Use CLIP preprocessing for CLIPIQA
+                tensor_result = self._clip_transform(image)
+                tensor = tensor_result if isinstance(tensor_result, torch.Tensor) else torch.tensor(tensor_result)
+                if tensor.dim() == 3:  # CHW -> BCHW
+                    tensor = tensor.unsqueeze(0)
+            else:
+                # Standard preprocessing for BRISQUE
+                image_array = np.array(image).astype(np.float32) / 255.0
+                tensor = torch.from_numpy(image_array.transpose(2, 0, 1)).unsqueeze(0)
+            
+            # Move to device (keep float32 for CLIPIQA to avoid precision issues)
+            tensor = tensor.to(self.device)
+            if self.device == "cuda" and not for_clipiqa and tensor.dtype == torch.float32:
+                tensor = tensor.half()
+            
+            return tensor
+            
+        except Exception as e:
+            logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to convert image to tensor {image_path}: {e}")
+            return None
+
+    def analyze_clip_iqa(self, image_path: str) -> float:
+        """Analyze image quality using CLIP-IQA."""
+        try:
+            # Lazy load model
+            self._load_clipiqa_model()
+            if self._clipiqa_model is None:
+                return 0.5
+            
+            # Convert image to tensor with CLIP preprocessing
+            tensor = self._image_to_tensor(image_path, for_clipiqa=True)
+            if tensor is None:
+                return 0.5
+            
+            # Run inference
+            with torch.inference_mode():
+                score = self._clipiqa_model(tensor)
+                # CLIPIQA returns scores in [0,1] where higher is better
+                return float(torch.clamp(score, 0.0, 1.0).cpu())
+                
+        except Exception as e:
+            logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to analyze CLIP-IQA for {image_path}: {e}")
+            return 0.5
+
+    def analyze_brisque(self, image_path: str) -> float:
+        """Analyze image quality using BRISQUE (normalized to [0,1] where 1=better)."""
+        try:
+            # Convert image to tensor
+            tensor = self._image_to_tensor(image_path)
+            if tensor is None:
+                return 0.5
+            
+            # Run BRISQUE inference
+            with torch.inference_mode():
+                score = piq.brisque(tensor, data_range=1.0)
+                raw_score = float(score.cpu())
+                
+                # BRISQUE: lower scores = better quality
+                # Normalize to [0,1] where 1 = better quality
+                # Clamp extreme values and invert
+                clamped_score = min(raw_score, self.BRISQUE_MAX)
+                normalized_score = 1.0 - (clamped_score / self.BRISQUE_MAX)
+                
+                return max(0.0, normalized_score)
+                
+        except Exception as e:
+            logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to analyze BRISQUE for {image_path}: {e}")
             return 0.5
 
 
@@ -369,8 +510,11 @@ class FeaturesService:
         self.logger.info("Initializing OpenCLIP classifier...")
         self.clip_classifier = CLIPClassifier(cache_dir=self.cache_dir)
         
-        # Initialize technical quality analyzer
+        # Initialize technical quality analyzer (auto-detects MPS/CUDA/CPU)
         self.quality_analyzer = TechnicalQualityAnalyzer()
+        
+        # Cache version for invalidation
+        self.cache_version = self._get_cache_version()
 
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process preprocessed photos and extract features."""
@@ -434,16 +578,23 @@ class FeaturesService:
                     try:
                         # Check if cache file is not empty
                         if os.path.getsize(cache_file) > 0:
-                            cache_hits += 1
-                            self.logger.debug(f"Cache hit for {photo_id[:8]}")
                             with open(cache_file, 'r') as f:
-                                cached_features = json.load(f)
+                                cached_data = json.load(f)
+                                
+                            # Check if cache is valid (version matches)
+                            if self._is_cache_valid(cached_data):
+                                cache_hits += 1
+                                self.logger.debug(f"Cache hit for {photo_id[:8]}")
                                 # Merge cached features with current artifact (preserving all metadata)
                                 complete_artifact = artifact.copy()
-                                complete_artifact["features"] = cached_features.get("features", {})
+                                complete_artifact["features"] = cached_data.get("features", {})
                                 artifacts.append(complete_artifact)
-                            processed_count += 1
-                            continue
+                                processed_count += 1
+                                continue
+                            else:
+                                # Cache version mismatch, remove old cache
+                                os.remove(cache_file)
+                                self.logger.debug(f"Cache version mismatch for {photo_id[:8]}, regenerating")
                         else:
                             # Remove empty cache file
                             os.remove(cache_file)
@@ -466,8 +617,11 @@ class FeaturesService:
 
                 artifacts.append(complete_artifact)
 
-                # Cache only the features (not the full artifact to avoid duplication)
-                cache_data = {"features": features}
+                # Cache features with version metadata
+                cache_data = {
+                    "version": self.cache_version,
+                    "features": features
+                }
                 with open(cache_file, 'w') as f:
                     json.dump(cache_data, f, indent=2)
                 
@@ -515,6 +669,36 @@ class FeaturesService:
             
         return result
 
+    def _get_cache_version(self) -> Dict[str, Any]:
+        """Generate cache version metadata for invalidation."""
+        try:
+            # Get labels and templates hash
+            labels_templates_str = json.dumps({
+                "labels": self.clip_classifier.labels,
+                "templates": self.clip_classifier.templates
+            }, sort_keys=True)
+            labels_hash = hashlib.sha1(labels_templates_str.encode()).hexdigest()[:12]
+            
+            return {
+                "code": "features-v2-iqa",
+                "clip_model_id": self.clip_classifier.model_id,
+                "labels_hash": labels_hash,
+                "clipiqa_model": "piq-clipiqa",
+                "brisque_model": "piq-brisque",
+                "piq_version": piq.__version__
+            }
+        except Exception as e:
+            self.logger.warning(f"Failed to generate cache version: {e}")
+            return {"code": "features-v2-iqa-fallback"}
+
+    def _is_cache_valid(self, cache_data: Dict[str, Any]) -> bool:
+        """Check if cached data is valid based on version metadata."""
+        try:
+            cached_version = cache_data.get("version", {})
+            return cached_version == self.cache_version
+        except Exception:
+            return False
+
     def _extract_features(self, photo_uri: str, photo_id: str, exif_data: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Extract features from a single photo using OpenCLIP and technical analysis."""
         try:
@@ -534,13 +718,23 @@ class FeaturesService:
                 for result in clip_results
             ]
             
-            # Get technical quality metrics
+            # Get technical quality metrics in parallel
             self.logger.debug(f"Analyzing technical quality for {photo_id[:8]}")
-            tech_features = {
-                "sharpness": self.quality_analyzer.analyze_sharpness(photo_uri),
-                "exposure": self.quality_analyzer.analyze_exposure(photo_uri),
-                "noise": self.quality_analyzer.analyze_noise(photo_uri)
-            }
+            
+            # Run traditional metrics (optimized) and IQA metrics in parallel
+            with ThreadPoolExecutor(max_workers=3) as executor:
+                # Submit tasks: traditional metrics as one task, IQA metrics separately
+                f_traditional = executor.submit(TechnicalQualityAnalyzer.analyze_traditional_metrics, photo_uri)
+                f_clip_iqa = executor.submit(self.quality_analyzer.analyze_clip_iqa, photo_uri)
+                f_brisque = executor.submit(self.quality_analyzer.analyze_brisque, photo_uri)
+                
+                # Collect results
+                traditional_metrics = f_traditional.result()
+                tech_features = {
+                    **traditional_metrics,  # sharpness, exposure, noise
+                    "clip_iqa": f_clip_iqa.result(),
+                    "brisque": f_brisque.result()
+                }
             
             features = {
                 "tech": tech_features,
@@ -561,7 +755,13 @@ class FeaturesService:
             self.logger.error(f"Error extracting features from {photo_uri}: {e}")
             # Return minimal features on error with confidence 0.2 (fallback)
             return {
-                "tech": {"sharpness": 0.5, "exposure": 0.5, "noise": 0.5},
+                "tech": {
+                    "sharpness": 0.5, 
+                    "exposure": 0.5, 
+                    "noise": 0.5,
+                    "clip_iqa": 0.5,
+                    "brisque": 0.5
+                },
                 "clip_labels": [
                     {"label": "photography", "confidence": 0.2, "cosine_score": 0.1},
                     {"label": "landscape", "confidence": 0.2, "cosine_score": 0.1},
