@@ -16,6 +16,7 @@ from typing import Dict, Any, List, Optional, Union
 import numpy.typing as npt
 from PIL import Image
 from skimage import filters, measure, exposure
+from skimage.restoration import estimate_sigma
 import logging
 
 # Set up logging
@@ -215,131 +216,122 @@ class CLIPClassifier:
 
 
 class TechnicalQualityAnalyzer:
-    """Analyzes technical quality metrics of images."""
-    
+    """Analyzes technical quality metrics of images using optimized algorithms."""
+
+    # Calibration constants for quality metrics
+    TENENGRAD_K = 2000.0  # Tenengrad sharpness calibration
+    NOISE_SIGMA_MAX = 0.08  # Maximum sigma for noise estimation
+
+    def __init__(self):
+        # Enable OpenCV optimizations and set thread count to avoid oversubscription
+        cv2.setUseOptimized(True)
+        cv2.setNumThreads(1)
+
+    @staticmethod
+    def _get_gray_preview(image_path: str, max_side: int = 512) -> Optional[np.ndarray]:
+        """Get downscaled grayscale preview for efficient analysis."""
+        try:
+            # Read grayscale image once
+            gray = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+            if gray is None:
+                return None
+
+            # Resize if needed (keep aspect ratio)
+            h, w = gray.shape
+            if h > max_side or w > max_side:
+                if h > w:
+                    new_h, new_w = max_side, int(max_side * w / h)
+                else:
+                    new_h, new_w = int(max_side * h / w), max_side
+                gray = cv2.resize(gray, (new_w, new_h), interpolation=cv2.INTER_AREA)
+
+            return gray
+
+        except Exception as e:
+            logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to get gray preview for {image_path}: {e}")
+            return None
+
     @staticmethod
     def analyze_sharpness(image_path: str) -> float:
-        """Calculate sharpness using Laplacian variance."""
+        """Calculate sharpness using Tenengrad (Sobel energy) method."""
         try:
-            image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-            if image is None:
+            analyzer = TechnicalQualityAnalyzer()
+            gray = analyzer._get_gray_preview(image_path)
+            if gray is None:
                 return 0.5
-            
-            # Resize for consistent computation
-            if image.shape[0] > 1024 or image.shape[1] > 1024:
-                image = cv2.resize(image, (1024, int(1024 * image.shape[0] / image.shape[1])))
-            
-            # Calculate Laplacian variance
-            laplacian_var = cv2.Laplacian(image, cv2.CV_64F).var()
-            
-            # Normalize to 0-1 range (empirically determined thresholds)
-            normalized = min(laplacian_var / 1000.0, 1.0)
-            return float(normalized)
-            
+
+            # Compute Sobel gradients
+            gx = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
+            gy = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
+
+            # Tenengrad energy (mean of squared gradients)
+            g2 = np.mean(gx*gx + gy*gy)
+
+            # Smooth squashing with tanh
+            score = np.tanh(g2 / TechnicalQualityAnalyzer.TENENGRAD_K)
+            return float(score)
+
         except Exception as e:
-            # Use module logger for static methods
             logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to analyze sharpness for {image_path}: {e}")
             return 0.5
-    
+
     @staticmethod
     def analyze_exposure(image_path: str) -> float:
-        """Analyze exposure quality."""
+        """Analyze exposure quality using percentiles and clipping."""
         try:
-            image = cv2.imread(image_path)
-            if image is None:
+            analyzer = TechnicalQualityAnalyzer()
+            gray = analyzer._get_gray_preview(image_path)
+            if gray is None:
                 return 0.5
-            
-            # Convert to grayscale for analysis
-            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            
-            # Calculate histogram
-            hist = cv2.calcHist([gray], [0], None, [256], [0, 256])
-            hist = hist.flatten() / hist.sum()
-            
-            # Check for clipping (overexposure/underexposure)
-            underexposed = hist[:10].sum()  # Very dark pixels
-            overexposed = hist[-10:].sum()  # Very bright pixels
-            
-            # Penalty for clipping
-            clipping_penalty = (underexposed + overexposed) * 2
-            
-            # Reward good distribution
-            mean_brightness = np.average(range(256), weights=hist)
-            brightness_score = 1.0 - abs(mean_brightness - 128) / 128
-            
+
+            # Convert to float [0,1]
+            vals = gray.astype(np.float32) / 255.0
+
+            # Get percentiles
+            p1, p50, p99 = np.percentile(vals, [1, 50, 99])
+
+            # Midtone proximity (closer to 0.5 is better)
+            mid = 1.0 - min(abs(p50 - 0.5) / 0.5, 1.0)
+
+            # Dynamic range (wider range is better, normalized to [0,1])
+            dr = np.clip((p99 - p1) / 0.9, 0.0, 1.0)
+
+            # Clipping penalty (fraction of pixels in extreme ranges)
+            clip_frac = np.mean(vals < 0.02) + np.mean(vals > 0.98)
+
             # Combine scores
-            exposure_score = max(0.0, brightness_score - clipping_penalty)
-            return float(exposure_score)
-            
+            score = np.clip(0.6 * mid + 0.3 * dr - 0.6 * clip_frac, 0.0, 1.0)
+            return float(score)
+
         except Exception as e:
             logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to analyze exposure for {image_path}: {e}")
             return 0.5
-    
+
     @staticmethod
     def analyze_noise(image_path: str) -> float:
-        """Analyze noise level (returns inverse - lower noise = higher score)."""
+        """Analyze noise level using wavelet-based sigma estimation."""
         try:
-            image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-            if image is None:
+            analyzer = TechnicalQualityAnalyzer()
+            gray = analyzer._get_gray_preview(image_path)
+            if gray is None:
                 return 0.5
-            
-            # Resize for consistent computation
-            if image.shape[0] > 512 or image.shape[1] > 512:
-                image = cv2.resize(image, (512, int(512 * image.shape[0] / image.shape[1])))
-            
-            # Estimate noise using local standard deviation
-            # Apply Gaussian blur and subtract from original
-            blurred = cv2.GaussianBlur(image, (5, 5), 0)
-            noise = cv2.absdiff(image, blurred)
-            noise_level = noise.std()
-            
-            # Normalize and invert (lower noise = higher score)
-            normalized_noise = min(noise_level / 20.0, 1.0)
-            noise_score = 1.0 - normalized_noise
-            
-            return float(noise_score)
-            
+
+            # Convert to float [0,1]
+            gray_float = gray.astype(np.float32) / 255.0
+
+            # Estimate sigma using wavelet method
+            sigma_result = estimate_sigma(gray_float, channel_axis=None, average_sigmas=True)
+            sigma_array = np.asarray(sigma_result)
+            sigma = float(np.mean(sigma_array))
+
+            # Map to [0,1] score (1 = clean, 0 = very noisy)
+            score = 1.0 - np.clip(sigma / TechnicalQualityAnalyzer.NOISE_SIGMA_MAX, 0.0, 1.0)
+            return float(score)
+
         except Exception as e:
             logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to analyze noise for {image_path}: {e}")
             return 0.5
-    
-    @staticmethod
-    def analyze_horizon(image_path: str) -> float:
-        """Analyze horizon tilt in degrees."""
-        try:
-            image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-            if image is None:
-                return 0.0
-            
-            # Resize for faster processing
-            if image.shape[0] > 512 or image.shape[1] > 512:
-                image = cv2.resize(image, (512, int(512 * image.shape[0] / image.shape[1])))
-            
-            # Edge detection
-            edges = cv2.Canny(image, 50, 150, apertureSize=3)
-            
-            # Hough line detection
-            lines = cv2.HoughLines(edges, 1, np.pi/180, threshold=100)
-            
-            if lines is not None:
-                angles = []
-                for rho, theta in lines[:10]:  # Consider top 10 lines
-                    angle = theta * 180 / np.pi
-                    # Convert to horizon angle (-90 to 90)
-                    if angle > 90:
-                        angle = angle - 180
-                    angles.append(angle)
-                
-                # Find the most common angle (likely horizon)
-                if angles:
-                    median_angle = np.median(angles)
-                    return float(median_angle)
-            
-            return 0.0
-            
-        except Exception as e:
-            logging.getLogger('TechnicalQualityAnalyzer').warning(f"Failed to analyze horizon for {image_path}: {e}")
-            return 0.0
+
 
 
 class FeaturesService:
@@ -547,14 +539,8 @@ class FeaturesService:
             tech_features = {
                 "sharpness": self.quality_analyzer.analyze_sharpness(photo_uri),
                 "exposure": self.quality_analyzer.analyze_exposure(photo_uri),
-                "noise": self.quality_analyzer.analyze_noise(photo_uri),
-                "horizon_deg": self.quality_analyzer.analyze_horizon(photo_uri)
+                "noise": self.quality_analyzer.analyze_noise(photo_uri)
             }
-            
-            # Enhance with EXIF-based insights if available
-            if exif_data:
-                self.logger.debug(f"Extracting EXIF insights for {photo_id[:8]}")
-                tech_features.update(self._extract_exif_insights(exif_data))
             
             features = {
                 "tech": tech_features,
@@ -575,7 +561,7 @@ class FeaturesService:
             self.logger.error(f"Error extracting features from {photo_uri}: {e}")
             # Return minimal features on error with confidence 0.2 (fallback)
             return {
-                "tech": {"sharpness": 0.5, "exposure": 0.5, "noise": 0.5, "horizon_deg": 0},
+                "tech": {"sharpness": 0.5, "exposure": 0.5, "noise": 0.5},
                 "clip_labels": [
                     {"label": "photography", "confidence": 0.2, "cosine_score": 0.1},
                     {"label": "landscape", "confidence": 0.2, "cosine_score": 0.1},
@@ -584,56 +570,3 @@ class FeaturesService:
                     {"label": "scenic", "confidence": 0.2, "cosine_score": 0.1}
                 ]
             }
-    
-    def _extract_exif_insights(self, exif_data: Dict[str, Any]) -> Dict[str, Any]:
-        """Extract additional technical insights from EXIF data."""
-        insights = {}
-        
-        try:
-            # ISO-based noise prediction
-            iso = exif_data.get("iso")
-            if iso and isinstance(iso, (int, float)):
-                # Higher ISO typically means more noise
-                # This is a rough heuristic - actual noise analysis is still preferred
-                iso_noise_factor = min(iso / 3200.0, 1.0)  # Normalize to 0-1
-                insights["iso_noise_factor"] = float(iso_noise_factor)
-            
-            # Aperture information for depth of field context
-            aperture = exif_data.get("aperture")
-            if aperture and isinstance(aperture, str) and aperture.startswith("f/"):
-                try:
-                    f_number = float(aperture[2:])
-                    # Lower f-number = wider aperture = shallower DOF
-                    insights["aperture_f_number"] = f_number
-                except ValueError:
-                    pass
-            
-            # Shutter speed for motion blur context
-            shutter_speed = exif_data.get("shutter_speed")
-            if shutter_speed and isinstance(shutter_speed, str) and "/" in shutter_speed:
-                try:
-                    if shutter_speed.startswith("1/"):
-                        denominator = float(shutter_speed[2:])
-                        shutter_fraction = 1.0 / denominator
-                    else:
-                        shutter_fraction = float(shutter_speed)
-                    insights["shutter_speed_seconds"] = shutter_fraction
-                except ValueError:
-                    pass
-            
-            # Camera type for context
-            camera = exif_data.get("camera")
-            if camera:
-                insights["camera_type"] = camera
-                # Simple heuristic for camera quality tier
-                if "iPhone" in camera or "Pixel" in camera:
-                    insights["camera_tier"] = "smartphone"
-                elif any(brand in camera.upper() for brand in ["CANON", "NIKON", "SONY", "FUJI"]):
-                    insights["camera_tier"] = "professional"
-                else:
-                    insights["camera_tier"] = "consumer"
-        
-        except Exception as e:
-            self.logger.warning(f"Error extracting EXIF insights: {e}")
-        
-        return insights

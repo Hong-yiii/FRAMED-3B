@@ -62,30 +62,7 @@ The service accepts two input formats:
 }
 ```
 
-**2. Direct from Ingest Service (Fallback):**
-```json
-{
-  "batch_id": "batch_20251016_132943",
-  "photo_index": [
-    {
-      "photo_id": "f399832e651bcecc870e4daac76c389f117bd34f2543acd0e596d561128dad47",
-      "original_uri": "./data/input/07C58076-AE31-41F3-878E-0B5837667F80.jpg",
-      "ranking_uri": "./data/rankingInput/f399832e651bcecc870e4daac76c389f117bd34f2543acd0e596d561128dad47.jpg",
-      "exif": {
-        "camera": "Apple iPhone 13 Pro Max",
-        "lens": "Unknown",
-        "iso": 50,
-        "aperture": "f/1.5",
-        "shutter_speed": "1/5587",
-        "focal_length": "5mm",
-        "datetime": "2024:12:23 12:14:29",
-        "gps": null
-      },
-      "format": ".jpg"
-    }
-  ]
-}
-```
+
 
 ### Output Format
 ```json
@@ -118,11 +95,6 @@ The service accepts two input formats:
           "sharpness": 1.0,
           "exposure": 0.7250478958473853,
           "noise": 0.09551166822581503,
-          "horizon_deg": 0.0,
-          "iso_noise_factor": 0.02,
-          "aperture_f_number": 1.8,
-          "camera_type": "Apple iPhone 11 Pro Max",
-          "camera_tier": "smartphone"
         },
         "clip_labels": [
           {
@@ -198,19 +170,11 @@ The labels are ordered by confidence (descending), so the first label is the mod
 - **Image Classification:** Zero-shot classification with temperature-scaled probabilities
 - **Caching:** Persistent embedding cache with model/config validation
 
-### TechnicalQualityAnalyzer
-- **Sharpness:** Laplacian variance-based sharpness measurement
-- **Exposure:** Histogram analysis for over/under-exposure detection
-- **Noise:** Gaussian blur difference for noise estimation
-- **Horizon:** Hough line detection for horizon tilt analysis
-- **EXIF Enhancement:** Additional insights from camera metadata
+### TechnicalQualityAnalyzer (v2 - Optimized)
+- **Sharpness:** Tenengrad method using Sobel gradient energy with tanh squashing (calibrated with K=2000.0)
+- **Exposure:** Percentile-based analysis combining midtone proximity, dynamic range, and clipping penalty
+- **Noise:** Wavelet-based sigma estimation using scikit-image (calibrated with σ_max=0.08)
 
-### 5. EXIF-Based Insights
-- **ISO Noise Factor:** Predicted noise level based on ISO setting
-- **Aperture Analysis:** F-number for depth of field context
-- **Shutter Speed:** Motion blur prediction from exposure time
-- **Camera Tier:** Classification (smartphone/consumer/professional)
-- **Camera Type:** Specific camera model information
 
 ### FeaturesService (Main Interface)
 - **Pipeline Integration:** Processes batch artifacts from preprocess service
@@ -241,8 +205,6 @@ open-clip-torch = ">=2.26.1,<3"
 # Image processing and quality assessment
 opencv = ">=4.8.0,<5"
 scikit-image = ">=0.22.0,<1"
-# Technical quality metrics
-pyiqa = ">=0.1.7,<1"
 ```
 
 ### `config/labels.json`
@@ -298,11 +260,12 @@ pyiqa = ">=0.1.7,<1"
 - **Scoring:** Temperature-scaled softmax for probability distribution (confidence)
 - **Output:** Top-5 labels with confidence (softmax probability) and raw cosine scores
 
-### 4. Technical Quality Analysis
-- **Sharpness:** Laplacian variance with normalization
-- **Exposure:** Histogram analysis for clipping detection
-- **Noise:** Gaussian blur difference method
-- **Horizon:** Hough line detection for tilt measurement
+### 4. Technical Quality Analysis (v2)
+- **Sharpness:** Tenengrad method (Sobel gradients) with tanh(K=2000.0) squashing for [0,1] mapping
+- **Exposure:** Percentile analysis (p1,p50,p99) combining midtone proximity, dynamic range, and clipping penalty
+- **Noise:** Wavelet sigma estimation via scikit-image.restoration.estimate_sigma with σ_max=0.08 calibration
+- **Shared Preview:** Single downscaled grayscale (max_side=512, INTER_AREA) for all metrics
+- **Optimizations:** OpenCV optimizations enabled, thread count limited to avoid PyTorch oversubscription
 
 ### 5. Caching Strategy
 - **Feature Cache:** Per-photo hash-based caching in JSON format

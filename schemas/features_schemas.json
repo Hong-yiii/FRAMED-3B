@@ -72,67 +72,28 @@
     },
     "technical_features": {
       "type": "object",
-      "description": "Technical quality metrics (core metrics always present, EXIF-derived optional)",
+      "description": "Technical quality metrics (core image analysis metrics)",
       "properties": {
         "sharpness": {
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description": "Sharpness score (Laplacian variance)"
+          "description": "Sharpness score using Tenengrad method (Sobel gradient energy)"
         },
         "exposure": {
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description": "Exposure quality score"
+          "description": "Exposure quality score using percentile analysis"
         },
         "noise": {
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description": "Noise level (inverse quality)"
-        },
-        "horizon_deg": {
-          "type": "number",
-          "description": "Horizon tilt in degrees"
-        },
-        "iso_noise_factor": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "ISO-based noise prediction factor (optional)"
-        },
-        "aperture_f_number": {
-          "type": "number",
-          "description": "Aperture f-number for depth of field analysis (optional)"
-        },
-        "depth_of_field_factor": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "Depth of field factor (optional)"
-        },
-        "shutter_speed_seconds": {
-          "type": "number",
-          "description": "Shutter speed in seconds (optional)"
-        },
-        "motion_blur_risk": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "Motion blur risk factor (optional)"
-        },
-        "camera_type": {
-          "type": "string",
-          "description": "Camera make and model (optional)"
-        },
-        "camera_tier": {
-          "type": "string",
-          "enum": ["smartphone", "consumer", "enthusiast", "professional", "unknown"],
-          "description": "Camera quality tier classification (optional)"
+          "description": "Noise level using wavelet sigma estimation (inverse quality)"
         }
       },
-      "required": ["sharpness", "exposure", "noise", "horizon_deg"],
+      "required": ["sharpness", "exposure", "noise"],
       "additionalProperties": false
     },
     "features_data": {
