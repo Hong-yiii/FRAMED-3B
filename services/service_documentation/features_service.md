@@ -125,17 +125,54 @@ The service accepts two input formats:
           "camera_tier": "smartphone"
         },
         "clip_labels": [
-          "wide shot",
-          "colorful",
-          "close-up",
-          "panorama",
-          "indoor"
+          {
+            "label": "wide shot",
+            "confidence": 0.956,
+            "cosine_score": 0.845
+          },
+          {
+            "label": "colorful",
+            "confidence": 0.823,
+            "cosine_score": 0.781
+          },
+          {
+            "label": "close-up",
+            "confidence": 0.712,
+            "cosine_score": 0.658
+          },
+          {
+            "label": "panorama",
+            "confidence": 0.634,
+            "cosine_score": 0.542
+          },
+          {
+            "label": "indoor",
+            "confidence": 0.521,
+            "cosine_score": 0.421
+          }
         ]
       }
     }
   ]
 }
 ```
+
+## CLIP Labels with Confidence Scores
+
+The `clip_labels` field contains the top-5 CLIP classification results, each with three metrics:
+
+- **label** (string): The photography-focused classification label
+- **confidence** (0-1 float): Temperature-scaled probability from softmax, representing the model's confidence in this label
+- **cosine_score** (0-1 float): Raw cosine similarity score between the image embedding and label embedding (for reference/advanced use)
+
+### Confidence Score Interpretation
+
+- **confidence > 0.8**: Very confident match (e.g., clearly a landscape photo labeled "landscape")
+- **confidence 0.6-0.8**: Good match (e.g., strong indication of the label being present)
+- **confidence 0.4-0.6**: Moderate match (e.g., the label applies but with other strong contenders)
+- **confidence < 0.4**: Weak match (fallback/exploratory label)
+
+The labels are ordered by confidence (descending), so the first label is the model's top prediction.
 
 ## Implementation Details
 
@@ -147,7 +184,7 @@ The service accepts two input formats:
 * **Image processing:** Uses standardized images from preprocess service
 * **Labels:** read from `config/labels.json` (50 photography-focused labels)
 * **Prompt templates:** 6 templates per label; averaged text embeddings
-* **Return:** top 5 CLIP labels with probabilities and cosine scores
+* **Return:** top 5 CLIP labels with confidence scores (softmax probability) and cosine similarity scores
 * **Cache:** label embeddings cached to disk; technical features cached per photo
 * **Thread-safety:** model loaded once on service initialization
 * **Logging:** structured logs for batch processing, feature extraction timing
@@ -258,8 +295,8 @@ pyiqa = ">=0.1.7,<1"
 ### 3. Image Classification Pipeline
 - **Preprocessing:** Uses model-specific transforms from OpenCLIP
 - **Encoding:** Image embeddings L2-normalized for cosine similarity
-- **Scoring:** Temperature-scaled softmax for probability distribution
-- **Output:** Top-5 labels with probabilities and raw cosine scores
+- **Scoring:** Temperature-scaled softmax for probability distribution (confidence)
+- **Output:** Top-5 labels with confidence (softmax probability) and raw cosine scores
 
 ### 4. Technical Quality Analysis
 - **Sharpness:** Laplacian variance with normalization

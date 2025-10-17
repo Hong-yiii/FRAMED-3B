@@ -528,10 +528,19 @@ class FeaturesService:
         try:
             self.logger.debug(f"Extracting features for {photo_id[:8]}...")
             
-            # Get CLIP labels
+            # Get CLIP labels with confidence scores
             self.logger.debug(f"Running CLIP classification for {photo_id[:8]}")
             clip_results = self.clip_classifier.classify_image(photo_uri, top_k=5)
-            clip_labels = [result["label"] for result in clip_results]
+            
+            # Format labels with confidence: keep label and probability, rename score to confidence for clarity
+            clip_labels = [
+                {
+                    "label": result["label"],
+                    "confidence": result["probability"],  # Temperature-scaled probability
+                    "cosine_score": result["score"]      # Raw cosine similarity score
+                }
+                for result in clip_results
+            ]
             
             # Get technical quality metrics
             self.logger.debug(f"Analyzing technical quality for {photo_id[:8]}")
@@ -557,15 +566,23 @@ class FeaturesService:
             if exif_data and exif_data.get("camera"):
                 camera_info = f" ({exif_data['camera']})"
             
-            self.logger.debug(f"Features extracted successfully for {photo_id[:8]}{camera_info}: {clip_labels[:3]}...")
+            # Extract just the label names for logging
+            label_names = [label["label"] for label in clip_labels]
+            self.logger.debug(f"Features extracted successfully for {photo_id[:8]}{camera_info}: {label_names[:3]}...")
             return features
 
         except Exception as e:
             self.logger.error(f"Error extracting features from {photo_uri}: {e}")
-            # Return minimal features on error
+            # Return minimal features on error with confidence 0.2 (fallback)
             return {
                 "tech": {"sharpness": 0.5, "exposure": 0.5, "noise": 0.5, "horizon_deg": 0},
-                "clip_labels": ["photography", "landscape", "nature", "outdoor", "scenic"]
+                "clip_labels": [
+                    {"label": "photography", "confidence": 0.2, "cosine_score": 0.1},
+                    {"label": "landscape", "confidence": 0.2, "cosine_score": 0.1},
+                    {"label": "nature", "confidence": 0.2, "cosine_score": 0.1},
+                    {"label": "outdoor", "confidence": 0.2, "cosine_score": 0.1},
+                    {"label": "scenic", "confidence": 0.2, "cosine_score": 0.1}
+                ]
             }
     
     def _extract_exif_insights(self, exif_data: Dict[str, Any]) -> Dict[str, Any]:

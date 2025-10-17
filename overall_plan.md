@@ -335,9 +335,6 @@ Each service is a stateless Python module with async communication. Keep everyth
 
    * Add pairwise judge inside clusters + for opener finalists; audit + caching.
 
-## 📋 **M5 – Personalization (PLANNED)**
-
-   * Collect pairwise picks → fit **Bradley–Terry** or a small linear head; add as `BT_personal`.
 
 ---
 
