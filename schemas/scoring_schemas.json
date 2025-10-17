@@ -3,6 +3,54 @@
   "title": "Scoring and Clustering Service Schemas",
   "description": "Schemas for scoring, clustering, and role classification services",
   "definitions": {
+    "scoring_input": {
+      "type": "object",
+      "description": "Input from features service for scoring",
+      "properties": {
+        "batch_id": {
+          "type": "string",
+          "description": "Batch identifier"
+        },
+        "artifacts": {
+          "type": "array",
+          "description": "Photo artifacts with features from features service",
+          "items": {
+            "type": "object",
+            "properties": {
+              "photo_id": {
+                "type": "string",
+                "description": "Unique photo identifier"
+              },
+              "features": {
+                "type": "object",
+                "description": "Features extracted by features service",
+                "properties": {
+                  "tech": {
+                    "type": "object",
+                    "description": "Technical quality metrics",
+                    "properties": {
+                      "sharpness": {"type": "number"},
+                      "exposure": {"type": "number"},
+                      "noise": {"type": "number"},
+                      "horizon_deg": {"type": "number"}
+                    },
+                    "required": ["sharpness", "exposure", "noise", "horizon_deg"]
+                  },
+                  "clip_labels": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "CLIP classification labels"
+                  }
+                },
+                "required": ["tech", "clip_labels"]
+              }
+            },
+            "required": ["photo_id", "features"]
+          }
+        }
+      },
+      "required": ["batch_id", "artifacts"]
+    },
     "score_output": {
       "type": "object",
       "properties": {
