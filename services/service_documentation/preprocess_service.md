@@ -11,6 +11,7 @@ The Preprocess Service creates standardized versions of photos without quality l
 3. **Quality Preservation:** Maintain high JPEG quality settings
 4. **Aspect Ratio Maintenance:** Preserve original proportions
 5. **Processing Metadata:** Track transformation details for audit trails
+6. **Data Preservation:** Maintain ALL metadata from ingest service (EXIF, format, etc.)
 
 ## Processing Workflow
 
@@ -34,6 +35,11 @@ The Preprocess Service creates standardized versions of photos without quality l
 - Record original and processed dimensions
 - Track processing method and parameters
 - Generate processing metadata for audit trails
+
+### 5. Data Preservation
+- Preserve ALL metadata from ingest service (EXIF, format, camera info, GPS, etc.)
+- Maintain complete data lineage through the pipeline
+- Ensure downstream services receive comprehensive photo metadata
 
 ## Image Processing Details
 
@@ -89,16 +95,27 @@ The service accepts two input formats:
 
 ```json
 {
-  "batch_id": "batch_20250920_143703",
+  "batch_id": "batch_20251017_105804",
   "artifacts": [
     {
-      "photo_id": "a6d54a6157e85c3fce236acca72d7f67...",
-      "original_uri": "./data/input/photo1.jpg",
-      "ranking_uri": "./data/rankingInput/a6d54a6157e85c3fce236acca72d7f67.jpg",
-      "std_uri": "./data/rankingInput/a6d54a6157e85c3fce236acca72d7f67_1024.jpg",
+      "photo_id": "48f6cf1e6e10e5367e229aabc3bffcf1c3bb3adac74365665fa9d6d1d1ed0541",
+      "original_uri": "./data/input/992DDF60-302C-4AB3-A794-EE9D0DDC56AA.jpg",
+      "ranking_uri": "./data/rankingInput/48f6cf1e6e10e5367e229aabc3bffcf1c3bb3adac74365665fa9d6d1d1ed0541.jpg",
+      "std_uri": "./data/rankingInput/48f6cf1e6e10e5367e229aabc3bffcf1c3bb3adac74365665fa9d6d1d1ed0541_1024.jpg",
+      "exif": {
+        "camera": "Apple iPhone 11 Pro Max",
+        "lens": "Unknown",
+        "iso": 64,
+        "aperture": "f/1.8",
+        "shutter_speed": "1/60",
+        "focal_length": "4mm",
+        "datetime": "2024:12:25 11:25:57",
+        "gps": null
+      },
+      "format": ".jpg",
       "processing_metadata": {
-        "original_size": [3264, 2448],
-        "standardized_size": [2048, 1536],
+        "original_size": [3840, 2160],
+        "standardized_size": [2048, 1152],
         "processing_method": "quality_preserved"
       }
     }
@@ -223,13 +240,21 @@ RESAMPLING = Image.Resampling.LANCZOS
 ## Integration Points
 
 ### Upstream Services
-- **Ingest Service:** Primary input source with ranking-ready files
+- **Ingest Service:** Primary input source with ranking-ready files and complete metadata
 - **Direct Input:** Can process raw photo index for testing
 
 ### Downstream Services
-- **Features Service:** Consumes standardized images for analysis
+- **Features Service:** Consumes artifacts with preserved EXIF data and standardized images
 - **Cache System:** Uses photo IDs for processing result caching
 - **Quality Control:** Provides processing metadata for audit trails
+
+### Data Flow Integration
+```
+Ingest Service (photo_index) → Preprocess Service (artifacts) → Features Service
+```
+- **Preserves:** All EXIF metadata, format information, file paths
+- **Adds:** Standardized image versions, processing metadata
+- **Ensures:** Complete data lineage for downstream analysis
 
 ## Best Practices
 

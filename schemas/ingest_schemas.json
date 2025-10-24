@@ -106,16 +106,16 @@
                     "description": "GPS coordinates",
                     "properties": {
                       "lat": {
-                        "type": "number",
-                        "description": "Latitude in decimal degrees"
+                        "type": ["number", "string"],
+                        "description": "Latitude (decimal degrees or formatted string)"
                       },
                       "lon": {
-                        "type": "number",
-                        "description": "Longitude in decimal degrees"
+                        "type": ["number", "string"],
+                        "description": "Longitude (decimal degrees or formatted string)"
                       },
                       "alt": {
-                        "type": "number",
-                        "description": "Altitude in meters (optional)"
+                        "type": ["number", "string"],
+                        "description": "Altitude (meters or formatted string, optional)"
                       }
                     },
                     "required": ["lat", "lon"]
@@ -124,8 +124,8 @@
               },
               "format": {
                 "type": "string",
-                "description": "File format extension (always '.jpg' after processing)",
-                "pattern": "\\.jpg$"
+                "description": "Original file format extension (e.g., '.jpg', '.heic', '.png')",
+                "pattern": "^\\.[a-zA-Z0-9]+$"
               }
             },
             "required": ["photo_id", "original_uri", "ranking_uri", "exif", "format"]

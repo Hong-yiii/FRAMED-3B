@@ -132,6 +132,19 @@ class MockDataGenerator:
         time_of_day = ["dawn", "morning", "afternoon", "dusk", "night"]
         orientations = ["landscape", "portrait"]
         palette_clusters = ["warm", "cool", "monochrome", "vibrant"]
+        
+        # CLIP label categories for realistic mock data
+        photography_labels = [
+            "photography", "landscape", "nature", "outdoor", "scenic",
+            "portrait", "street photography", "architecture", "urban", "cityscape",
+            "mountain", "forest", "ocean", "beach", "sunset", "sunrise", "night",
+            "indoor", "people", "animal", "flower", "tree", "building", "sky",
+            "cloud", "water", "road", "bridge", "park", "garden", "travel",
+            "vacation", "food", "restaurant", "art", "museum", "concert",
+            "festival", "sports", "action", "macro", "close-up", "wide shot",
+            "panorama", "black and white", "colorful", "vintage", "modern",
+            "abstract", "minimalist"
+        ]
 
         for artifact in preprocess_output["artifacts"]:
             photo_id = artifact["photo_id"]
@@ -141,6 +154,22 @@ class MockDataGenerator:
             exposure = random.uniform(0.4, 0.9)
             noise = random.uniform(0.05, 0.4)
             horizon_tilt = random.uniform(-3, 3)
+            
+            # Generate realistic CLIP labels with confidence scores
+            selected_labels = random.sample(photography_labels, 5)
+            # Generate descending confidence scores (realistic pattern)
+            base_confidence = random.uniform(0.6, 0.95)
+            confidences = [base_confidence - (i * 0.12) for i in range(5)]
+            confidences = [max(0.1, c) for c in confidences]  # Ensure minimum confidence
+            
+            clip_labels = [
+                {
+                    "label": label,
+                    "confidence": float(confidence),
+                    "cosine_score": float(confidence * random.uniform(0.8, 1.0))  # Cosine score correlated with confidence
+                }
+                for label, confidence in zip(selected_labels, confidences)
+            ]
 
             features.append({
                 "photo_id": photo_id,
@@ -156,6 +185,7 @@ class MockDataGenerator:
                     "noise": noise,
                     "horizon_deg": horizon_tilt
                 },
+                "clip_labels": clip_labels,
                 "saliency": {
                     "heatmap_uri": f"./data/sal/{photo_id}.png",
                     "neg_space_ratio": random.uniform(0.1, 0.8)

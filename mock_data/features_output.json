@@ -3,2293 +3,803 @@
   "features": [
     {
       "photo_id": "e7c4f5e1ebbad7203b18f8c840da314144d27f639e1962e5d87a06c63d4df672",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/e7c4f5e1ebbad7203b18f8c840da314144d27f639e1962e5d87a06c63d4df672_clip.npy"
-      },
-      "hashes": {
-        "phash": "6840bfecd265e3da"
-      },
       "tech": {
         "sharpness": 0.5824664430670188,
         "exposure": 0.7642725303263522,
         "noise": 0.15978705996824694,
         "horizon_deg": 0.6372531198368598
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/e7c4f5e1ebbad7203b18f8c840da314144d27f639e1962e5d87a06c63d4df672.png",
-        "neg_space_ratio": 0.4579961417686347
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            22.663192022793865,
-            -2.5576993818011076,
-            1.1952209139951258
-          ],
-          [
-            68.39065218200624,
-            7.474285876581067,
-            26.4157872238532
-          ],
-          [
-            64.22226160941801,
-            -12.118594835930626,
-            -4.122156022500786
-          ],
-          [
-            76.93246915827885,
-            16.830834248721608,
-            7.389324596784547
-          ]
-        ],
-        "cluster_id": "pal_02"
-      }
+      "clip_labels": [
+        "photography",
+        "landscape",
+        "nature",
+        "outdoor",
+        "scenic"
+      ]
     },
     {
       "photo_id": "2532015be408bf7d89e4de7cead893f3773e3a3735ecd163a34731ce19bc26b1",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/2532015be408bf7d89e4de7cead893f3773e3a3735ecd163a34731ce19bc26b1_clip.npy"
-      },
-      "hashes": {
-        "phash": "2ed0e4fd90a6d6e1"
-      },
       "tech": {
         "sharpness": 0.7678402709590675,
         "exposure": 0.550161134105632,
         "noise": 0.15824963177302864,
         "horizon_deg": -0.5496425482846989
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/2532015be408bf7d89e4de7cead893f3773e3a3735ecd163a34731ce19bc26b1.png",
-        "neg_space_ratio": 0.38168027094040724
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            59.89576605276629,
-            -4.834188915098331,
-            14.8880736095334
-          ],
-          [
-            30.441640592596638,
-            2.7642101946323727,
-            -5.6354898745102275
-          ],
-          [
-            70.02351015824345,
-            -7.845002029265849,
-            -17.389038907041485
-          ],
-          [
-            67.14552964865481,
-            4.266462819190508,
-            -10.665046215807713
-          ],
-          [
-            46.50716101027717,
-            7.025089327603993,
-            0.6704398124752267
-          ]
-        ],
-        "cluster_id": "pal_03"
-      }
+      "clip_labels": [
+        "mountain",
+        "sky",
+        "water",
+        "forest",
+        "sunset"
+      ]
     },
     {
       "photo_id": "9d813ad7a2344ad21c5bb93e377aaecd713d91f9048a41d6fa7bf4e9bff2f98b",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/9d813ad7a2344ad21c5bb93e377aaecd713d91f9048a41d6fa7bf4e9bff2f98b_clip.npy"
-      },
-      "hashes": {
-        "phash": "104104279c487b9e"
-      },
       "tech": {
         "sharpness": 0.7282529842489741,
         "exposure": 0.5418932024965137,
         "noise": 0.2823488427067496,
         "horizon_deg": 0.7155648321742527
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/9d813ad7a2344ad21c5bb93e377aaecd713d91f9048a41d6fa7bf4e9bff2f98b.png",
-        "neg_space_ratio": 0.16537104005289388
-      },
-      "faces": {
-        "count": 3,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            33.478439959837296,
-            -12.034802690936935,
-            -28.53447673639042
-          ],
-          [
-            34.69055264470101,
-            -0.9945462312477957,
-            20.984261677483914
-          ],
-          [
-            24.369693751074145,
-            -3.422359560091227,
-            7.785922844262821
-          ],
-          [
-            31.66611420438256,
-            7.854170019620199,
-            -0.3373698593737835
-          ]
-        ],
-        "cluster_id": "pal_04"
-      }
+      "clip_labels": [
+        "city",
+        "architecture",
+        "urban",
+        "building",
+        "street"
+      ]
     },
     {
       "photo_id": "f56a2e78d1df534c6f44ad24eb3ba0d28873f61f128cc6d63d7aaf6b63bfec85",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/f56a2e78d1df534c6f44ad24eb3ba0d28873f61f128cc6d63d7aaf6b63bfec85_clip.npy"
-      },
-      "hashes": {
-        "phash": "0afc36ae3a8a92ee"
-      },
       "tech": {
         "sharpness": 0.3959213743093438,
         "exposure": 0.7438112065402598,
         "noise": 0.3624309391739783,
         "horizon_deg": 2.162643392535128
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/f56a2e78d1df534c6f44ad24eb3ba0d28873f61f128cc6d63d7aaf6b63bfec85.png",
-        "neg_space_ratio": 0.7198256438569062
-      },
-      "faces": {
-        "count": 2,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            23.013103108438454,
-            -10.032068813601134,
-            20.900180841099584
-          ],
-          [
-            47.38770952821035,
-            12.056664068890576,
-            10.054663955181184
-          ],
-          [
-            79.27354718398688,
-            3.8180927387767873,
-            27.002376506589357
-          ],
-          [
-            73.48555554862622,
-            4.506092910470514,
-            13.156437676558028
-          ],
-          [
-            50.286689889464114,
-            13.222766788856603,
-            2.8723170366497044
-          ]
-        ],
-        "cluster_id": "pal_03"
-      }
+      "clip_labels": [
+        "portrait",
+        "person",
+        "face",
+        "people",
+        "human"
+      ]
     },
     {
       "photo_id": "c76ebc72801a271659948bc315c9bc77f45937d1e7a671b027a485045640165a",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/c76ebc72801a271659948bc315c9bc77f45937d1e7a671b027a485045640165a_clip.npy"
-      },
-      "hashes": {
-        "phash": "55666f03cf4104dc"
-      },
       "tech": {
         "sharpness": 0.7833760374037302,
         "exposure": 0.6373372184115267,
         "noise": 0.14071704196275678,
         "horizon_deg": -1.5165615749420427
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/c76ebc72801a271659948bc315c9bc77f45937d1e7a671b027a485045640165a.png",
-        "neg_space_ratio": 0.5463630057433094
-      },
-      "faces": {
-        "count": 2,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            36.47584681505229,
-            -16.90066584541057,
-            -12.85631094821085
-          ],
-          [
-            36.30290642493108,
-            -7.211617263249508,
-            2.4091333511073856
-          ],
-          [
-            28.302443690969344,
-            -10.749540810872528,
-            11.636988737943135
-          ]
-        ],
-        "cluster_id": "pal_04"
-      }
+      "clip_labels": [
+        "animal",
+        "wildlife",
+        "bird",
+        "mammal",
+        "creature"
+      ]
     },
     {
       "photo_id": "e036e9bc5f973fb601c4361a9fb60fd76ff7308752803d28349557a61b38c596",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/e036e9bc5f973fb601c4361a9fb60fd76ff7308752803d28349557a61b38c596_clip.npy"
-      },
-      "hashes": {
-        "phash": "7382485f52a941d3"
-      },
       "tech": {
         "sharpness": 0.34174875296402074,
         "exposure": 0.6037996848332934,
         "noise": 0.2399138991763704,
         "horizon_deg": -0.5053545953810641
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/e036e9bc5f973fb601c4361a9fb60fd76ff7308752803d28349557a61b38c596.png",
-        "neg_space_ratio": 0.2447840726600872
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            71.40392193823605,
-            10.623783044722778,
-            -7.177138264337302
-          ],
-          [
-            20.353765015039585,
-            -5.929647893127012,
-            15.208507503563155
-          ]
-        ],
-        "cluster_id": "pal_07"
-      }
+      "clip_labels": [
+        "food",
+        "cuisine",
+        "dish",
+        "meal",
+        "cooking"
+      ]
     },
     {
       "photo_id": "a99ce8b2e50450ec33333f6c49d469f61311bcd3ef8c7f4de0eb653e592567b3",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/a99ce8b2e50450ec33333f6c49d469f61311bcd3ef8c7f4de0eb653e592567b3_clip.npy"
-      },
-      "hashes": {
-        "phash": "4629276249b9b3b9"
-      },
       "tech": {
         "sharpness": 0.6498433689466504,
         "exposure": 0.7673170303781789,
         "noise": 0.3299538598294437,
         "horizon_deg": 2.3868680843951715
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/a99ce8b2e50450ec33333f6c49d469f61311bcd3ef8c7f4de0eb653e592567b3.png",
-        "neg_space_ratio": 0.4417606342851754
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            40.16777262190295,
-            7.1656754011339885,
-            -5.740999851741776
-          ],
-          [
-            29.90268387221053,
-            -1.304394030707595,
-            -22.342332163130358
-          ],
-          [
-            57.33541765844388,
-            -18.921341923794493,
-            -6.358784619617715
-          ],
-          [
-            53.86351898148645,
-            -18.915918146387504,
-            8.564978880560147
-          ],
-          [
-            28.141969233833855,
-            -1.532062237939531,
-            -26.982921990682346
-          ]
-        ],
-        "cluster_id": "pal_07"
-      }
+      "clip_labels": [
+        "flower",
+        "plant",
+        "garden",
+        "bloom",
+        "botanical"
+      ]
     },
     {
       "photo_id": "6ec7c42b638604f90927b9583d003d601d0d9934c49a7a582af4cbf9de6a68e0",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/6ec7c42b638604f90927b9583d003d601d0d9934c49a7a582af4cbf9de6a68e0_clip.npy"
-      },
-      "hashes": {
-        "phash": "3f3ddce7c42450bf"
-      },
       "tech": {
         "sharpness": 0.5127792335121273,
         "exposure": 0.6273496625082411,
         "noise": 0.16812519182585473,
         "horizon_deg": 2.2778399160113727
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/6ec7c42b638604f90927b9583d003d601d0d9934c49a7a582af4cbf9de6a68e0.png",
-        "neg_space_ratio": 0.2947796309471642
-      },
-      "faces": {
-        "count": 3,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            48.21841017278281,
-            9.960970443314029,
-            -26.874863505404672
-          ],
-          [
-            77.11518154291525,
-            -11.031113371210072,
-            -25.882897772833836
-          ]
-        ],
-        "cluster_id": "pal_01"
-      }
+      "clip_labels": [
+        "car",
+        "vehicle",
+        "transportation",
+        "automobile",
+        "machine"
+      ]
     },
     {
       "photo_id": "5496458b8bd454679a4d062ab39ba66b766a86bc6c3e902a484e366083ffb970",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/5496458b8bd454679a4d062ab39ba66b766a86bc6c3e902a484e366083ffb970_clip.npy"
-      },
-      "hashes": {
-        "phash": "a6d93167439e7897"
-      },
       "tech": {
         "sharpness": 0.790251582638692,
         "exposure": 0.8748058663579945,
         "noise": 0.11977623882688652,
         "horizon_deg": -2.877719896078006
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/5496458b8bd454679a4d062ab39ba66b766a86bc6c3e902a484e366083ffb970.png",
-        "neg_space_ratio": 0.20666764204935328
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            47.90203900611324,
-            -9.750252137512536,
-            -7.866289540623516
-          ],
-          [
-            56.353561553618675,
-            18.54938976404835,
-            13.101433715760493
-          ],
-          [
-            66.66751317052595,
-            -13.449367593312033,
-            -11.337664824084008
-          ]
-        ],
-        "cluster_id": "pal_10"
-      }
+      "clip_labels": [
+        "photography",
+        "landscape",
+        "nature",
+        "outdoor",
+        "scenic"
+      ]
     },
     {
       "photo_id": "b231f3bde60f38e3f6560eba453a1d73595a8c1c7adce87c1a69a89a1d3a25a9",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/b231f3bde60f38e3f6560eba453a1d73595a8c1c7adce87c1a69a89a1d3a25a9_clip.npy"
-      },
-      "hashes": {
-        "phash": "3cda085d9dc65eb3"
-      },
       "tech": {
         "sharpness": 0.3166909765733529,
         "exposure": 0.5559786221973476,
         "noise": 0.2870715503976431,
         "horizon_deg": 2.7490370292353754
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/b231f3bde60f38e3f6560eba453a1d73595a8c1c7adce87c1a69a89a1d3a25a9.png",
-        "neg_space_ratio": 0.3776581090616391
-      },
-      "faces": {
-        "count": 2,
-        "landmarks_ok": false
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            26.11407832675859,
-            10.899235398048962,
-            21.01759434532778
-          ],
-          [
-            56.02469688901065,
-            -15.157797397307395,
-            29.03066109088028
-          ],
-          [
-            66.95812078166118,
-            -6.1118493876620406,
-            -4.297319205915333
-          ]
-        ],
-        "cluster_id": "pal_06"
-      }
+      "clip_labels": [
+        "mountain",
+        "sky",
+        "water",
+        "forest",
+        "sunset"
+      ]
     },
     {
       "photo_id": "657d580dee3fcfa3127927e0e800d6fd870862ece20e3cb047ed44f65e3e3832",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/657d580dee3fcfa3127927e0e800d6fd870862ece20e3cb047ed44f65e3e3832_clip.npy"
-      },
-      "hashes": {
-        "phash": "65edcf94bceaece7"
-      },
       "tech": {
         "sharpness": 0.3448218787377663,
         "exposure": 0.7237716270284026,
         "noise": 0.05442825255804858,
         "horizon_deg": -0.4796475549490342
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/657d580dee3fcfa3127927e0e800d6fd870862ece20e3cb047ed44f65e3e3832.png",
-        "neg_space_ratio": 0.44314119349328585
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            62.43851862236462,
-            -2.5805141996929173,
-            14.027718240803516
-          ],
-          [
-            77.92842387428466,
-            -9.196704144503967,
-            18.491953128405356
-          ],
-          [
-            52.290374386895344,
-            -0.6600998446721533,
-            -3.865530419766344
-          ],
-          [
-            63.86157285830733,
-            -9.264178478030987,
-            21.102789601159913
-          ],
-          [
-            69.8438611334362,
-            -16.533484077773025,
-            22.897871040166315
-          ]
-        ],
-        "cluster_id": "pal_04"
-      }
+      "clip_labels": [
+        "city",
+        "architecture",
+        "urban",
+        "building",
+        "street"
+      ]
     },
     {
       "photo_id": "4e073793e511ce5ca4feacda8acb4394592339fd0df261ce402a245617e73cbc",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/4e073793e511ce5ca4feacda8acb4394592339fd0df261ce402a245617e73cbc_clip.npy"
-      },
-      "hashes": {
-        "phash": "10b6f63870697aa0"
-      },
       "tech": {
         "sharpness": 0.787809583187554,
         "exposure": 0.6849248223391611,
         "noise": 0.2838659646559228,
         "horizon_deg": -0.9816202806517484
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/4e073793e511ce5ca4feacda8acb4394592339fd0df261ce402a245617e73cbc.png",
-        "neg_space_ratio": 0.4460145525311454
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            67.8699414096858,
-            -6.386446273428653,
-            22.819198785493526
-          ],
-          [
-            62.071025019932094,
-            -8.949256969752604,
-            -29.390933133679372
-          ],
-          [
-            76.88375466662187,
-            -16.57548152167915,
-            13.204479846251658
-          ],
-          [
-            49.31467081092724,
-            10.326586139298655,
-            11.436560366791383
-          ]
-        ],
-        "cluster_id": "pal_08"
-      }
+      "clip_labels": [
+        "portrait",
+        "person",
+        "face",
+        "people",
+        "human"
+      ]
     },
     {
       "photo_id": "5958d52af285c66565b6d34c120ca77f7c3c0e105457e2156af6273fcb8fc259",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/5958d52af285c66565b6d34c120ca77f7c3c0e105457e2156af6273fcb8fc259_clip.npy"
-      },
-      "hashes": {
-        "phash": "3367fa664bd321da"
-      },
       "tech": {
         "sharpness": 0.5913134572312709,
         "exposure": 0.40862162967418636,
         "noise": 0.1529824534621741,
         "horizon_deg": -0.5735932279324314
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/5958d52af285c66565b6d34c120ca77f7c3c0e105457e2156af6273fcb8fc259.png",
-        "neg_space_ratio": 0.27031361471373005
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            45.53022876231289,
-            9.837417468544384,
-            -10.15252216824419
-          ],
-          [
-            62.17129653114613,
-            -9.163342920952147,
-            -14.915779427943509
-          ],
-          [
-            27.239353085138347,
-            -12.296628261939304,
-            -22.82671552469683
-          ],
-          [
-            52.151837923024985,
-            10.487584379364119,
-            -18.89100945374028
-          ]
-        ],
-        "cluster_id": "pal_04"
-      }
+      "clip_labels": [
+        "animal",
+        "wildlife",
+        "bird",
+        "mammal",
+        "creature"
+      ]
     },
     {
       "photo_id": "320b0c2b5a8764e24ddaf809b436b3040034a29ad5d5ce21cddbdb21176c369c",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/320b0c2b5a8764e24ddaf809b436b3040034a29ad5d5ce21cddbdb21176c369c_clip.npy"
-      },
-      "hashes": {
-        "phash": "d09a1f6e4a892c5b"
-      },
       "tech": {
         "sharpness": 0.7800930247808179,
         "exposure": 0.5382498134843446,
         "noise": 0.25635541708627685,
         "horizon_deg": 1.5612473722384959
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/320b0c2b5a8764e24ddaf809b436b3040034a29ad5d5ce21cddbdb21176c369c.png",
-        "neg_space_ratio": 0.5177535183586113
-      },
-      "faces": {
-        "count": 4,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            33.64898980895328,
-            -12.822338252583867,
-            -29.151097964636172
-          ],
-          [
-            52.0481053560598,
-            -9.027546928669308,
-            28.457695866164272
-          ],
-          [
-            53.2015380079165,
-            7.896695716407777,
-            -22.423230422495465
-          ],
-          [
-            72.10767183577664,
-            -0.3648522190488457,
-            22.363184099912075
-          ]
-        ],
-        "cluster_id": "pal_10"
-      }
+      "clip_labels": [
+        "food",
+        "cuisine",
+        "dish",
+        "meal",
+        "cooking"
+      ]
     },
     {
       "photo_id": "3a48bab119e2090a736d869069a8c7832ac952644883b5853935ac51a90a33d3",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/3a48bab119e2090a736d869069a8c7832ac952644883b5853935ac51a90a33d3_clip.npy"
-      },
-      "hashes": {
-        "phash": "b5c9c741cc15d4f8"
-      },
       "tech": {
         "sharpness": 0.4848205626391471,
         "exposure": 0.639357104303199,
         "noise": 0.16924707639610234,
         "horizon_deg": 2.792985858829769
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/3a48bab119e2090a736d869069a8c7832ac952644883b5853935ac51a90a33d3.png",
-        "neg_space_ratio": 0.27673487334508085
-      },
-      "faces": {
-        "count": 2,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            44.04244653511638,
-            -17.03671318977441,
-            7.7667424171199
-          ],
-          [
-            23.21654445755199,
-            -14.032096621053793,
-            3.770375825073856
-          ]
-        ],
-        "cluster_id": "pal_05"
-      }
+      "clip_labels": [
+        "flower",
+        "plant",
+        "garden",
+        "bloom",
+        "botanical"
+      ]
     },
     {
       "photo_id": "24fe204288c7a11a85dfbc14e16a9ef25d987298331aff192c2310269da077a9",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/24fe204288c7a11a85dfbc14e16a9ef25d987298331aff192c2310269da077a9_clip.npy"
-      },
-      "hashes": {
-        "phash": "d5a354c7f7e2eb7f"
-      },
       "tech": {
         "sharpness": 0.3553675904575495,
         "exposure": 0.5240954776050581,
         "noise": 0.24532556211616996,
         "horizon_deg": -0.5029558715380293
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/24fe204288c7a11a85dfbc14e16a9ef25d987298331aff192c2310269da077a9.png",
-        "neg_space_ratio": 0.5172887917870177
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            47.03086789332525,
-            -2.2911598392268644,
-            21.609999949570806
-          ],
-          [
-            79.40187562800787,
-            -7.784790227225585,
-            7.261639264328913
-          ],
-          [
-            56.57785473470782,
-            9.6035722193818,
-            26.85541201952268
-          ],
-          [
-            32.46727434941308,
-            -11.55899218778428,
-            9.625688231522197
-          ],
-          [
-            29.423425602852628,
-            -13.047458066942621,
-            -25.496107865929925
-          ]
-        ],
-        "cluster_id": "pal_01"
-      }
+      "clip_labels": [
+        "car",
+        "vehicle",
+        "transportation",
+        "automobile",
+        "machine"
+      ]
     },
     {
       "photo_id": "672275d045eee7ed3fff5833788d2eb16395b587001fb88d2e5c2f4acf7c6d85",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/672275d045eee7ed3fff5833788d2eb16395b587001fb88d2e5c2f4acf7c6d85_clip.npy"
-      },
-      "hashes": {
-        "phash": "7aa09321c4749f50"
-      },
       "tech": {
         "sharpness": 0.5655364222290173,
         "exposure": 0.7446855678923845,
         "noise": 0.2144693676526901,
         "horizon_deg": -2.8041608677144545
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/672275d045eee7ed3fff5833788d2eb16395b587001fb88d2e5c2f4acf7c6d85.png",
-        "neg_space_ratio": 0.3016734227155825
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            61.24309520427457,
-            16.956441779301947,
-            17.269681598803878
-          ],
-          [
-            57.50348042985331,
-            6.447321714134713,
-            26.020107506730795
-          ]
-        ],
-        "cluster_id": "pal_07"
-      }
+      "clip_labels": [
+        "photography",
+        "landscape",
+        "nature",
+        "outdoor",
+        "scenic"
+      ]
     },
     {
       "photo_id": "d625039dbb6b0fabc98f06655150c89f818e9e9ea93d1a64cdc61b5f7a6acce2",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/d625039dbb6b0fabc98f06655150c89f818e9e9ea93d1a64cdc61b5f7a6acce2_clip.npy"
-      },
-      "hashes": {
-        "phash": "651d647ac2166519"
-      },
       "tech": {
         "sharpness": 0.3746045965996797,
         "exposure": 0.5124047251330119,
         "noise": 0.10214629037636523,
         "horizon_deg": -1.4062051701561589
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/d625039dbb6b0fabc98f06655150c89f818e9e9ea93d1a64cdc61b5f7a6acce2.png",
-        "neg_space_ratio": 0.1995653998105741
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            46.349206920424244,
-            -1.2520811889535253,
-            -11.754528567313997
-          ],
-          [
-            44.150511149768334,
-            -9.110152274229474,
-            2.3988937558808416
-          ],
-          [
-            46.26553181429588,
-            3.9214664816441456,
-            23.365373357547213
-          ],
-          [
-            64.07203539713691,
-            4.148545637836424,
-            -28.448106456699872
-          ]
-        ],
-        "cluster_id": "pal_04"
-      }
+      "clip_labels": [
+        "mountain",
+        "sky",
+        "water",
+        "forest",
+        "sunset"
+      ]
     },
     {
       "photo_id": "9ea01a883db1299977c59d785ec23cc9e1231690fc1a9bfe1a3966802d1eb910",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/9ea01a883db1299977c59d785ec23cc9e1231690fc1a9bfe1a3966802d1eb910_clip.npy"
-      },
-      "hashes": {
-        "phash": "beb7f4034b49b4b0"
-      },
       "tech": {
         "sharpness": 0.9252422164253438,
         "exposure": 0.8179793069530907,
         "noise": 0.2513196882269757,
         "horizon_deg": 2.704717666838114
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/9ea01a883db1299977c59d785ec23cc9e1231690fc1a9bfe1a3966802d1eb910.png",
-        "neg_space_ratio": 0.799700691814216
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            65.78654025030232,
-            -12.992370882481094,
-            1.1378304592562358
-          ],
-          [
-            46.53376426521217,
-            -8.873737102303165,
-            29.81672849595381
-          ]
-        ],
-        "cluster_id": "pal_07"
-      }
+      "clip_labels": [
+        "city",
+        "architecture",
+        "urban",
+        "building",
+        "street"
+      ]
     },
     {
       "photo_id": "0726cbe665d1db84fb51c710560de396b603c8e6e684c68b26fe6bb0be83700c",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/0726cbe665d1db84fb51c710560de396b603c8e6e684c68b26fe6bb0be83700c_clip.npy"
-      },
-      "hashes": {
-        "phash": "392112d13012ea51"
-      },
       "tech": {
         "sharpness": 0.7126100676451563,
         "exposure": 0.6458629010955067,
         "noise": 0.08193484220283952,
         "horizon_deg": -0.9122336622320972
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/0726cbe665d1db84fb51c710560de396b603c8e6e684c68b26fe6bb0be83700c.png",
-        "neg_space_ratio": 0.3333158755655644
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            44.69870538726762,
-            -0.18123916142648966,
-            9.755012219485728
-          ],
-          [
-            44.02713528881939,
-            10.41999088230628,
-            -27.798172181177478
-          ],
-          [
-            25.283587566547315,
-            -9.904045962311692,
-            -23.044703914142527
-          ],
-          [
-            66.35287556238848,
-            14.596423362075164,
-            19.49563219612206
-          ]
-        ],
-        "cluster_id": "pal_01"
-      }
+      "clip_labels": [
+        "portrait",
+        "person",
+        "face",
+        "people",
+        "human"
+      ]
     },
     {
       "photo_id": "f89632c72c43189db48b5cde1fa5b09c764e641717851f0c190b86a9b72ff0c6",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/f89632c72c43189db48b5cde1fa5b09c764e641717851f0c190b86a9b72ff0c6_clip.npy"
-      },
-      "hashes": {
-        "phash": "0969ddb321654c26"
-      },
       "tech": {
         "sharpness": 0.7274792512140338,
         "exposure": 0.6712967971785975,
         "noise": 0.19463664977976253,
         "horizon_deg": -1.8745047516328373
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/f89632c72c43189db48b5cde1fa5b09c764e641717851f0c190b86a9b72ff0c6.png",
-        "neg_space_ratio": 0.35324555140617275
-      },
-      "faces": {
-        "count": 2,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            32.21349430101643,
-            1.9687855634132667,
-            25.66036565066686
-          ],
-          [
-            46.28696570434269,
-            7.930001164886889,
-            -22.714434998242808
-          ]
-        ],
-        "cluster_id": "pal_10"
-      }
+      "clip_labels": [
+        "animal",
+        "wildlife",
+        "bird",
+        "mammal",
+        "creature"
+      ]
     },
     {
       "photo_id": "6ffcf1a81a6895608517b4213d6bb066561c3efaae19bbab5ec53a7f19289505",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/6ffcf1a81a6895608517b4213d6bb066561c3efaae19bbab5ec53a7f19289505_clip.npy"
-      },
-      "hashes": {
-        "phash": "14126cc109191262"
-      },
       "tech": {
         "sharpness": 0.8195539266284058,
         "exposure": 0.7548914125501296,
         "noise": 0.1587625484376673,
         "horizon_deg": -2.917953213203636
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/6ffcf1a81a6895608517b4213d6bb066561c3efaae19bbab5ec53a7f19289505.png",
-        "neg_space_ratio": 0.3855934811029318
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            47.68687365072701,
-            -15.301354036417699,
-            19.928590426134072
-          ],
-          [
-            49.90253028243171,
-            8.664133039671643,
-            0.5323209041707031
-          ]
-        ],
-        "cluster_id": "pal_05"
-      }
+      "clip_labels": [
+        "food",
+        "cuisine",
+        "dish",
+        "meal",
+        "cooking"
+      ]
     },
     {
       "photo_id": "5cfda97f5c7c925e173093a5d0366f4e06d832e9ba6f37634a3cb2060a5dafc7",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/5cfda97f5c7c925e173093a5d0366f4e06d832e9ba6f37634a3cb2060a5dafc7_clip.npy"
-      },
-      "hashes": {
-        "phash": "365be13282e47669"
-      },
       "tech": {
         "sharpness": 0.5700687229079795,
         "exposure": 0.6412497884789281,
         "noise": 0.21527692366619272,
         "horizon_deg": -0.2592811636061185
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/5cfda97f5c7c925e173093a5d0366f4e06d832e9ba6f37634a3cb2060a5dafc7.png",
-        "neg_space_ratio": 0.20124937793992614
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            71.84161606571529,
-            -8.950103887118361,
-            17.40037092018681
-          ],
-          [
-            44.89654541308071,
-            17.3699357473008,
-            0.4642605485793858
-          ],
-          [
-            69.2329683911347,
-            -8.686440668686934,
-            -12.086649013693968
-          ]
-        ],
-        "cluster_id": "pal_10"
-      }
+      "clip_labels": [
+        "flower",
+        "plant",
+        "garden",
+        "bloom",
+        "botanical"
+      ]
     },
     {
       "photo_id": "c92afc9299c99b6d6415ba0942dfcbaeae9d33f3ecb661727ef73c0d6e0c34b9",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/c92afc9299c99b6d6415ba0942dfcbaeae9d33f3ecb661727ef73c0d6e0c34b9_clip.npy"
-      },
-      "hashes": {
-        "phash": "08ce79acec005dd5"
-      },
       "tech": {
         "sharpness": 0.6769501995242126,
         "exposure": 0.7299703765274597,
         "noise": 0.35284120814508496,
         "horizon_deg": -0.3207156417408332
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/c92afc9299c99b6d6415ba0942dfcbaeae9d33f3ecb661727ef73c0d6e0c34b9.png",
-        "neg_space_ratio": 0.4390389698862043
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            47.320677011990064,
-            -7.128905990838504,
-            -18.680857577573676
-          ],
-          [
-            61.84990565723428,
-            2.8719056793960434,
-            -15.986253236526412
-          ],
-          [
-            66.53266850595553,
-            -18.254108036107922,
-            14.682309093911755
-          ],
-          [
-            62.31367286150015,
-            12.456356102595073,
-            -6.835274850541062
-          ],
-          [
-            59.82132976907208,
-            12.829902068382204,
-            28.849088319587104
-          ]
-        ],
-        "cluster_id": "pal_08"
-      }
+      "clip_labels": [
+        "car",
+        "vehicle",
+        "transportation",
+        "automobile",
+        "machine"
+      ]
     },
     {
       "photo_id": "fa7bda9067a49ff07f455ed8badea0b579c937e3082ebbac5e910f712abafc63",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/fa7bda9067a49ff07f455ed8badea0b579c937e3082ebbac5e910f712abafc63_clip.npy"
-      },
-      "hashes": {
-        "phash": "345f83c492a2b0c9"
-      },
       "tech": {
         "sharpness": 0.9271358849410916,
         "exposure": 0.46312313490469437,
         "noise": 0.3878737565618988,
         "horizon_deg": -1.0080317764118174
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/fa7bda9067a49ff07f455ed8badea0b579c937e3082ebbac5e910f712abafc63.png",
-        "neg_space_ratio": 0.17025522151539663
-      },
-      "faces": {
-        "count": 2,
-        "landmarks_ok": false
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            20.920855874915638,
-            -14.2337833613221,
-            22.25597828095316
-          ],
-          [
-            78.19740764246637,
-            -17.006870070251647,
-            16.891517476381487
-          ],
-          [
-            35.90136677260453,
-            4.930376020879919,
-            -6.151000566853593
-          ],
-          [
-            24.81891923476694,
-            -6.857376440661751,
-            10.461449709240576
-          ],
-          [
-            52.01733874381008,
-            18.165583704907043,
-            7.607950740479268
-          ]
-        ],
-        "cluster_id": "pal_08"
-      }
+      "clip_labels": [
+        "photography",
+        "landscape",
+        "nature",
+        "outdoor",
+        "scenic"
+      ]
     },
     {
       "photo_id": "887e835b33796bad136da2e242379b869db1ae4ac417d82445b051841bd9cb58",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/887e835b33796bad136da2e242379b869db1ae4ac417d82445b051841bd9cb58_clip.npy"
-      },
-      "hashes": {
-        "phash": "9a7d09ef7f26ab4a"
-      },
       "tech": {
         "sharpness": 0.8670489613090484,
         "exposure": 0.4179495499188433,
         "noise": 0.07394726151354301,
         "horizon_deg": 0.7869661011278435
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/887e835b33796bad136da2e242379b869db1ae4ac417d82445b051841bd9cb58.png",
-        "neg_space_ratio": 0.7446503691462077
-      },
-      "faces": {
-        "count": 4,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            78.70026369323274,
-            10.414787719770615,
-            12.233449759742271
-          ],
-          [
-            26.030434419369044,
-            -13.345408530830994,
-            -12.032035185356115
-          ],
-          [
-            21.736834963854086,
-            -7.02501332874791,
-            -26.632846313699584
-          ],
-          [
-            41.50780053802181,
-            -2.7725284857839974,
-            -15.348154068961897
-          ],
-          [
-            44.72310493853452,
-            7.272014854109127,
-            -19.196586830921333
-          ]
-        ],
-        "cluster_id": "pal_03"
-      }
+      "clip_labels": [
+        "mountain",
+        "sky",
+        "water",
+        "forest",
+        "sunset"
+      ]
     },
     {
       "photo_id": "07fcc2555af9133d12551c078a0e737c84d67f227d2d4fd532abb5a273b4a371",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/07fcc2555af9133d12551c078a0e737c84d67f227d2d4fd532abb5a273b4a371_clip.npy"
-      },
-      "hashes": {
-        "phash": "cbc985af1e88628d"
-      },
       "tech": {
         "sharpness": 0.3513294279289965,
         "exposure": 0.8354197993224275,
         "noise": 0.2668986289880954,
         "horizon_deg": -1.5550212488621218
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/07fcc2555af9133d12551c078a0e737c84d67f227d2d4fd532abb5a273b4a371.png",
-        "neg_space_ratio": 0.7389803112164884
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            47.57422995060386,
-            6.673628690659228,
-            23.93451190201926
-          ],
-          [
-            47.91519533151809,
-            -8.494733370062448,
-            2.7958882561216996
-          ],
-          [
-            24.43171401697238,
-            17.809425397385837,
-            29.259101713108286
-          ],
-          [
-            37.94925494742633,
-            18.481162912937677,
-            11.418810747607743
-          ]
-        ],
-        "cluster_id": "pal_08"
-      }
+      "clip_labels": [
+        "city",
+        "architecture",
+        "urban",
+        "building",
+        "street"
+      ]
     },
     {
       "photo_id": "dccae63ebf2694130ea906e9e2ba2400b33b343adc2eff9f0e18dd41d69a529a",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/dccae63ebf2694130ea906e9e2ba2400b33b343adc2eff9f0e18dd41d69a529a_clip.npy"
-      },
-      "hashes": {
-        "phash": "adfdc762865550f8"
-      },
       "tech": {
         "sharpness": 0.8494475513426891,
         "exposure": 0.4996084995544462,
         "noise": 0.18464263713857093,
         "horizon_deg": -0.10075163364470363
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/dccae63ebf2694130ea906e9e2ba2400b33b343adc2eff9f0e18dd41d69a529a.png",
-        "neg_space_ratio": 0.26604399134930223
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            21.3163758715739,
-            13.201502459713758,
-            -6.251655545317959
-          ],
-          [
-            20.485877945689413,
-            14.602695907890642,
-            16.698696946204677
-          ],
-          [
-            78.41616900967549,
-            16.42467814874842,
-            14.710329248038207
-          ],
-          [
-            69.9703339803913,
-            16.117396737991015,
-            16.544458776202852
-          ]
-        ],
-        "cluster_id": "pal_04"
-      }
+      "clip_labels": [
+        "portrait",
+        "person",
+        "face",
+        "people",
+        "human"
+      ]
     },
     {
       "photo_id": "54d80af0874d925b1dc326c94a63202cc1891a61ca5e11104e83cbd589b03008",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/54d80af0874d925b1dc326c94a63202cc1891a61ca5e11104e83cbd589b03008_clip.npy"
-      },
-      "hashes": {
-        "phash": "6f65af16506f5d5e"
-      },
       "tech": {
         "sharpness": 0.6945922488067728,
         "exposure": 0.5761604779176583,
         "noise": 0.27281625730206216,
         "horizon_deg": 0.7253469787818245
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/54d80af0874d925b1dc326c94a63202cc1891a61ca5e11104e83cbd589b03008.png",
-        "neg_space_ratio": 0.5744351210363516
-      },
-      "faces": {
-        "count": 2,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            57.6948862212139,
-            16.136148162918715,
-            8.78043653343137
-          ],
-          [
-            38.535973037158165,
-            -2.367072393487536,
-            4.774428322104164
-          ],
-          [
-            63.9415860763543,
-            -16.394664970151243,
-            -12.293372902250685
-          ]
-        ],
-        "cluster_id": "pal_07"
-      }
+      "clip_labels": [
+        "animal",
+        "wildlife",
+        "bird",
+        "mammal",
+        "creature"
+      ]
     },
     {
       "photo_id": "68ecdb1f39e1c191ba859d588285bcd5358609cfc9ec30f2cc90db9768428835",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/68ecdb1f39e1c191ba859d588285bcd5358609cfc9ec30f2cc90db9768428835_clip.npy"
-      },
-      "hashes": {
-        "phash": "1b3bf8d4aed63bdf"
-      },
       "tech": {
         "sharpness": 0.4141660457887993,
         "exposure": 0.4660798988733918,
         "noise": 0.2387927156445474,
         "horizon_deg": 2.828937487268039
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/68ecdb1f39e1c191ba859d588285bcd5358609cfc9ec30f2cc90db9768428835.png",
-        "neg_space_ratio": 0.4715966615919496
-      },
-      "faces": {
-        "count": 3,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            74.84293721229872,
-            17.76751264388794,
-            28.043044570008732
-          ],
-          [
-            37.70848695034951,
-            14.815878373001588,
-            18.253952316270635
-          ],
-          [
-            48.09988333116172,
-            -16.9880255637297,
-            15.249089583680124
-          ],
-          [
-            33.53688174194422,
-            7.052948988740653,
-            10.464373818014067
-          ]
-        ],
-        "cluster_id": "pal_07"
-      }
+      "clip_labels": [
+        "food",
+        "cuisine",
+        "dish",
+        "meal",
+        "cooking"
+      ]
     },
     {
       "photo_id": "eacc8fc93f03cd1e4a360a169cd051a85084e48aa46e8226d2bd5fc8598e86f9",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/eacc8fc93f03cd1e4a360a169cd051a85084e48aa46e8226d2bd5fc8598e86f9_clip.npy"
-      },
-      "hashes": {
-        "phash": "65c616ff7c8d9986"
-      },
       "tech": {
         "sharpness": 0.9287253357450209,
         "exposure": 0.802293822010281,
         "noise": 0.17802126729194823,
         "horizon_deg": 1.7440918115336252
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/eacc8fc93f03cd1e4a360a169cd051a85084e48aa46e8226d2bd5fc8598e86f9.png",
-        "neg_space_ratio": 0.10974305857063082
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            55.07360549912996,
-            12.896692049070971,
-            26.417513506773254
-          ],
-          [
-            26.500766131953842,
-            -10.647123911536674,
-            -28.49852102121106
-          ],
-          [
-            73.05409071289114,
-            2.456295289995154,
-            24.915354524589567
-          ],
-          [
-            33.2820320044394,
-            -17.47131835359218,
-            19.43132108342686
-          ]
-        ],
-        "cluster_id": "pal_05"
-      }
+      "clip_labels": [
+        "flower",
+        "plant",
+        "garden",
+        "bloom",
+        "botanical"
+      ]
     },
     {
       "photo_id": "8dc74c3d293cfdc528c79e157d76895b3e7a615e13f28cb67ec19f4e17c969dc",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/8dc74c3d293cfdc528c79e157d76895b3e7a615e13f28cb67ec19f4e17c969dc_clip.npy"
-      },
-      "hashes": {
-        "phash": "3d5eeea9c1c56e8b"
-      },
       "tech": {
         "sharpness": 0.7220056400849841,
         "exposure": 0.45833796836352725,
         "noise": 0.06587138385468375,
         "horizon_deg": -2.77672723065177
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/8dc74c3d293cfdc528c79e157d76895b3e7a615e13f28cb67ec19f4e17c969dc.png",
-        "neg_space_ratio": 0.7971491623285206
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            43.31874986900855,
-            -5.159539380524691,
-            26.962846104714323
-          ],
-          [
-            61.78903949825797,
-            1.607699817158803,
-            5.240420732916448
-          ],
-          [
-            63.59594903343449,
-            15.416551355983174,
-            9.295313849607837
-          ]
-        ],
-        "cluster_id": "pal_08"
-      }
+      "clip_labels": [
+        "car",
+        "vehicle",
+        "transportation",
+        "automobile",
+        "machine"
+      ]
     },
     {
       "photo_id": "4b8ee83aa0d36866ec58a9059d79e9b022e87c98f1e1b059700c1d828a724770",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/4b8ee83aa0d36866ec58a9059d79e9b022e87c98f1e1b059700c1d828a724770_clip.npy"
-      },
-      "hashes": {
-        "phash": "08ce78aa65f4f3b3"
-      },
       "tech": {
         "sharpness": 0.7001739391332515,
         "exposure": 0.8695265328568277,
         "noise": 0.14790904903002602,
         "horizon_deg": 1.1416839824853815
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/4b8ee83aa0d36866ec58a9059d79e9b022e87c98f1e1b059700c1d828a724770.png",
-        "neg_space_ratio": 0.2520887792882931
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            25.96127747636782,
-            7.427210619251415,
-            2.667951688928696
-          ],
-          [
-            78.6705517671228,
-            -5.653046351507282,
-            -6.111621435337614
-          ],
-          [
-            31.388513729664773,
-            -15.113611236509449,
-            20.88199130782086
-          ],
-          [
-            47.28304211423103,
-            6.51074952247912,
-            8.502268033993055
-          ]
-        ],
-        "cluster_id": "pal_10"
-      }
+      "clip_labels": [
+        "photography",
+        "landscape",
+        "nature",
+        "outdoor",
+        "scenic"
+      ]
     },
     {
       "photo_id": "c9ded46197f374cba45f5d68200a6201257c1172cd5aae05c6c3d40b44426bed",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/c9ded46197f374cba45f5d68200a6201257c1172cd5aae05c6c3d40b44426bed_clip.npy"
-      },
-      "hashes": {
-        "phash": "19aa794263689187"
-      },
       "tech": {
         "sharpness": 0.931210652842241,
         "exposure": 0.4252892553314365,
         "noise": 0.16672820475138062,
         "horizon_deg": 2.9329254236485305
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/c9ded46197f374cba45f5d68200a6201257c1172cd5aae05c6c3d40b44426bed.png",
-        "neg_space_ratio": 0.6508846699834211
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            55.18298501489371,
-            12.522119244842358,
-            -16.020079257238113
-          ],
-          [
-            66.4621146682892,
-            11.54575017110438,
-            5.7588981104652035
-          ],
-          [
-            36.63649075854098,
-            19.361125273909558,
-            29.251638261970342
-          ]
-        ],
-        "cluster_id": "pal_09"
-      }
+      "clip_labels": [
+        "mountain",
+        "sky",
+        "water",
+        "forest",
+        "sunset"
+      ]
     },
     {
       "photo_id": "d827942970aaf8e0012e489cb8b67606837633b5ecd9950b575cbe6b1e820802",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/d827942970aaf8e0012e489cb8b67606837633b5ecd9950b575cbe6b1e820802_clip.npy"
-      },
-      "hashes": {
-        "phash": "fef8f8bf5d5c21ca"
-      },
       "tech": {
         "sharpness": 0.4629252278732805,
         "exposure": 0.48724856045069675,
         "noise": 0.2813701749090609,
         "horizon_deg": -2.8453191012828096
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/d827942970aaf8e0012e489cb8b67606837633b5ecd9950b575cbe6b1e820802.png",
-        "neg_space_ratio": 0.1104022290614962
-      },
-      "faces": {
-        "count": 2,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            20.946865010669615,
-            -9.385299667001066,
-            -22.394487377233183
-          ],
-          [
-            45.257633414604754,
-            -15.454027728538136,
-            -26.186517711171827
-          ],
-          [
-            46.89651285619305,
-            -5.518441047299518,
-            5.619961072081622
-          ],
-          [
-            47.12032519452514,
-            -11.1380097432686,
-            6.906410177066192
-          ]
-        ],
-        "cluster_id": "pal_09"
-      }
+      "clip_labels": [
+        "city",
+        "architecture",
+        "urban",
+        "building",
+        "street"
+      ]
     },
     {
       "photo_id": "51b2ed2d777ae30e6688b9466dc2b944c37c8fdfde9d9c5e90c2a1a1ac36b32f",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/51b2ed2d777ae30e6688b9466dc2b944c37c8fdfde9d9c5e90c2a1a1ac36b32f_clip.npy"
-      },
-      "hashes": {
-        "phash": "13b1a7432b367dcf"
-      },
       "tech": {
         "sharpness": 0.49605971386825765,
         "exposure": 0.7216703421027444,
         "noise": 0.06090272382862037,
         "horizon_deg": 2.9915205305359613
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/51b2ed2d777ae30e6688b9466dc2b944c37c8fdfde9d9c5e90c2a1a1ac36b32f.png",
-        "neg_space_ratio": 0.6931089802170699
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            24.40944294598703,
-            -16.76838090356832,
-            6.497845418006399
-          ],
-          [
-            23.940933999206834,
-            -8.999360017681873,
-            7.984603458060931
-          ],
-          [
-            52.901386042901635,
-            -6.992582267253283,
-            29.677665351655413
-          ],
-          [
-            51.83341024587947,
-            -1.8513832969811332,
-            6.32560749211877
-          ],
-          [
-            25.95070770074252,
-            8.071176741842649,
-            21.167564237734503
-          ]
-        ],
-        "cluster_id": "pal_09"
-      }
+      "clip_labels": [
+        "portrait",
+        "person",
+        "face",
+        "people",
+        "human"
+      ]
     },
     {
       "photo_id": "e20584db0b0c5b63de349afa37d1200af01ad77436a82ae80196ccf663166f9a",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/e20584db0b0c5b63de349afa37d1200af01ad77436a82ae80196ccf663166f9a_clip.npy"
-      },
-      "hashes": {
-        "phash": "a37c4e91987545d9"
-      },
       "tech": {
         "sharpness": 0.7685459458274394,
         "exposure": 0.5075115331637485,
         "noise": 0.20804422058784855,
         "horizon_deg": -1.6290385538124936
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/e20584db0b0c5b63de349afa37d1200af01ad77436a82ae80196ccf663166f9a.png",
-        "neg_space_ratio": 0.33725213318462266
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            38.75290099982798,
-            -7.499057154325289,
-            -14.706612211033248
-          ],
-          [
-            77.2155510571475,
-            7.472841418679067,
-            -1.5439268646538373
-          ]
-        ],
-        "cluster_id": "pal_02"
-      }
+      "clip_labels": [
+        "animal",
+        "wildlife",
+        "bird",
+        "mammal",
+        "creature"
+      ]
     },
     {
       "photo_id": "1efa11b5f7044e8e3b50d46da6eec24b63240233e68eb478d01f75758964f7c2",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/1efa11b5f7044e8e3b50d46da6eec24b63240233e68eb478d01f75758964f7c2_clip.npy"
-      },
-      "hashes": {
-        "phash": "f7f0791257157f12"
-      },
       "tech": {
         "sharpness": 0.8406517275086554,
         "exposure": 0.4466150508518387,
         "noise": 0.08379755139802497,
         "horizon_deg": 1.432775990932294
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/1efa11b5f7044e8e3b50d46da6eec24b63240233e68eb478d01f75758964f7c2.png",
-        "neg_space_ratio": 0.6682384996941747
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            60.20079588393775,
-            -3.5676546831136733,
-            22.416442334059113
-          ],
-          [
-            76.46779213113379,
-            -3.082525769444665,
-            24.95062025832862
-          ],
-          [
-            23.086764798342564,
-            -8.494823694106909,
-            -11.253066054740763
-          ],
-          [
-            26.216033955478004,
-            0.2965018787201643,
-            -20.716189448504316
-          ]
-        ],
-        "cluster_id": "pal_08"
-      }
+      "clip_labels": [
+        "food",
+        "cuisine",
+        "dish",
+        "meal",
+        "cooking"
+      ]
     },
     {
       "photo_id": "6d3c94b21a8ffcf051e7ac25ed2b13b0c651a74aa2c620a85727245bb285e5aa",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/6d3c94b21a8ffcf051e7ac25ed2b13b0c651a74aa2c620a85727245bb285e5aa_clip.npy"
-      },
-      "hashes": {
-        "phash": "5082c2f77cc23b2c"
-      },
       "tech": {
         "sharpness": 0.4457591649199176,
         "exposure": 0.45410919096363334,
         "noise": 0.3458806965104708,
         "horizon_deg": -0.794633696307899
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/6d3c94b21a8ffcf051e7ac25ed2b13b0c651a74aa2c620a85727245bb285e5aa.png",
-        "neg_space_ratio": 0.6338239423557949
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            56.53969493318392,
-            6.313249119955536,
-            11.608271271339532
-          ],
-          [
-            21.737190863676098,
-            -9.069184451491008,
-            15.74457107885987
-          ]
-        ],
-        "cluster_id": "pal_06"
-      }
+      "clip_labels": [
+        "flower",
+        "plant",
+        "garden",
+        "bloom",
+        "botanical"
+      ]
     },
     {
       "photo_id": "49badb2889b87d9fbb41465c3efab95657df621c50e9340eac367db7dce24a0e",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/49badb2889b87d9fbb41465c3efab95657df621c50e9340eac367db7dce24a0e_clip.npy"
-      },
-      "hashes": {
-        "phash": "e0cba4b0f549fd7d"
-      },
       "tech": {
         "sharpness": 0.5281652234790382,
         "exposure": 0.49070277910628435,
         "noise": 0.1001380216197102,
         "horizon_deg": 0.944067809020773
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/49badb2889b87d9fbb41465c3efab95657df621c50e9340eac367db7dce24a0e.png",
-        "neg_space_ratio": 0.1487097948738355
-      },
-      "faces": {
-        "count": 2,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            64.7667057203424,
-            -11.394684798659561,
-            -4.810050374129812
-          ],
-          [
-            40.45375890615996,
-            -5.1978763009198445,
-            13.295758064560395
-          ]
-        ],
-        "cluster_id": "pal_10"
-      }
+      "clip_labels": [
+        "car",
+        "vehicle",
+        "transportation",
+        "automobile",
+        "machine"
+      ]
     },
     {
       "photo_id": "756890df4c2fb869e30ffdfec38b254da4263ca4533eed2c966820bb303d5916",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/756890df4c2fb869e30ffdfec38b254da4263ca4533eed2c966820bb303d5916_clip.npy"
-      },
-      "hashes": {
-        "phash": "930843189fb4fa2f"
-      },
       "tech": {
         "sharpness": 0.68754545193331,
         "exposure": 0.8416710922591717,
         "noise": 0.10445296619157093,
         "horizon_deg": 1.526615274749913
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/756890df4c2fb869e30ffdfec38b254da4263ca4533eed2c966820bb303d5916.png",
-        "neg_space_ratio": 0.13483374470307002
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            49.13970229345978,
-            -2.3182325320888353,
-            -13.609989338113834
-          ],
-          [
-            65.29658862010224,
-            -15.44729967559193,
-            -4.20518199612658
-          ],
-          [
-            36.99478820482696,
-            7.13945019040532,
-            -0.8020347981449518
-          ],
-          [
-            60.02795352418097,
-            -18.1833054958229,
-            -6.284196234742264
-          ],
-          [
-            55.95949741666703,
-            -19.692516564004684,
-            -11.914838278893793
-          ]
-        ],
-        "cluster_id": "pal_04"
-      }
+      "clip_labels": [
+        "photography",
+        "landscape",
+        "nature",
+        "outdoor",
+        "scenic"
+      ]
     },
     {
       "photo_id": "7fd168ccccc0fa977398fafd04b2c3e68f8d4a3b71ace3faafd4cdbef29ae432",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/7fd168ccccc0fa977398fafd04b2c3e68f8d4a3b71ace3faafd4cdbef29ae432_clip.npy"
-      },
-      "hashes": {
-        "phash": "7222e3dcc189c0c8"
-      },
       "tech": {
         "sharpness": 0.7987771927505926,
         "exposure": 0.7820804478806238,
         "noise": 0.15130649592610318,
         "horizon_deg": -2.280093937766705
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/7fd168ccccc0fa977398fafd04b2c3e68f8d4a3b71ace3faafd4cdbef29ae432.png",
-        "neg_space_ratio": 0.4481697300293288
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            50.015740793372785,
-            13.334168096795132,
-            18.37201119400583
-          ],
-          [
-            24.32452979552947,
-            14.470574480903544,
-            -27.461864306232517
-          ],
-          [
-            21.124492195138743,
-            16.846497380096494,
-            21.726600816723987
-          ]
-        ],
-        "cluster_id": "pal_10"
-      }
+      "clip_labels": [
+        "mountain",
+        "sky",
+        "water",
+        "forest",
+        "sunset"
+      ]
     },
     {
       "photo_id": "76c27f5c82bf63986ff241b08d58930edb353cac9f703685f46e97b8cf26f539",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/76c27f5c82bf63986ff241b08d58930edb353cac9f703685f46e97b8cf26f539_clip.npy"
-      },
-      "hashes": {
-        "phash": "58f696194e203af4"
-      },
       "tech": {
         "sharpness": 0.5790347860955432,
         "exposure": 0.6022114422526172,
         "noise": 0.27404958416665265,
         "horizon_deg": -1.262908766485451
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/76c27f5c82bf63986ff241b08d58930edb353cac9f703685f46e97b8cf26f539.png",
-        "neg_space_ratio": 0.38352261494546824
-      },
-      "faces": {
-        "count": 3,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            69.92155478430243,
-            16.790790069655387,
-            -24.71220712212692
-          ],
-          [
-            70.66906158888182,
-            -10.267341007090653,
-            5.332277298174716
-          ],
-          [
-            51.437752580037895,
-            -4.169332125626681,
-            -11.38352628984832
-          ],
-          [
-            40.37079686890783,
-            -6.677255100274721,
-            -19.912037517258803
-          ],
-          [
-            50.6289970725289,
-            -15.438934406457898,
-            0.5971237393783184
-          ]
-        ],
-        "cluster_id": "pal_06"
-      }
+      "clip_labels": [
+        "city",
+        "architecture",
+        "urban",
+        "building",
+        "street"
+      ]
     },
     {
       "photo_id": "620b17dd7e7dcf6633bb70460fa205ca7fccd558de1aef694552c07acd4a468d",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/620b17dd7e7dcf6633bb70460fa205ca7fccd558de1aef694552c07acd4a468d_clip.npy"
-      },
-      "hashes": {
-        "phash": "956f9b020ebc5c00"
-      },
       "tech": {
         "sharpness": 0.5282148277222842,
         "exposure": 0.8791116744985752,
         "noise": 0.27590504165934737,
         "horizon_deg": -2.1138609840153673
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/620b17dd7e7dcf6633bb70460fa205ca7fccd558de1aef694552c07acd4a468d.png",
-        "neg_space_ratio": 0.171963169444434
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            65.61291773281351,
-            6.220360420749564,
-            -19.371232263166252
-          ],
-          [
-            66.37088535485361,
-            -0.23531899930445377,
-            15.266749514819146
-          ],
-          [
-            65.59262897646491,
-            -2.0437897201974806,
-            25.44925550313956
-          ]
-        ],
-        "cluster_id": "pal_10"
-      }
+      "clip_labels": [
+        "portrait",
+        "person",
+        "face",
+        "people",
+        "human"
+      ]
     },
     {
       "photo_id": "15db98103763e5e6a39d35cbd25f2a28dee56c32c350b7b817223ea3d4a5300b",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/15db98103763e5e6a39d35cbd25f2a28dee56c32c350b7b817223ea3d4a5300b_clip.npy"
-      },
-      "hashes": {
-        "phash": "8ffd296f4a4f7f6f"
-      },
       "tech": {
         "sharpness": 0.7179446899365178,
         "exposure": 0.8932659738679296,
         "noise": 0.16312288457517626,
         "horizon_deg": 2.8258383852489617
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/15db98103763e5e6a39d35cbd25f2a28dee56c32c350b7b817223ea3d4a5300b.png",
-        "neg_space_ratio": 0.32129722614340617
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            67.77978074908569,
-            3.6567902732408406,
-            -8.883466642795405
-          ],
-          [
-            24.45143937039726,
-            -1.5303005421418376,
-            -27.743565265734475
-          ],
-          [
-            42.12425596938877,
-            -8.516918695947231,
-            8.679988174550246
-          ],
-          [
-            78.64211195198895,
-            -16.38813983946789,
-            5.644789117754016
-          ]
-        ],
-        "cluster_id": "pal_07"
-      }
+      "clip_labels": [
+        "animal",
+        "wildlife",
+        "bird",
+        "mammal",
+        "creature"
+      ]
     },
     {
       "photo_id": "502a9082b0e4492934c660869a35fbef6216c0b875a85dc9c8c18afa9befc72a",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/502a9082b0e4492934c660869a35fbef6216c0b875a85dc9c8c18afa9befc72a_clip.npy"
-      },
-      "hashes": {
-        "phash": "a98c17b732c68a53"
-      },
       "tech": {
         "sharpness": 0.600762578302727,
         "exposure": 0.677158185669152,
         "noise": 0.3271362290428755,
         "horizon_deg": 2.3752605933408155
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/502a9082b0e4492934c660869a35fbef6216c0b875a85dc9c8c18afa9befc72a.png",
-        "neg_space_ratio": 0.41481359255563444
-      },
-      "faces": {
-        "count": 2,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            56.30035004420385,
-            0.054692074913106126,
-            27.4633415319951
-          ],
-          [
-            47.03138654090547,
-            12.438672452904825,
-            20.24263069485326
-          ],
-          [
-            78.94313486560384,
-            -16.626834719017445,
-            8.767625468623152
-          ],
-          [
-            22.348527572040428,
-            8.304868172931155,
-            29.459161358813247
-          ]
-        ],
-        "cluster_id": "pal_09"
-      }
+      "clip_labels": [
+        "food",
+        "cuisine",
+        "dish",
+        "meal",
+        "cooking"
+      ]
     },
     {
       "photo_id": "faa1255dc9b4b38eaa1bf32f91b741443dbcefc4af003ca7961e94db0b87c2ac",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/faa1255dc9b4b38eaa1bf32f91b741443dbcefc4af003ca7961e94db0b87c2ac_clip.npy"
-      },
-      "hashes": {
-        "phash": "fc7010386f6b5bbb"
-      },
       "tech": {
         "sharpness": 0.6397862229226046,
         "exposure": 0.4793731039907707,
         "noise": 0.1804981937354645,
         "horizon_deg": -1.3026385283134927
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/faa1255dc9b4b38eaa1bf32f91b741443dbcefc4af003ca7961e94db0b87c2ac.png",
-        "neg_space_ratio": 0.38613857807312424
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            23.95471125678305,
-            -16.219762099396227,
-            10.702760690404858
-          ],
-          [
-            37.04881843268682,
-            8.949346200098471,
-            9.393845184628674
-          ],
-          [
-            74.38056182982064,
-            14.931186482421552,
-            -9.998277836366604
-          ],
-          [
-            54.964370875185175,
-            -14.342864776627287,
-            -9.010752747849345
-          ]
-        ],
-        "cluster_id": "pal_07"
-      }
+      "clip_labels": [
+        "flower",
+        "plant",
+        "garden",
+        "bloom",
+        "botanical"
+      ]
     },
     {
       "photo_id": "cf5fc9fdb4351b1383523485b3714603ebc4cb484106af717f90941034b277dd",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/cf5fc9fdb4351b1383523485b3714603ebc4cb484106af717f90941034b277dd_clip.npy"
-      },
-      "hashes": {
-        "phash": "8035830383bb16e8"
-      },
       "tech": {
         "sharpness": 0.3838185778765141,
         "exposure": 0.754417007185527,
         "noise": 0.0796516542014007,
         "horizon_deg": 0.35353242054638123
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/cf5fc9fdb4351b1383523485b3714603ebc4cb484106af717f90941034b277dd.png",
-        "neg_space_ratio": 0.5504452843529237
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            58.761489244009276,
-            -3.0637453471158516,
-            -8.290314219192926
-          ],
-          [
-            41.755860138922664,
-            -12.789483084926214,
-            -17.148440327465977
-          ]
-        ],
-        "cluster_id": "pal_08"
-      }
+      "clip_labels": [
+        "car",
+        "vehicle",
+        "transportation",
+        "automobile",
+        "machine"
+      ]
     },
     {
       "photo_id": "2c944bf51c746635814e79b90625950c104cdb114faa73ec9dc97fb0b9d30e06",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/2c944bf51c746635814e79b90625950c104cdb114faa73ec9dc97fb0b9d30e06_clip.npy"
-      },
-      "hashes": {
-        "phash": "3036cc56f62923a9"
-      },
       "tech": {
         "sharpness": 0.42480340188185106,
         "exposure": 0.8999883105515143,
         "noise": 0.10423081053054169,
         "horizon_deg": -1.2252473900722693
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/2c944bf51c746635814e79b90625950c104cdb114faa73ec9dc97fb0b9d30e06.png",
-        "neg_space_ratio": 0.6516841215699801
-      },
-      "faces": {
-        "count": 1,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            59.71575424228506,
-            15.055710901709674,
-            7.081887929610474
-          ],
-          [
-            55.83478646429771,
-            -13.829889547155139,
-            -19.149241969878204
-          ]
-        ],
-        "cluster_id": "pal_10"
-      }
+      "clip_labels": [
+        "photography",
+        "landscape",
+        "nature",
+        "outdoor",
+        "scenic"
+      ]
     },
     {
       "photo_id": "ff9a294bde50007f248b12c6b846ef9e21fd237f9c1f5668fdbfc2649284945b",
-      "embeddings": {
-        "clip_L14": "s3://mock-bucket/emb/ff9a294bde50007f248b12c6b846ef9e21fd237f9c1f5668fdbfc2649284945b_clip.npy"
-      },
-      "hashes": {
-        "phash": "a1307e732218c1d4"
-      },
       "tech": {
         "sharpness": 0.8258784177655456,
         "exposure": 0.48276958287202937,
         "noise": 0.2031856917984214,
         "horizon_deg": -0.5348483310207994
       },
-      "saliency": {
-        "heatmap_uri": "s3://mock-bucket/sal/ff9a294bde50007f248b12c6b846ef9e21fd237f9c1f5668fdbfc2649284945b.png",
-        "neg_space_ratio": 0.5734540455319731
-      },
-      "faces": {
-        "count": 0,
-        "landmarks_ok": true
-      },
-      "palette": {
-        "lab_centroids": [
-          [
-            65.14346990668915,
-            11.352014377393708,
-            -15.959823339874532
-          ],
-          [
-            34.35010983473117,
-            18.623865487761456,
-            17.06221437559229
-          ],
-          [
-            74.2384602882475,
-            -12.239352951097207,
-            10.698409503905545
-          ],
-          [
-            54.225163601833486,
-            -2.37610385963918,
-            16.16631311853456
-          ]
-        ],
-        "cluster_id": "pal_07"
-      }
+      "clip_labels": [
+        "mountain",
+        "sky",
+        "water",
+        "forest",
+        "sunset"
+      ]
     }
   ]
 }

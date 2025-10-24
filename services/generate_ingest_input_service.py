@@ -10,7 +10,7 @@ import hashlib
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 
 
 class GenerateIngestInputService:
@@ -44,7 +44,7 @@ class GenerateIngestInputService:
         # Supported image extensions
         self.image_extensions = {'.jpg', '.jpeg', '.png', '.tiff', '.tif', '.bmp', '.gif', '.heic', '.heif', '.webp'}
 
-    def process(self, batch_id: str, input_dir: str = "./data/input/") -> Dict[str, Any]:
+    def process(self, batch_id: str, input_dir: str = "./data/input/") -> Optional[Dict[str, Any]]:
         """Generate ingest input from photos in a directory."""
         start_time = time.time()
         print("🔍 Scanning directory for images...")
@@ -123,11 +123,9 @@ class GenerateIngestInputService:
 
     def save_ingest_input(self, ingest_input: Dict[str, Any], output_file: str = "./data/ingest_input.json"):
         """Save the ingest input to a JSON file."""
-        import os
         os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
         with open(output_file, 'w') as f:
-            import json
             json.dump(ingest_input, f, indent=2)
 
         self.logger.info(f"Ingest input saved to {output_file}")
