@@ -9,7 +9,7 @@ the flow based on event subscriptions.
 import json
 import time
 import threading
-from typing import Dict, Any, List, Callable
+from typing import Dict, Any, List, Callable, Optional
 from datetime import datetime, timezone
 from mock_services import MockServices
 from mock_data_generator import MockDataGenerator
@@ -20,9 +20,8 @@ try:
     REAL_SERVICES_AVAILABLE = True
 except ImportError:
     REAL_SERVICES_AVAILABLE = False
+    RealServices = None  # type: ignore
     print("⚠️  Real services not available, using mock services")
-
-# Import real services
 
 class MessageBus:
     """Simple in-memory message bus for event-driven communication."""
@@ -55,11 +54,12 @@ class MessageBus:
                 try:
                     callback(event)
                 except Exception as e:
-                    print(f"❌ Error in event handler for {event_type}: {e}")
+                    event_name = event_type or 'unknown'
+                    print(f"❌ Error in event handler for {event_name}: {e}")
 
-    def get_event_log(self, event_type: str = None) -> List[Dict[str, Any]]:
+    def get_event_log(self, event_type: Optional[str] = None) -> List[Dict[str, Any]]:
         """Get event log, optionally filtered by event type."""
-        if event_type:
+        if event_type is not None:
             return [e for e in self.events_log if e["event_type"] == event_type]
         return self.events_log.copy()
 
@@ -76,12 +76,13 @@ class Orchestrator:
         self.batch_states: Dict[str, Dict[str, Any]] = {}
 
         # Initialize real services if available
-        if REAL_SERVICES_AVAILABLE:
+        if REAL_SERVICES_AVAILABLE and RealServices is not None:
             try:
                 self.real_services = RealServices()
                 print("✅ Real services initialized")
             except Exception as e:
                 print(f"❌ Error initializing real services: {e}")
+                self.real_services = None
 
         self.setup_event_subscriptions()
 
@@ -113,7 +114,9 @@ class Orchestrator:
 
     def _get_services(self):
         """Get the appropriate services based on current mode."""
-        return self.real_services if self.use_real_services else self.mock_services
+        if self.use_real_services and self.real_services is not None:
+            return self.real_services
+        return self.mock_services
 
     def setup_event_subscriptions(self):
         """Set up event subscriptions for the MVP pipeline flow."""
@@ -215,7 +218,12 @@ class Orchestrator:
 
         # Get required data
         services = self._get_services()
-        score_output = services.data_store[batch_id]["score_output"]
+        if hasattr(services, 'data_store') and batch_id in services.data_store:  # type: ignore
+            score_output = services.data_store[batch_id]["score_output"]  # type: ignore
+        else:
+            # For real services, we need to get score_output from the previous step
+            # This is a simplified approach - in real implementation, this would be handled differently
+            score_output = data  # Assume data contains the score output
         theme_spec = self.generator.generate_theme_spec()
 
         # Trigger cluster ranking service
@@ -275,7 +283,11 @@ class Orchestrator:
         services = self._get_services()
 
         # Get current selection
-        current_selection = services.data_store[batch_id]["selection_output"]
+        if hasattr(services, 'data_store') and batch_id in services.data_store:  # type: ignore
+            current_selection = services.data_store[batch_id]["selection_output"]  # type: ignore
+        else:
+            # For real services, use the data passed in the event
+            current_selection = data
 
         # Apply review constraints (in real system, this would modify the optimizer input)
         # For now, just re-run with same data
@@ -285,7 +297,7 @@ class Orchestrator:
         self.message_bus.publish("selection.completed", new_selection)
 
     def generate_ingest_input_from_directory(self, input_dir: str = "./data/input",
-                                            batch_id: str = None) -> Dict[str, Any]:
+                                            batch_id: Optional[str] = None) -> Dict[str, Any]:
         """Generate ingest input from photos in a directory using the dedicated service."""
 
         # Generate batch ID if not provided
@@ -297,15 +309,14 @@ class Orchestrator:
         if self.real_services:
             ingest_input = self.real_services.generate_ingest_input_from_directory(batch_id, input_dir)
         else:
-            print("⚠️ Real services not available, exiting")
-            return 0
+            raise RuntimeError("Real services not available, cannot generate ingest input from directory")
 
         if ingest_input is None:
             raise ValueError(f"No image files found in {input_dir}")
 
         return ingest_input
 
-    def start_batch(self, ingest_input: Dict[str, Any] = None, batch_id: str = None) -> str:
+    def start_batch(self, ingest_input: Optional[Dict[str, Any]] = None, batch_id: Optional[str] = None) -> Optional[str]:
         """Start a new curation batch."""
 
         # If no ingest_input provided, try to generate from data/input directory
@@ -319,6 +330,7 @@ class Orchestrator:
 
         # Use the batch_id from the ingest_input, or use the provided batch_id
         batch_id = ingest_input["batch_id"]
+        assert batch_id is not None, "batch_id must not be None"
 
         # Determine whether to use real services
         self.use_real_services = self._should_use_real_services(ingest_input)
@@ -424,15 +436,17 @@ def main():
 
     # Save final result
     services = orchestrator._get_services()
-    if hasattr(services, 'data_store') and batch_id in services.data_store:
-        final_result = services.data_store[batch_id].get("curated_list")
-        if final_result:
-            with open("./data/output/curated_list.json", 'w') as f:
-                json.dump(final_result, f, indent=2)
-            print("\n💾 Final curated list saved to ./data/output/curated_list.json")
-            print(f"Selected {len(final_result['items'])} photos")
-        else:
-            print("⚠️ No curated list found in results")
+    final_result = None
+    if hasattr(services, 'data_store') and batch_id in services.data_store:  # type: ignore
+        final_result = services.data_store[batch_id].get("curated_list")  # type: ignore
+
+    if final_result:
+        with open("./data/output/curated_list.json", 'w') as f:
+            json.dump(final_result, f, indent=2)
+        print("\n💾 Final curated list saved to ./data/output/curated_list.json")
+        print(f"Selected {len(final_result['items'])} photos")
+    else:
+        print("⚠️ No curated list found in results")
 
     print(f"\n🎉 Pipeline complete: {batch_id}")
 

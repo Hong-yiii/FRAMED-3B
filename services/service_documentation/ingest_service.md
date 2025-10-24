@@ -194,7 +194,8 @@ self.ffmpeg_formats = {'.raw', '.cr2', '.nef', '.arw', '.dng', '.orf', '.rw2', '
 - **Batch Generator:** Can consume outputs from `generate_ingest_input_service.py`
 
 ### Downstream Services
-- **Preprocess Service:** Consumes `ranking_uri` for standardization
+- **Preprocess Service:** Consumes complete `photo_index` with EXIF and format data
+- **Features Service:** Can process directly from ingest (fallback mode)
 - **Cache System:** Uses `photo_id` for result caching
 - **Monitoring:** Feeds metrics to observability systems
 

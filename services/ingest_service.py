@@ -89,7 +89,7 @@ class IngestService:
     def process(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
         """Process actual photos from the input directory."""
         start_time = time.time()
-        self.logger.info("Processing photos...")
+        self.logger.info("Processing photos... (ingest service)")
 
         batch_id = input_data["batch_id"]
         photo_index = []
@@ -482,14 +482,35 @@ class IngestService:
                 degrees, minutes, seconds = gps_value[:3]
 
                 # Convert each component if it's a tuple (rational number)
-                if isinstance(degrees, (list, tuple)):
-                    degrees = degrees[0] / degrees[1] if len(degrees) >= 2 else degrees[0]
-                if isinstance(minutes, (list, tuple)):
-                    minutes = minutes[0] / minutes[1] if len(minutes) >= 2 else minutes[0]
-                if isinstance(seconds, (list, tuple)):
-                    seconds = seconds[0] / seconds[1] if len(seconds) >= 2 else seconds[0]
+                degrees_val: float = 0.0
+                minutes_val: float = 0.0
+                seconds_val: float = 0.0
+                
+                # Helper to convert numeric component (handles rationals)
+                def _convert_component(val):
+                    if isinstance(val, (list, tuple)) and len(val) >= 2:
+                        return float(val[0]) / float(val[1])  # type: ignore
+                    elif isinstance(val, (list, tuple)) and len(val) > 0:
+                        return float(val[0])  # type: ignore
+                    else:
+                        return float(val)  # type: ignore
+                
+                if isinstance(degrees, (list, tuple)) and len(degrees) > 0:
+                    degrees_val = _convert_component(degrees)
+                else:
+                    degrees_val = float(degrees)  # type: ignore
+                    
+                if isinstance(minutes, (list, tuple)) and len(minutes) > 0:
+                    minutes_val = _convert_component(minutes)
+                else:
+                    minutes_val = float(minutes)  # type: ignore
+                    
+                if isinstance(seconds, (list, tuple)) and len(seconds) > 0:
+                    seconds_val = _convert_component(seconds)
+                else:
+                    seconds_val = float(seconds)  # type: ignore
 
-                return float(degrees) + (float(minutes) / 60.0) + (float(seconds) / 3600.0)
+                return degrees_val + (minutes_val / 60.0) + (seconds_val / 3600.0)
 
             # Handle numeric format (already in decimal degrees)
             elif isinstance(gps_value, (int, float)):
