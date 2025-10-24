@@ -18,6 +18,7 @@ intermediateJsons/clustering/
 intermediateJsons/ranking/
 intermediateJsons/optimizer/
 intermediateJsons/exporter/
+!intermediateJsons/**/*.gitkeep
 !intermediateJsons/README.md
 !intermediateJsons/analyze_pipeline.py
 
