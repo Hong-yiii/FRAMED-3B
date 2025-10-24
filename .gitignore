@@ -10,6 +10,8 @@ __pycache__/
 data/
 !data/**/*.gitkeep
 intermediateJsons/
+!intermediateJsons/analyze_pipeline.py
+!intermediateJsons/README.md
 intermediateJsons/ingest/
 intermediateJsons/preprocess/
 intermediateJsons/features/
@@ -18,6 +20,7 @@ intermediateJsons/clustering/
 intermediateJsons/ranking/
 intermediateJsons/optimizer/
 intermediateJsons/exporter/
+!intermediateJsons/**/*.gitkeep
 !intermediateJsons/README.md
 !intermediateJsons/analyze_pipeline.py
 
