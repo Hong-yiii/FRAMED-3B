@@ -8,6 +8,7 @@ __pycache__/
 
 # Data folders - exclude processed data but keep structure
 data/
+!data/**/*.gitkeep
 intermediateJsons/
 intermediateJsons/ingest/
 intermediateJsons/preprocess/
