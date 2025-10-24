@@ -9,9 +9,7 @@ __pycache__/
 # Data folders - exclude processed data but keep structure
 data/
 !data/**/*.gitkeep
-intermediateJsons/
-!intermediateJsons/analyze_pipeline.py
-!intermediateJsons/README.md
+# intermediateJsons - only ignore specific subdirectories, keep root files
 intermediateJsons/ingest/
 intermediateJsons/preprocess/
 intermediateJsons/features/
@@ -21,8 +19,6 @@ intermediateJsons/ranking/
 intermediateJsons/optimizer/
 intermediateJsons/exporter/
 !intermediateJsons/**/*.gitkeep
-!intermediateJsons/README.md
-!intermediateJsons/analyze_pipeline.py
 
 # Distribution / packaging
 .Python
