@@ -3,22 +3,44 @@
 @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css');
 
 :root {
-  /* --- NEW "Zen" Light Mode Color Palette (Beige) --- */
-  /* */
+  /* --- "Zen" Light Mode (Beige) --- */
   --background: oklch(0.97 0.035 80);         /* Very light, warm beige */
   --foreground: oklch(0.22 0.02 80);         /* Dark, warm grey/brown text */
   --card: oklch(0.98 0.02 80);               /* Slightly lighter beige for cards */
   --secondary: oklch(0.96 0.02 80);            /* A slightly darker beige for accents */
   --muted-foreground: oklch(0.55 0.01 80);   /* Medium grey for subtitles */
-  
   --primary: oklch(0.28 0.03 80);            /* Dark, warm grey (for buttons) */
   --primary-foreground: oklch(0.985 0 0);    /* Light text (for buttons) */
-  
   --border: oklch(0.93 0.01 80);             /* Light grey border */
   --ring: oklch(0.78 0.01 80);               /* Medium grey ring */
-  /* -------------------------------------------------- */
+}
 
-  /* Apply fonts and colors */
+/* --- NEW: Dark Mode from Inspiration --- */
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --border: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+}
+
+/* Apply fonts and colors */
+html {
+  scroll-behavior: smooth; /* Added from inspiration */
+}
+
+body {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 320px;
+  min-height: 100vh;
+  
   font-family: 'Vazirmatn', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -33,14 +55,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -52,4 +66,19 @@ body {
 /* This is the class for our serif font */
 .font-serif {
   font-family: 'Source Serif 4', serif;
+}
+
+/* --- NEW: Reduced Motion from Inspiration --- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

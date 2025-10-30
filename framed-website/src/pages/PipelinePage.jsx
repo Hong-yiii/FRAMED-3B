@@ -1,9 +1,8 @@
-
-import React, { useEffect, useState } from 'react';
+import React from 'react'; // Removed useEffect, useState
 import { motion } from 'framer-motion';
-import { useFiles } from '../context/FileContext'; // <-- Get our files
+import { useFiles } from '../context/FileContext'; // <-- Import our global hook
 
-// Styles for this page updated to use CSS Variables
+// Styles (No change)
 const styles = {
   pageContainer: {
     width: '100%',
@@ -24,24 +23,24 @@ const styles = {
   stageNumber: {
     fontSize: '1.5rem',
     fontWeight: 'bold',
-    color: 'var(--muted-foreground)', // Use variable
+    color: 'var(--muted-foreground)',
     fontFamily: '"Source Serif 4", serif',
   },
   stageTitle: {
     fontSize: '2rem',
     fontWeight: 'bold',
-    color: 'var(--foreground)', // Use variable
+    color: 'var(--foreground)',
     marginTop: '0.5rem',
     fontFamily: '"Source Serif 4", serif',
   },
   stageDesc: {
-    color: 'var(--muted-foreground)', // Use variable
+    color: 'var(--muted-foreground)',
     marginTop: '0.5rem',
   },
   stageContent: {
     width: '70%',
     paddingLeft: '2rem',
-    borderLeft: '2px solid var(--border)', // Use variable
+    borderLeft: '2px solid var(--border)',
     display: 'flex',
     flexWrap: 'wrap',
     gap: '10px',
@@ -52,7 +51,7 @@ const styles = {
     height: '100px',
     borderRadius: '8px',
     objectFit: 'cover',
-    backgroundColor: 'var(--card)', // Use variable
+    backgroundColor: 'var(--secondary)',
   },
 };
 
@@ -63,24 +62,12 @@ const fadeInUp = {
   transition: { duration: 0.6, ease: 'easeOut' },
 };
 
-// This component will show a single photo thumbnail
+// --- *** THIS IS THE CORRECTED COMPONENT *** ---
+// It's simpler and works with our new `presetFiles` array
 function FilePreview({ file }) {
-  const [imgSrc, setImgSrc] = useState(null);
-
-  useEffect(() => {
-    // Create a temporary URL to display the image
-    const objectUrl = URL.createObjectURL(file);
-    setImgSrc(objectUrl);
-
-    // Clean up the object URL when the component unmounts
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [file]);
-
-  if (!imgSrc) return null;
-
   return (
     <motion.img
-      src={imgSrc}
+      src={file.path} // <-- It now reads file.path
       alt={file.name}
       style={styles.thumbnail}
       variants={fadeInUp} // Each thumbnail fades in
@@ -88,13 +75,11 @@ function FilePreview({ file }) {
     />
   );
 }
+// --- END CORRECTION ---
 
 // Main Page Component
 function PipelinePage() {
   const { files } = useFiles();
-
-  // We'll add more state here later to simulate progression
-  // const [currentStage, setCurrentStage] = useState('ingest');
 
   return (
     <motion.div
@@ -113,8 +98,7 @@ function PipelinePage() {
           <p style={styles.stageDesc}>Receiving {files.length} photos...</p>
         </div>
         <div style={styles.stageContent}>
-          {/* We'll show the images in the *next* step */}
-          <p style={{ color: '#666' }}>Ingest complete. Starting preprocess...</p>
+          <p style={{ color: 'var(--muted-foreground)' }}>Ingest complete. Starting preprocess...</p>
         </div>
       </motion.section>
 
@@ -131,6 +115,7 @@ function PipelinePage() {
             animate: { transition: { staggerChildren: 0.05 } }, // Stagger thumbnails
           }}
         >
+          {/* This will now render your demo photos */}
           {files.map((file, index) => (
             <FilePreview key={file.name + index} file={file} />
           ))}
@@ -138,7 +123,6 @@ function PipelinePage() {
       </motion.section>
 
       {/* --- SIMULATED STAGES (Wizard of Oz) --- */}
-      {/* We'll animate these in the next step */}
 
       {/* Stage 3-5: Features, Scoring, Clustering */}
       <motion.section style={styles.stage} variants={fadeInUp}>
@@ -150,10 +134,9 @@ function PipelinePage() {
           </p>
         </div>
         <div style={styles.stageContent}>
-          <p style={{ color: '#666' }}>
+          <p style={{ color: 'var(--muted-foreground)' }}>
             Simulating grouping {files.length} photos into moments...
           </p>
-          {/* TODO: Animate photos grouping together here */}
         </div>
       </motion.section>
 
@@ -165,8 +148,7 @@ function PipelinePage() {
           <p style={styles.stageDesc}>Selecting the "hero" shots from each moment.</p>
         </div>
         <div style={styles.stageContent}>
-          <p style={{ color: '#666' }}>Simulating hero selection...</p>
-          {/* TODO: Animate "pulling out" the top 5-10 photos */}
+          <p style={{ color: 'var(--muted-foreground)' }}>Simulating hero selection...</p>
         </div>
       </motion.section>
 
@@ -180,8 +162,7 @@ function PipelinePage() {
           </p>
         </div>
         <div style={styles.stageContent}>
-          {/* TODO: Add a button to navigate to the /placement page */}
-          <p style={{ color: '#666' }}>Final set selected. Preparing for placement...</p>
+          <p style={{ color: 'var(--muted-foreground)' }}>Final set selected. Preparing for placement...</p>
         </div>
       </motion.section>
     </motion.div>

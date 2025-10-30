@@ -1,9 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { UploadCloud } from 'lucide-react';
 
-// ... (imports remain the same)
-
-// Component styles updated to use CSS Variables
+// Component styles (Updated `dragging` style for light theme)
 const styles = {
   dropzone: {
     display: 'flex',
@@ -11,16 +9,16 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '32px',
-    border: '2px dashed var(--border)', // Use variable
+    border: '2px dashed var(--border)',
     borderRadius: '8px',
-    backgroundColor: 'var(--card)', // Use variable
-    color: 'var(--muted-foreground)', // Use variable
+    backgroundColor: 'var(--card)',
+    color: 'var(--muted-foreground)',
     cursor: 'pointer',
     transition: 'border-color 0.3s ease, background-color 0.3s ease',
   },
   dragging: {
-    borderColor: 'var(--ring)', // Use variable
-    backgroundColor: '#2a2a3a', // A slightly different dark shade for drag-over
+    borderColor: 'var(--primary)',
+    backgroundColor: 'var(--secondary)', // <-- FIXED: Was a dark color
   },
   icon: {
     width: '50px',
@@ -40,21 +38,18 @@ function UploadComponent({ onFilesSelected }) {
 
   // --- Event Handlers ---
 
-  // Handle file drag over
   const handleDragOver = (e) => {
-    e.preventDefault(); // Prevent default browser behavior
+    e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
   };
 
-  // Handle file drag leave
   const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
   };
 
-  // Handle file drop
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -63,27 +58,24 @@ function UploadComponent({ onFilesSelected }) {
     const files = Array.from(e.dataTransfer.files);
     if (files && files.length > 0) {
       console.log('Files dropped:', files);
-      onFilesSelected(files); // Pass files to parent
+      onFilesSelected(files);
     }
   };
 
-  // Handle file selection from the hidden input (for clicking)
   const handleFileSelect = (e) => {
     const files = Array.from(e.target.files);
     if (files && files.length > 0) {
       console.log('Files selected via click:', files);
-      onFilesSelected(files); // Pass files to parent
+      onFilesSelected(files);
     }
   };
 
-  // Trigger the hidden file input when the dropzone is clicked
   const handleUploadClick = () => {
     fileInputRef.current.click();
   };
 
   // --- Render ---
 
-  // Combine base style with dragging style if active
   const dropzoneStyle = {
     ...styles.dropzone,
     ...(isDragging ? styles.dragging : {}),
@@ -97,17 +89,15 @@ function UploadComponent({ onFilesSelected }) {
       onDrop={handleDrop}
       onClick={handleUploadClick}
     >
-      {/* Hidden file input */}
       <input
         type="file"
-        multiple // Allow multiple files
+        multiple
         ref={fileInputRef}
         onChange={handleFileSelect}
         style={{ display: 'none' }}
-        accept="image/*" // Accept only images
+        accept="image/*"
       />
 
-      {/* Visible content */}
       <UploadCloud style={styles.icon} />
       <span>Drag & drop your photos here, or click to select photos</span>
       <span style={{ fontSize: '0.8rem', marginTop: '8px' }}>
