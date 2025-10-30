@@ -1,13 +1,22 @@
-import React from 'react';
-import './App.css'; // Keep this for any future app-wide styles
-import LandingPage from './pages/LandingPage';
+import React, { Suspense, lazy } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import './App.css';
+
+// Lazy load the pages for better performance
+const LandingPage = lazy(() => import('./pages/LandingPage.jsx'));
+const PipelinePage = lazy(() => import('./pages/PipelinePage.jsx'));
 
 function App() {
-  // For now, the App component just renders the LandingPage.
-  // Later, we will add routing here to move between pipeline stages.
   return (
     <div className="App">
-      <LandingPage />
+      {/* Suspense is required for lazy loading */}
+      <Suspense fallback={<div style={{ color: '#fff' }}>Loading...</div>}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/pipeline" element={<PipelinePage />} />
+          {/* Add more routes later for /placement and /magazine */}
+        </Routes>
+      </Suspense>
     </div>
   );
 }

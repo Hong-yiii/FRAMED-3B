@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { UploadCloud } from 'lucide-react';
 
-// Component styles (we'll keep them in the file for simplicity)
+// ... (imports remain the same)
+
+// Component styles updated to use CSS Variables
 const styles = {
   dropzone: {
     display: 'flex',
@@ -9,16 +11,16 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '32px',
-    border: '2px dashed #444',
+    border: '2px dashed var(--border)', // Use variable
     borderRadius: '8px',
-    backgroundColor: '#1e1e1e',
-    color: '#888',
+    backgroundColor: 'var(--card)', // Use variable
+    color: 'var(--muted-foreground)', // Use variable
     cursor: 'pointer',
     transition: 'border-color 0.3s ease, background-color 0.3s ease',
   },
   dragging: {
-    borderColor: '#007bff',
-    backgroundColor: '#2a2a3a',
+    borderColor: 'var(--ring)', // Use variable
+    backgroundColor: '#2a2a3a', // A slightly different dark shade for drag-over
   },
   icon: {
     width: '50px',
@@ -107,9 +109,8 @@ function UploadComponent({ onFilesSelected }) {
 
       {/* Visible content */}
       <UploadCloud style={styles.icon} />
-      <span>Drag & drop your photos here, or click to select files</span>
+      <span>Drag & drop your photos here, or click to select photos</span>
       <span style={{ fontSize: '0.8rem', marginTop: '8px' }}>
-        (This is a simulation, no files will be uploaded to a server)
       </span>
     </div>
   );
